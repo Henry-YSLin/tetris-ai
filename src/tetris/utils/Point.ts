@@ -6,11 +6,11 @@ export default class Point {
     this.Y = y;
   }
 
-  add(other: Point): Point {
+  Add(other: Point): Point {
     return new Point(this.X + other.X, this.Y + other.Y);
   }
 
-  subtract(other: Point): Point {
+  Subtract(other: Point): Point {
     return new Point(this.X - other.X, this.Y - other.Y);
   }
 }

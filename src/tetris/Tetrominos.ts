@@ -11,11 +11,23 @@ export enum Tetromino {
   Z,
 }
 
+export enum Rotation {
+  R0,
+  R90,
+  R180,
+  R270
+}
+
+export enum RotationDirection {
+  CW = 1,
+  CCW = -1
+}
+
 type WallKickInfo = Readonly<[
-  {[-1]:Readonly<Point[]>, [1]: Readonly<Point[]>},
-  {[-1]:Readonly<Point[]>, [1]: Readonly<Point[]>},
-  {[-1]:Readonly<Point[]>, [1]: Readonly<Point[]>},
-  {[-1]:Readonly<Point[]>, [1]: Readonly<Point[]>}
+  {[RotationDirection.CCW]:Readonly<Point[]>, [RotationDirection.CW]: Readonly<Point[]>},
+  {[RotationDirection.CCW]:Readonly<Point[]>, [RotationDirection.CW]: Readonly<Point[]>},
+  {[RotationDirection.CCW]:Readonly<Point[]>, [RotationDirection.CW]: Readonly<Point[]>},
+  {[RotationDirection.CCW]:Readonly<Point[]>, [RotationDirection.CW]: Readonly<Point[]>}
 ]>;
 const WallKick3x3: WallKickInfo = Object.freeze([
   {
