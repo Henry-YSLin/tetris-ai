@@ -2,12 +2,17 @@ import { Tetrominos, Tetromino, Rotation, RotationDirection } from './Tetrominos
 import Point from './utils/Point';
 import './utils/Array';
 import { GRID_HEIGHT, GRID_WIDTH } from './Consts';
+import PieceGenerator from './PieceGenerator';
 
 
 class FallingTetromino {
   Type: Tetromino;
   Rotation: Rotation;
   Position: Point;
+  /**
+   * Lock the piece if it hasn't moved for LOCK_DELAY ticks
+   */
+  LastActionTick: number;
 
   //#region Helper Functions
   get InternalPoints(): readonly Point[] {
@@ -75,7 +80,7 @@ class FallingTetromino {
   }
 
   Clone(): FallingTetromino {
-    return new FallingTetromino(this.Type, this.Rotation, this.Position);
+    return new FallingTetromino(this.Type, this.Rotation, this.Position, this.LastActionTick);
   }
 
   Rotate(direction: RotationDirection = RotationDirection.CW): void {
@@ -85,7 +90,12 @@ class FallingTetromino {
   }
   //#endregion
 
-  constructor(type: Tetromino, rotation: Rotation = Rotation.R0, position: Point | undefined = undefined) {
+  constructor(
+    type: Tetromino,
+    rotation: Rotation = Rotation.R0,
+    position: Point | undefined = undefined,
+    lastActionTick = NaN,
+  ) {
     this.Type = type;
     this.Rotation = rotation;
     if (position)
@@ -95,12 +105,27 @@ class FallingTetromino {
       this.Bottom = 21;                                         // spawns just above playfield
       this.Left = Math.floor(GRID_WIDTH / 2 - this.Width / 2);  // spawns centered, rounds to the left
     }
+    this.LastActionTick = lastActionTick;
   }
 }
 
 export class GameState {
   Grid: Tetromino[][];
   Falling: FallingTetromino | null;
+  Hold: Tetromino;
+  /**
+   * Whether to disallow hold, reset when a new tetromino is dequeued
+   */
+  BlockHold: boolean;
+  /**
+   * see Consts/TICK_RATE
+   */
+  TicksElapsed: number;
+  Pieces: PieceGenerator;
+  /**
+   * Index of the next piece in queue
+   */
+  PieceIndex: number;
 
   Get(x: number, y: number): Tetromino | null;
 
@@ -130,7 +155,7 @@ export class GameState {
    * @param falling Optionally specify a falling piece to be tested
    * @returns Whether the falling piece is not out of bounds and is not overlapping with locked pieces
    */
-  IsFallingValid(falling: FallingTetromino | undefined = undefined): boolean {
+  IsPieceValid(falling: FallingTetromino | undefined = undefined): boolean {
     if (falling)
       return !falling.Points.some(p => (this.Get(p) ?? Tetromino.I) !== Tetromino.None);
     if (this.Falling)
@@ -139,12 +164,40 @@ export class GameState {
   }
 
   /**
+   * Attempt to dequeue a piece from the queue and start dropping it
+   * @returns Whether the dequeue is successful
+   */
+  DequeuePiece(): boolean {
+    if (this.Falling !== null) return false;
+    this.Falling = new FallingTetromino(this.Pieces.Get(this.PieceIndex++));
+    this.Falling.LastActionTick = this.TicksElapsed;
+    return true;
+  }
+
+  /**
+   * Attempt to hold the current piece
+   * @returns Whether the hold was successful
+   */
+  HoldPiece(): boolean {
+    if (this.Falling === null) return false;
+    if (this.BlockHold) return false;
+    let hold = this.Hold;
+    this.Hold = this.Falling.Type;
+    if (hold === Tetromino.None)
+      hold = this.Pieces.Get(this.PieceIndex++);
+    this.Falling = new FallingTetromino(hold);
+    this.Falling.LastActionTick = this.TicksElapsed;
+    this.BlockHold = true;
+    return true;
+  }
+
+  /**
    * Attempt to lock the currently falling piece.
    * @returns Whether the lock was successful
    */
-  LockFalling(): boolean {
+  LockPiece(): boolean {
     if (this.Falling === null) return false;
-    if (!this.IsFallingValid()) return false;
+    if (!this.IsPieceValid()) return false;
     this.Falling.Points.some(p => this.Grid[p.Y][p.X] = this.Falling?.Type ?? Tetromino.None);
     this.Falling = null;
     return true;
@@ -156,7 +209,7 @@ export class GameState {
    * @param direction Direction of rotation, clockwise or counter-clockwise
    * @returns Whether the rotation was successful
    */
-  RotateFalling(direction: RotationDirection = RotationDirection.CW): boolean {
+  RotatePiece(direction: RotationDirection = RotationDirection.CW): boolean {
     if (this.Falling === null) return false;
     const kick = Tetrominos[this.Falling.Type].WallKick[this.Falling.Rotation][direction]
       .find(p => {
@@ -164,28 +217,42 @@ export class GameState {
         if (!falling) return false;
         falling.Rotate(direction);
         falling.Position.Add(p);
-        return this.IsFallingValid(falling);
+        return this.IsPieceValid(falling);
       });
     if (!kick) return false;
     this.Falling.Rotate(direction);
     this.Falling.Position.Add(kick);
+    this.Falling.LastActionTick = this.TicksElapsed;
     return true;
   }
 
-  ShiftFalling(offset: number): boolean {
+  ShiftPiece(offset: number): boolean {
     if (this.Falling === null) return false;
     const falling = this.Falling.Clone();
     falling.Position.X += offset;
-    if (this.IsFallingValid(falling)) {
+    if (this.IsPieceValid(falling)) {
       this.Falling = falling;
+      this.Falling.LastActionTick = this.TicksElapsed;
       return true;
     }
     else return false;
   }
 
-  constructor() {
+  constructor(
+    falling: FallingTetromino | null = null,
+    hold: Tetromino = Tetromino.None,
+    elapsed = 0,
+    blockHold = false,
+    pieceSeed: number | undefined = undefined,
+    pieceIndex = 0,
+  ) {
     this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(Tetromino.None));
-    this.Falling = null;
+    this.Falling = falling;
+    this.Hold = hold;
+    this.BlockHold = blockHold;
+    this.TicksElapsed = elapsed;
+    this.Pieces = new PieceGenerator(pieceSeed);
+    this.PieceIndex = pieceIndex;
   }
 }
 export default GameState;
