@@ -1,113 +1,9 @@
-import { Tetrominos, Tetromino, Rotation, RotationDirection } from './Tetrominos';
+import { Tetrominos, Tetromino, RotationDirection } from './Tetrominos';
 import Point from './utils/Point';
 import './utils/Array';
-import { GRID_HEIGHT, GRID_WIDTH } from './Consts';
+import { DROP_INTERVAL, GRID_HEIGHT, GRID_WIDTH, LOCK_DELAY, QUEUE_LENGTH } from './Consts';
 import PieceGenerator from './PieceGenerator';
-
-
-class FallingTetromino {
-  Type: Tetromino;
-  Rotation: Rotation;
-  Position: Point;
-  /**
-   * Lock the piece if it hasn't moved for LOCK_DELAY ticks
-   */
-  LastActionTick: number;
-
-  //#region Helper Functions
-  get InternalPoints(): readonly Point[] {
-    return Tetrominos[this.Type].Rotations[this.Rotation];
-  }
-
-  get Points(): Point[] {
-    return Tetrominos[this.Type].Rotations[this.Rotation].map(p => p.Add(this.Position));
-  }
-
-  get InternalLeft(): number {
-    return this.InternalPoints.map(x=>x.X).min();
-  }
-
-  get InternalRight(): number {
-    return this.InternalPoints.map(x=>x.X).max();
-  }
-
-  get InternalTop(): number {
-    return this.InternalPoints.map(x=>x.Y).max();
-  }
-
-  get InternalBottom(): number {
-    return this.InternalPoints.map(x=>x.Y).min();
-  }
-
-  get Left(): number {
-    return this.Position.X + this.InternalLeft;
-  }
-
-  set Left(left: number) {
-    this.Position.X = left - this.InternalLeft;
-  }
-
-  get Right(): number {
-    return this.Position.X + this.InternalRight;
-  }
-
-  set Right(right: number) {
-    this.Position.X = right - this.InternalRight;
-  }
-
-  get Top(): number {
-    return this.Position.Y + this.InternalTop;
-  }
-
-  set Top(top: number) {
-    this.Position.Y = top - this.InternalTop;
-  }
-
-  get Bottom(): number {
-    return this.Position.Y + this.InternalBottom;
-  }
-
-  set Bottom(bottom: number) {
-    this.Position.Y = bottom - this.InternalBottom;
-  }
-
-  get Width(): number {
-    return this.InternalRight - this.InternalLeft;
-  }
-
-  get Height(): number {
-    return this.InternalTop - this.InternalBottom;
-  }
-
-  Clone(): FallingTetromino {
-    return new FallingTetromino(this.Type, this.Rotation, this.Position, this.LastActionTick);
-  }
-
-  Rotate(direction: RotationDirection = RotationDirection.CW): void {
-    this.Rotation += direction;
-    if (this.Rotation > 3) this.Rotation = 0;
-    if (this.Rotation < 0) this.Rotation = 3;
-  }
-  //#endregion
-
-  constructor(
-    type: Tetromino,
-    rotation: Rotation = Rotation.R0,
-    position: Point | undefined = undefined,
-    lastActionTick = NaN,
-  ) {
-    this.Type = type;
-    this.Rotation = rotation;
-    if (position)
-      this.Position = position;
-    else {
-      this.Position = new Point(4, 21);
-      this.Bottom = 21;                                         // spawns just above playfield
-      this.Left = Math.floor(GRID_WIDTH / 2 - this.Width / 2);  // spawns centered, rounds to the left
-    }
-    this.LastActionTick = lastActionTick;
-  }
-}
+import FallingTetromino  from './FallingTetromino';
 
 export class GameState {
   Grid: Tetromino[][];
@@ -121,11 +17,15 @@ export class GameState {
    * see Consts/TICK_RATE
    */
   TicksElapsed: number;
-  Pieces: PieceGenerator;
+  #pieces: PieceGenerator;
   /**
    * Index of the next piece in queue
    */
   PieceIndex: number;
+
+  get PieceQueue(): Tetromino[] {
+    return this.#pieces.GetRange(this.PieceIndex, QUEUE_LENGTH);
+  }
 
   Get(x: number, y: number): Tetromino | null;
 
@@ -169,8 +69,7 @@ export class GameState {
    */
   DequeuePiece(): boolean {
     if (this.Falling !== null) return false;
-    this.Falling = new FallingTetromino(this.Pieces.Get(this.PieceIndex++));
-    this.Falling.LastActionTick = this.TicksElapsed;
+    this.Falling = FallingTetromino.Spawn(this.#pieces.Get(this.PieceIndex++), this.TicksElapsed);
     return true;
   }
 
@@ -184,9 +83,8 @@ export class GameState {
     let hold = this.Hold;
     this.Hold = this.Falling.Type;
     if (hold === Tetromino.None)
-      hold = this.Pieces.Get(this.PieceIndex++);
-    this.Falling = new FallingTetromino(hold);
-    this.Falling.LastActionTick = this.TicksElapsed;
+      hold = this.#pieces.Get(this.PieceIndex++);
+    this.Falling = FallingTetromino.Spawn(hold, this.TicksElapsed);
     this.BlockHold = true;
     return true;
   }
@@ -223,6 +121,7 @@ export class GameState {
     this.Falling.Rotate(direction);
     this.Falling.Position.Add(kick);
     this.Falling.LastActionTick = this.TicksElapsed;
+    this.Falling.ActionCount++;
     return true;
   }
 
@@ -230,12 +129,60 @@ export class GameState {
     if (this.Falling === null) return false;
     const falling = this.Falling.Clone();
     falling.Position.X += offset;
-    if (this.IsPieceValid(falling)) {
-      this.Falling = falling;
-      this.Falling.LastActionTick = this.TicksElapsed;
-      return true;
+    if (!this.IsPieceValid(falling)) return false;
+    this.Falling = falling;
+    this.Falling.LastActionTick = this.TicksElapsed;
+    this.Falling.ActionCount++;
+    return true;
+  }
+
+  CanPieceDrop(falling: FallingTetromino | undefined = undefined): boolean {
+    let f: FallingTetromino;
+    if (falling){
+      f = falling.Clone();
+    }
+    else if (this.Falling) {
+      f = this.Falling.Clone();
     }
     else return false;
+    f.Position.Y--;
+    return this.IsPieceValid(f);
+  }
+
+  SoftDropPiece(isAuto = false): boolean {
+    if (this.Falling === null) return false;
+    const falling = this.Falling.Clone();
+    falling.Position.Y -= 1;
+    if (!this.IsPieceValid(falling)) return false;
+    this.Falling = falling;
+    this.Falling.LastActionTick = this.TicksElapsed;
+    this.Falling.ActionCount = 0;
+    if (isAuto)
+      this.Falling.DropTick = this.TicksElapsed;
+    return true;
+  }
+
+  HardDropPiece(): boolean {
+    if (this.Falling === null) return false;
+    while (this.IsPieceValid()) {
+      this.Falling.Position.Y--;
+    }
+    this.Falling.Position.Y++;
+    return this.LockPiece();
+  }
+
+  Tick(): void {
+    if (this.Falling === null) {
+      this.DequeuePiece();
+    }
+    else {
+      if (this.TicksElapsed - this.Falling.DropTick >= DROP_INTERVAL)
+        this.SoftDropPiece(true);
+      if (this.TicksElapsed - this.Falling.LastActionTick >= LOCK_DELAY && !this.CanPieceDrop(this.Falling))
+        this.LockPiece();
+    }
+
+    this.TicksElapsed++;
   }
 
   constructor(
@@ -251,7 +198,7 @@ export class GameState {
     this.Hold = hold;
     this.BlockHold = blockHold;
     this.TicksElapsed = elapsed;
-    this.Pieces = new PieceGenerator(pieceSeed);
+    this.#pieces = new PieceGenerator(pieceSeed);
     this.PieceIndex = pieceIndex;
   }
 }

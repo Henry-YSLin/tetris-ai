@@ -6,7 +6,7 @@ export default class PieceGenerator {
   #seed: number;
   #cache: Tetromino[];
 
-  get seed(): number {
+  get Seed(): number {
     return this.#seed;
   }
 
