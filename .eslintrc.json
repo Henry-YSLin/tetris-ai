@@ -1,0 +1,49 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+
+  "parser": "@typescript-eslint/parser", // Specifies the ESLint parser
+  "parserOptions": {
+    "ecmaVersion": 2020, // Allows for the parsing of modern ECMAScript features
+    "sourceType": "module", // Allows for the use of imports
+    "ecmaFeatures": {
+      "jsx": true // Allows for the parsing of JSX
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "detect" // Tells eslint-plugin-react to automatically detect the version of React to use
+    }
+  },
+
+  "extends": [
+    "plugin:react/recommended", // Uses the recommended rules from @eslint-plugin-react
+    "plugin:@typescript-eslint/recommended" // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+  ],
+
+  "rules": {
+    "semi": ["error", "always"],
+    "quotes": ["warn", "single"],
+    "no-console": "warn",
+    "consistent-return": "off",
+    "func-names": "off",
+    "no-param-reassign": "off",
+    "no-return-await": "off",
+    "no-underscore-dangle": "off",
+    "class-methods-use-this": "off",
+    "comma-dangle": ["warn", "always-multiline"],
+    "@typescript-eslint/no-var-requires": "off",
+    "prefer-destructuring": ["warn", { "object": true, "array": false }],
+    "no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "req|res|next|val|props" }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "req|res|next|val|props" }
+    ],
+    "@typescript-eslint/no-empty-interface": "off"
+  }
+}
