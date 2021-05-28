@@ -32,3 +32,8 @@ export const DROP_INTERVAL = 60;
  * Number of visible pieces in the queue
  */
 export const QUEUE_LENGTH = 6;
+
+/**
+ * The least number of ticks to wait between AI actions
+ */
+export const AI_ACTION_DELAY = 20;

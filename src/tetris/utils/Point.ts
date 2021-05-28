@@ -13,4 +13,8 @@ export default class Point {
   Subtract(other: Point): Point {
     return new Point(this.X - other.X, this.Y - other.Y);
   }
+
+  Clone(): Point {
+    return new Point(this.X, this.Y);
+  }
 }

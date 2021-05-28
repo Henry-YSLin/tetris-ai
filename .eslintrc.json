@@ -24,7 +24,8 @@
   ],
 
   "rules": {
-    "semi": ["error", "always"],
+    "semi": "off",
+    "@typescript-eslint/semi": ["error", "always"],
     "quotes": ["warn", "single"],
     "no-console": "warn",
     "consistent-return": "off",

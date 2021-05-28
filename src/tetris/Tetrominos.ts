@@ -1,4 +1,5 @@
 import Point from './utils/Point';
+import p5Types from 'p5';
 
 export enum Tetromino {
   None,
@@ -9,6 +10,27 @@ export enum Tetromino {
   S,
   T,
   Z,
+}
+
+export function TetrominoColor(p5: p5Types, tetromino: Tetromino): p5Types.Color {
+  switch (tetromino) {
+    case Tetromino.None:
+      return p5.color(200);
+    case Tetromino.I:
+      return p5.color('cyan');
+    case Tetromino.J:
+      return p5.color('blue');
+    case Tetromino.L:
+      return p5.color('orange');
+    case Tetromino.O:
+      return p5.color('yellow');
+    case Tetromino.S:
+      return p5.color('green');
+    case Tetromino.T:
+      return p5.color('purple');
+    case Tetromino.Z:
+      return p5.color('red');
+  }
 }
 
 export enum Rotation {

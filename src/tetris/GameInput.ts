@@ -1,4 +1,5 @@
 export enum GameInput {
+  None,
   SoftDrop,
   HardDrop,
   Hold,

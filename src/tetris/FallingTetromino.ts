@@ -97,7 +97,7 @@ export default class FallingTetromino {
     return new FallingTetromino(
       this.Type,
       this.Rotation,
-      this.Position,
+      this.Position.Clone(),
       this.LastActionTick,
       this.ActionCount,
       this.DropTick,
