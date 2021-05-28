@@ -112,6 +112,7 @@ export class GameState {
   DequeuePiece(): boolean {
     if (this.Falling !== null) return false;
     this.Falling = FallingTetromino.Spawn(this.#pieces.Get(this.PieceIndex++), this.TicksElapsed);
+    this.BlockHold = false;
     return true;
   }
 
@@ -156,12 +157,13 @@ export class GameState {
         const falling = this.Falling?.Clone();
         if (!falling) return false;
         falling.Rotate(direction);
-        falling.Position.Add(p);
+        falling.Position = falling.Position.Add(p);
         return this.IsPieceValid(falling);
       });
+    console.log(kick);
     if (!kick) return false;
     this.Falling.Rotate(direction);
-    this.Falling.Position.Add(kick);
+    this.Falling.Position = this.Falling.Position.Add(kick);
     this.Falling.LastActionTick = this.TicksElapsed;
     this.Falling.ActionCount++;
     return true;
@@ -202,17 +204,25 @@ export class GameState {
     return true;
   }
 
-  HardDropPiece(): boolean {
-    if (this.Falling === null) return false;
-    while (this.IsPieceValid()) {
-      this.Falling.Position.Y--;
+  HardDropPiece(falling: FallingTetromino | undefined = undefined): boolean {
+    let f : FallingTetromino;
+    if (falling) {
+      f = falling;
     }
-    this.Falling.Position.Y++;
-    return this.LockPiece();
+    else if (this.Falling) {
+      f = this.Falling;
+    }
+    else return false;
+    while (this.IsPieceValid(f)) {
+      f.Position.Y--;
+    }
+    f.Position.Y++;
+    if (f === this.Falling)
+      return this.LockPiece();
+    else return true;
   }
 
   Tick(): void {
-    console.log(this.Falling?.Bottom);
     if (this.Falling === null) {
       this.DequeuePiece();
     }
