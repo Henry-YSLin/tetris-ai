@@ -19,7 +19,7 @@ module.exports = {
 	},
 
 	output: {
-		publicPath: '',
+		publicPath: '/tetris-ai',
 		path: path.resolve(__dirname, 'prod'),
 		filename: '[name].[contenthash].bundle.js', // for production use [contenthash], for developement use [hash]
 	},
