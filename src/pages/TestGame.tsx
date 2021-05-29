@@ -15,9 +15,12 @@ import { GRID_HEIGHT, PLAYFIELD_HEIGHT } from '../tetris/Consts';
 interface Props {}
 
 const BLOCK_SIZE = 20;
+const KEY_REPEAT_DELAY = 10;
 
 const player: Player = new HumanPlayer();
 const game: SingleplayerGame = new SingleplayerGame(player);
+let keyHold: GameInput;
+let keyDelay = 0;
 game.StartClock();
 
 const TestGame: React.FC = (props: Props) => {
@@ -27,6 +30,15 @@ const TestGame: React.FC = (props: Props) => {
 	};
 
 	const draw = (p5: p5Types) => {
+		if (keyHold !== GameInput.None) {
+			if (player instanceof HumanPlayer) {
+				if (keyDelay <= 0) {
+					player.Enqueue(keyHold);
+					keyDelay = KEY_REPEAT_DELAY;
+				}
+				keyDelay--;
+			}
+		}
 		p5.translate(120, -(GRID_HEIGHT - PLAYFIELD_HEIGHT - 0.1) * BLOCK_SIZE);
 		const drawTetromino = (p5: p5Types, type: Tetromino | null, points: Point[], alpha: number) => {
 			const c = TetrominoColor(p5, type ?? Tetromino.None);
@@ -74,22 +86,45 @@ const TestGame: React.FC = (props: Props) => {
 	const keyPressed = (p5: p5Types) => {
 		if (!(player instanceof HumanPlayer)) return;
 		if (p5.keyCode === p5.LEFT_ARROW)
-			player.Enqueue(GameInput.ShiftLeft);
+			keyHold = GameInput.ShiftLeft;
 		if (p5.keyCode === p5.RIGHT_ARROW)
-			player.Enqueue(GameInput.ShiftRight);
+			keyHold = GameInput.ShiftRight;
 		if (p5.keyCode === p5.UP_ARROW)
-			player.Enqueue(GameInput.RotateCW);
+			keyHold = GameInput.RotateCW;
 		if (p5.keyCode === p5.CONTROL)
-			player.Enqueue(GameInput.RotateCCW);
+			keyHold = GameInput.RotateCCW;
 		if (p5.keyCode === p5.DOWN_ARROW)
-			player.Enqueue(GameInput.SoftDrop);
+			keyHold = GameInput.SoftDrop;
 		if (p5.keyCode === p5.SHIFT)
-			player.Enqueue(GameInput.Hold);
+			keyHold = GameInput.Hold;
 		if (p5.key === ' ')
-			player.Enqueue(GameInput.HardDrop);
+			keyHold = GameInput.HardDrop;
+		player.Enqueue(keyHold);
+		keyDelay = KEY_REPEAT_DELAY;
 	};
 
-	return <Sketch setup={setup} draw={draw} keyPressed={keyPressed} />;
+	const keyReleased = (p5: p5Types) => {
+		if (!(player instanceof HumanPlayer)) return;
+		let currentKey: GameInput = GameInput.None;
+		if (p5.keyCode === p5.LEFT_ARROW)
+			currentKey = GameInput.ShiftLeft;
+		if (p5.keyCode === p5.RIGHT_ARROW)
+			currentKey = GameInput.ShiftRight;
+		if (p5.keyCode === p5.UP_ARROW)
+			currentKey = GameInput.RotateCW;
+		if (p5.keyCode === p5.CONTROL)
+			currentKey = GameInput.RotateCCW;
+		if (p5.keyCode === p5.DOWN_ARROW)
+			currentKey = GameInput.SoftDrop;
+		if (p5.keyCode === p5.SHIFT)
+			currentKey = GameInput.Hold;
+		if (p5.key === ' ')
+			currentKey = GameInput.HardDrop;
+		if (keyHold === currentKey)
+			keyHold = GameInput.None;
+	};
+
+	return <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} />;
 };
 
 export default TestGame;
