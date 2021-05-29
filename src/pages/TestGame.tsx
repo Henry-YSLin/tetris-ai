@@ -36,7 +36,7 @@ const TestGame: React.FC = (props: Props) => {
 			});
 		};
 
-		p5.background(200);
+		p5.background(100);
 		const state = game.State;
 		if (!state) return;
 		p5.stroke(0);

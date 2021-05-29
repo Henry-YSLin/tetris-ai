@@ -2,6 +2,7 @@ import { Tetrominos, Tetromino, Rotation, RotationDirection } from './Tetrominos
 import Point from './utils/Point';
 import './utils/Array';
 import { GRID_WIDTH } from './Consts';
+import GameInput from './GameInput';
 
 export default class FallingTetromino {
   Type: Tetromino;
@@ -19,6 +20,10 @@ export default class FallingTetromino {
    * The number of actions performed without dropping
    */
   ActionCount: number;
+  /**
+   * Used for detecting T-spin
+   */
+  LastAction: GameInput;
 
 
   //#region Helper Functions
@@ -101,6 +106,7 @@ export default class FallingTetromino {
       this.LastActionTick,
       this.ActionCount,
       this.DropTick,
+      this.LastAction,
     );
   }
 
@@ -115,6 +121,7 @@ export default class FallingTetromino {
     lastActionTick = NaN,
     actionCount = 0,
     dropTick = NaN,
+    lastAction = GameInput.None,
   ) {
     this.Type = type;
     this.Rotation = rotation;
@@ -128,5 +135,6 @@ export default class FallingTetromino {
     this.LastActionTick = lastActionTick;
     this.ActionCount = actionCount;
     this.DropTick = dropTick;
+    this.LastAction = lastAction;
   }
 }

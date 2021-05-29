@@ -15,21 +15,21 @@ export enum Tetromino {
 export function TetrominoColor(p5: p5Types, tetromino: Tetromino): p5Types.Color {
   switch (tetromino) {
     case Tetromino.None:
-      return p5.color(200);
+      return p5.color(50);
     case Tetromino.I:
-      return p5.color('cyan');
+      return p5.color(77,208,225);
     case Tetromino.J:
-      return p5.color('blue');
+      return p5.color(33,150,243);
     case Tetromino.L:
-      return p5.color('orange');
+      return p5.color(255,152,0);
     case Tetromino.O:
-      return p5.color('yellow');
+      return p5.color(253,216,53);
     case Tetromino.S:
-      return p5.color('green');
+      return p5.color(76,175,80);
     case Tetromino.T:
-      return p5.color('purple');
+      return p5.color(224,64,251);
     case Tetromino.Z:
-      return p5.color('red');
+      return p5.color(229,115,115);
   }
 }
 

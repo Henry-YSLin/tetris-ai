@@ -4,6 +4,7 @@ import './utils/Array';
 import { DROP_INTERVAL, GRID_HEIGHT, GRID_WIDTH, LOCK_DELAY, PLAYFIELD_HEIGHT, QUEUE_LENGTH } from './Consts';
 import PieceGenerator from './PieceGenerator';
 import FallingTetromino  from './FallingTetromino';
+import GameInput from './GameInput';
 
 
 export class VisibleGameState {
@@ -14,6 +15,7 @@ export class VisibleGameState {
   TicksElapsed: number;
   PieceQueue: Tetromino[];
   PieceIndex: number;
+  LastAction: GameInput;
 
   constructor(
     pieceQueue: Tetromino[] = [],
@@ -23,6 +25,7 @@ export class VisibleGameState {
     hold: Tetromino = Tetromino.None,
     elapsed = 0,
     blockHold = false,
+    lastAction = GameInput.None,
   ) {
     this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(Tetromino.None));
     if (grid)
@@ -33,6 +36,7 @@ export class VisibleGameState {
     this.TicksElapsed = elapsed;
     this.PieceQueue = pieceQueue;
     this.PieceIndex = pieceIndex;
+    this.LastAction = lastAction;
   }
 }
 export class GameState {
@@ -129,7 +133,25 @@ export class GameState {
       hold = this.#pieces.Get(this.PieceIndex++);
     this.Falling = FallingTetromino.Spawn(hold, this.TicksElapsed);
     this.BlockHold = true;
+    this.Falling.LastAction = GameInput.Hold;
     return true;
+  }
+
+  /**
+   * Clear lines that are full and emit events
+   * @param lastPiece The most recently locked piece
+   */
+  ClearLines(lastPiece: FallingTetromino | undefined = undefined): void {
+    let linesCleared = 0;
+    for (let i = 0; i < this.GridHeight; i++) {
+      if (!this.Grid[i].some(t => t === Tetromino.None)) {
+        this.Grid.splice(i, 1);
+        this.Grid.push(new Array(this.GridWidth).fill(Tetromino.None));
+        linesCleared++;
+        i--;
+      }
+    }
+    console.log(linesCleared);
   }
 
   /**
@@ -140,6 +162,7 @@ export class GameState {
     if (this.Falling === null) return false;
     if (!this.IsPieceValid()) return false;
     this.Falling.Points.forEach(p => this.Grid[p.Y][p.X] = this.Falling?.Type ?? Tetromino.None);
+    this.ClearLines(this.Falling);
     this.Falling = null;
     return true;
   }
@@ -160,12 +183,12 @@ export class GameState {
         falling.Position = falling.Position.Add(p);
         return this.IsPieceValid(falling);
       });
-    console.log(kick);
     if (!kick) return false;
     this.Falling.Rotate(direction);
     this.Falling.Position = this.Falling.Position.Add(kick);
     this.Falling.LastActionTick = this.TicksElapsed;
     this.Falling.ActionCount++;
+    this.Falling.LastAction = direction === RotationDirection.CW ? GameInput.RotateCW : GameInput.RotateCCW;
     return true;
   }
 
@@ -177,6 +200,7 @@ export class GameState {
     this.Falling = falling;
     this.Falling.LastActionTick = this.TicksElapsed;
     this.Falling.ActionCount++;
+    this.Falling.LastAction = offset > 0 ? GameInput.ShiftRight : GameInput.ShiftLeft;
     return true;
   }
 
@@ -201,6 +225,8 @@ export class GameState {
     this.Falling.ActionCount = 0;
     if (isAuto)
       this.Falling.DropTick = this.TicksElapsed;
+    else
+      this.Falling.LastAction = GameInput.SoftDrop;
     return true;
   }
 
@@ -217,9 +243,13 @@ export class GameState {
       f.Position.Y--;
     }
     f.Position.Y++;
-    if (f === this.Falling)
+    f.LastAction = GameInput.HardDrop;
+    if (f === this.Falling) {
       return this.LockPiece();
-    else return true;
+    }
+    else {
+      return true;
+    }
   }
 
   Tick(): void {
