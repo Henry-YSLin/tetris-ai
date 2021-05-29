@@ -6,7 +6,7 @@ import TestGame from './pages/TestGame';
 
 const App: React.FC = () => {
 	return (
-		<BrowserRouter>
+		<BrowserRouter basename="/tetris-ai">
 			<Switch>
 				<Route exact path='/' component={Home} />
 				<Route exact path='/test' component={TestGame} />
