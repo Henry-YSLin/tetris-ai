@@ -21,12 +21,12 @@ export const TICK_RATE = 1000;
 /**
  * Number of ticks from contact to locking the piece
  */
-export const LOCK_DELAY = 500;
+export const LOCK_DELAY = 400;
 
 /**
  * Number of ticks between each drop by gravity
  */
-export const DROP_INTERVAL = 0.00;
+export const DROP_INTERVAL = 0;
 
 /**
  * Number of visible pieces in the queue

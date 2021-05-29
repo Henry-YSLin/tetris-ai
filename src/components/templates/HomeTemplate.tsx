@@ -11,11 +11,11 @@ const HomeTemplate: React.FC = () => {
 					className='text-green-400 underline'
 					target='_blank'
 					rel='noreferrer'
-					href='https://github.com/axibord/react-typescript-starter'
+					href='/test'
 				>
 					here
 				</a>{' '}
-				to read instructions for production optimization
+				to play pre-alpha Tetris
 			</h2>
 		</div>
 	);
