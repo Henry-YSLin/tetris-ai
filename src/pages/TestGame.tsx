@@ -17,7 +17,7 @@ interface Props {}
 const BLOCK_SIZE = 20;
 const KEY_REPEAT_DELAY = 10;
 
-const player: Player = new RandomAI();
+const player: Player = new HumanPlayer();
 const game: SingleplayerGame = new SingleplayerGame(player);
 let keyHold: GameInput;
 let keyDelay = 0;
@@ -39,7 +39,8 @@ const TestGame: React.FC = (props: Props) => {
 				keyDelay--;
 			}
 		}
-		p5.translate(120, -(GRID_HEIGHT - PLAYFIELD_HEIGHT - 0.1) * BLOCK_SIZE);
+		p5.scale(1, -1);
+		p5.translate(120, -(GRID_HEIGHT) * BLOCK_SIZE);
 		const drawTetromino = (p5: p5Types, type: Tetromino | null, points: Point[], alpha: number) => {
 			const c = TetrominoColor(p5, type ?? Tetromino.None);
 			c.setAlpha(alpha);

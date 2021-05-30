@@ -11,6 +11,11 @@ export default function InputDelayable<TBase extends Playable>(Base: Subtract<TB
   return class InputDelayable extends Base {
     #lastActionTick: number;
 
+    constructor(...args: MixinArgs) {
+      super(...args);
+      this.#lastActionTick = 0;
+    }
+
     Tick(gameState: VisibleGameState): GameInput {
       const acceptInput = gameState.TicksElapsed - this.#lastActionTick >= AI_ACTION_DELAY;
       const input = this.Update(
@@ -27,11 +32,6 @@ export default function InputDelayable<TBase extends Playable>(Base: Subtract<TB
 
     Update(_gameState: VisibleGameState, _acceptInput: boolean): GameInput {
       return GameInput.None;
-    }
-
-    constructor(...args: MixinArgs) {
-      super(...args);
-      this.#lastActionTick = 0;
     }
   };
 }

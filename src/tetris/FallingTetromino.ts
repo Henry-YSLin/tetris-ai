@@ -25,6 +25,46 @@ export default class FallingTetromino {
    */
   LastAction: GameInput;
 
+  constructor(
+    type: Tetromino,
+    rotation: Rotation = Rotation.R0,
+    position: Point | undefined = undefined,
+    lastActionTick = NaN,
+    actionCount = 0,
+    dropTick = NaN,
+    lastAction = GameInput.None,
+  ) {
+    this.Type = type;
+    this.Rotation = rotation;
+    if (position)
+      this.Position = position;
+    else {
+      this.Position = new Point(4, 21);
+      this.Bottom = 21;                                         // spawns just above playfield
+      this.Left = Math.floor(GRID_WIDTH / 2 - this.Width / 2);  // spawns centered, rounds to the left
+    }
+    this.LastActionTick = lastActionTick;
+    this.ActionCount = actionCount;
+    this.DropTick = dropTick;
+    this.LastAction = lastAction;
+  }
+
+  Clone(): FallingTetromino {
+    return new FallingTetromino(
+      this.Type,
+      this.Rotation,
+      this.Position.Clone(),
+      this.LastActionTick,
+      this.ActionCount,
+      this.DropTick,
+      this.LastAction,
+    );
+  }
+
+  static Spawn(type: Tetromino, ticksElapsed: number): FallingTetromino {
+    return new FallingTetromino(type, undefined, undefined, ticksElapsed, 0, ticksElapsed);
+  }
+
 
   //#region Helper Functions
   get InternalPoints(): readonly Point[] {
@@ -97,44 +137,4 @@ export default class FallingTetromino {
     if (this.Rotation < 0) this.Rotation = 3;
   }
   //#endregion
-
-  Clone(): FallingTetromino {
-    return new FallingTetromino(
-      this.Type,
-      this.Rotation,
-      this.Position.Clone(),
-      this.LastActionTick,
-      this.ActionCount,
-      this.DropTick,
-      this.LastAction,
-    );
-  }
-
-  static Spawn(type: Tetromino, ticksElapsed: number): FallingTetromino {
-    return new FallingTetromino(type, undefined, undefined, ticksElapsed, 0, ticksElapsed);
-  }
-
-  constructor(
-    type: Tetromino,
-    rotation: Rotation = Rotation.R0,
-    position: Point | undefined = undefined,
-    lastActionTick = NaN,
-    actionCount = 0,
-    dropTick = NaN,
-    lastAction = GameInput.None,
-  ) {
-    this.Type = type;
-    this.Rotation = rotation;
-    if (position)
-      this.Position = position;
-    else {
-      this.Position = new Point(4, 21);
-      this.Bottom = 21;                                         // spawns just above playfield
-      this.Left = Math.floor(GRID_WIDTH / 2 - this.Width / 2);  // spawns centered, rounds to the left
-    }
-    this.LastActionTick = lastActionTick;
-    this.ActionCount = actionCount;
-    this.DropTick = dropTick;
-    this.LastAction = lastAction;
-  }
 }

@@ -57,6 +57,75 @@ export class GameState {
    */
   PieceIndex: number;
 
+  /**
+   * Create a GameState from visible information, allowing gameplay simulations
+   * @param visible A VisibleGameState
+   */
+  constructor(visible: VisibleGameState);
+
+  /**
+   * Create a normal game state
+   * @param pieceSeed The seed for the internal PieceGenerator
+   * @param pieceIndex The starting index of the piece queue
+   * @param falling The currently falling tetromino
+   * @param hold The tetromino type of the held piece
+   * @param elapsed The ticks elapsed since game start
+   * @param blockHold Whether the hold action is disallowed
+   */
+  constructor(
+    pieceSeed?: number,
+    pieceIndex?: number,
+    falling?: FallingTetromino,
+    hold?: Tetromino,
+    elapsed?: number,
+    blockHold?: boolean,
+  );
+
+  constructor(
+    pieceSeedOrState: VisibleGameState | number | undefined = undefined,
+    pieceIndex = 0,
+    falling: FallingTetromino | null = null,
+    hold: Tetromino = Tetromino.None,
+    elapsed = 0,
+    blockHold = false,
+  ) {
+    if (pieceSeedOrState instanceof VisibleGameState) {
+      const state = pieceSeedOrState;
+      this.Grid = state.Grid;
+      this.Falling = state.Falling;
+      this.Hold = state.Hold;
+      this.BlockHold = state.BlockHold;
+      this.TicksElapsed = state.TicksElapsed;
+      this.#pieces = new PieceGenerator(state.PieceQueue, state.PieceIndex);
+      this.PieceIndex = state.PieceIndex;
+    }
+    else {
+      this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(Tetromino.None));
+      this.Falling = falling;
+      this.Hold = hold;
+      this.BlockHold = blockHold;
+      this.TicksElapsed = elapsed;
+      this.#pieces = new PieceGenerator(pieceSeedOrState);
+      this.PieceIndex = pieceIndex;
+    }
+  }
+
+  /**
+   * Get an object containing only information that is currently visible to the player
+   * @returns An object representing game states that are currently visible to the player
+   */
+  GetVisibleState(): VisibleGameState {
+    return new VisibleGameState(
+      this.PieceQueue,
+      this.PieceIndex,
+      this.Grid,
+      this.Falling,
+      this.Hold,
+      this.TicksElapsed,
+      this.BlockHold,
+    );
+  }
+
   get GridWidth(): number {
     return GRID_WIDTH;
   }
@@ -264,75 +333,6 @@ export class GameState {
     }
 
     this.TicksElapsed++;
-  }
-
-  /**
-   * Get an object containing only information that is currently visible to the player
-   * @returns An object representing game states that are currently visible to the player
-   */
-  GetVisibleState(): VisibleGameState {
-    return new VisibleGameState(
-      this.PieceQueue,
-      this.PieceIndex,
-      this.Grid,
-      this.Falling,
-      this.Hold,
-      this.TicksElapsed,
-      this.BlockHold,
-    );
-  }
-
-  /**
-   * Create a GameState from visible information, allowing gameplay simulations
-   * @param visible A VisibleGameState
-   */
-  constructor(visible: VisibleGameState);
-
-  /**
-   * Create a normal game state
-   * @param pieceSeed The seed for the internal PieceGenerator
-   * @param pieceIndex The starting index of the piece queue
-   * @param falling The currently falling tetromino
-   * @param hold The tetromino type of the held piece
-   * @param elapsed The ticks elapsed since game start
-   * @param blockHold Whether the hold action is disallowed
-   */
-  constructor(
-    pieceSeed?: number,
-    pieceIndex?: number,
-    falling?: FallingTetromino,
-    hold?: Tetromino,
-    elapsed?: number,
-    blockHold?: boolean,
-  );
-
-  constructor(
-    pieceSeedOrState: VisibleGameState | number | undefined = undefined,
-    pieceIndex = 0,
-    falling: FallingTetromino | null = null,
-    hold: Tetromino = Tetromino.None,
-    elapsed = 0,
-    blockHold = false,
-  ) {
-    if (pieceSeedOrState instanceof VisibleGameState) {
-      const state = pieceSeedOrState;
-      this.Grid = state.Grid;
-      this.Falling = state.Falling;
-      this.Hold = state.Hold;
-      this.BlockHold = state.BlockHold;
-      this.TicksElapsed = state.TicksElapsed;
-      this.#pieces = new PieceGenerator(state.PieceQueue, state.PieceIndex);
-      this.PieceIndex = state.PieceIndex;
-    }
-    else {
-      this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(Tetromino.None));
-      this.Falling = falling;
-      this.Hold = hold;
-      this.BlockHold = blockHold;
-      this.TicksElapsed = elapsed;
-      this.#pieces = new PieceGenerator(pieceSeedOrState);
-      this.PieceIndex = pieceIndex;
-    }
   }
 }
 export default GameState;

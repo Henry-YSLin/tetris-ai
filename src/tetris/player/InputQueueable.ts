@@ -9,6 +9,11 @@ export default function InputQueueable<TBase extends Playable>(Base: TBase): TBa
   return class InputQueueable extends Base {
     #queue: GameInput[];
 
+    constructor(...args: MixinArgs) {
+      super(...args);
+      this.#queue = [];
+    }
+
     Tick(gameState: VisibleGameState): GameInput {
       if ('Update' in Base)
         return super.Tick(gameState);
@@ -22,11 +27,6 @@ export default function InputQueueable<TBase extends Playable>(Base: TBase): TBa
 
     Enqueue(input: GameInput): void {
       this.#queue.push(input);
-    }
-
-    constructor(...args: MixinArgs) {
-      super(...args);
-      this.#queue = [];
     }
   };
 }

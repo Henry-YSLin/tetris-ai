@@ -37,3 +37,13 @@ export const QUEUE_LENGTH = 6;
  * The least number of ticks to wait between AI actions
  */
 export const AI_ACTION_DELAY = 20;
+
+/**
+ * Size of a block in pixels
+ */
+export const BLOCK_SIZE = 15;
+
+/**
+ * Number of frames to wait before repeating input
+ */
+export const KEY_REPEAT_DELAY = 10;

@@ -9,6 +9,20 @@ export default class SingleplayerGame {
   Player: Player;
   #handle: number | null;
 
+  constructor(
+    player: Player,
+    seed: number | GameState | undefined = undefined,
+  ) {
+    this.#handle = null;
+    this.Player = player;
+    if (seed instanceof GameState) {
+      this.State = seed;
+    }
+    else {
+      this.State = new GameState(seed);
+    }
+  }
+
   get ClockRunning(): boolean {
     return this.#handle !== null;
   }
@@ -49,20 +63,6 @@ export default class SingleplayerGame {
       case GameInput.SoftDrop:
         this.State.SoftDropPiece(false);
         break;
-    }
-  }
-
-  constructor(
-    player: Player,
-    seed: number | GameState | undefined = undefined,
-  ) {
-    this.#handle = null;
-    this.Player = player;
-    if (seed instanceof GameState) {
-      this.State = seed;
-    }
-    else {
-      this.State = new GameState(seed);
     }
   }
 }
