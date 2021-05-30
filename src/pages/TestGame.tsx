@@ -3,7 +3,7 @@ import Player from '../tetris/player/Player';
 import SingleplayerGame from '../tetris/SingleplayerGame';
 import Sketch from 'react-p5';
 import p5Types from 'p5'; //Import this for typechecking and intellisense
-import Tetrominos, { Tetromino, TetrominoColor } from '../tetris/Tetrominos';
+import Tetrominos, { Tetromino } from '../tetris/Tetrominos';
 import IdleAI from '../tetris/player/IdleAI';
 import RandomAI from '../tetris/player/RandomAI';
 import TopOutAI from '../tetris/player/TopOutAI';
@@ -11,6 +11,8 @@ import HumanPlayer from '../tetris/player/HumanPlayer';
 import GameInput from '../tetris/GameInput';
 import Point from '../tetris/utils/Point';
 import { GRID_HEIGHT, PLAYFIELD_HEIGHT } from '../tetris/Consts';
+import SingleplayerRenderer from '../tetris/renderer/SingleplayerRenderer';
+import { TetrominoColor } from '../tetris/renderer/Helper';
 
 interface Props {}
 
@@ -19,6 +21,8 @@ const KEY_REPEAT_DELAY = 10;
 
 const player: Player = new HumanPlayer();
 const game: SingleplayerGame = new SingleplayerGame(player);
+const renderer: SingleplayerRenderer = new SingleplayerRenderer(player, game.State);
+console.log(renderer);
 let keyHold: GameInput;
 let keyDelay = 0;
 game.StartClock();
@@ -125,7 +129,12 @@ const TestGame: React.FC = (props: Props) => {
 			keyHold = GameInput.None;
 	};
 
-	return <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} />;
+	return <Sketch
+		setup={renderer.p5Setup.bind(renderer)}
+		draw={renderer.p5Draw.bind(renderer)}
+		keyPressed={renderer.p5KeyPressed.bind(renderer)}
+		keyReleased={renderer.p5KeyReleased.bind(renderer)}
+	/>;
 };
 
 export default TestGame;

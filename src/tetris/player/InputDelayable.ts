@@ -5,7 +5,10 @@ import { Constructor, MixinArgs, Subtract } from '../utils/Mixin';
 import { InputQueueable } from './InputQueueable';
 import { Playable } from './Player';
 
-export type InputDelayable = Constructor<{ Update(_gameState: VisibleGameState, _acceptInput: boolean): GameInput }>;
+export type InputDelayable = Constructor<{
+  Tick(gameState: VisibleGameState): GameInput,
+  Update(_gameState: VisibleGameState, _acceptInput: boolean): GameInput
+}>;
 
 export default function InputDelayable<TBase extends Playable>(Base: Subtract<TBase, InputQueueable>): TBase & InputDelayable {
   return class InputDelayable extends Base {

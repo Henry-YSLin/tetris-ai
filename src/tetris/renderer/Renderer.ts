@@ -1,46 +1,49 @@
 import { Constructor } from '../utils/Mixin';
 import p5Types from 'p5';
 import { BLOCK_SIZE, PLAYFIELD_HEIGHT } from '../Consts';
+import GameState from '../GameState';
 
 export default class Renderer {
-  #width: number;
-  #height: number;
+  State: GameState;
+  protected width: number;
+  protected height: number;
 
   /**
    * Create a Renderer using the recommended size
    */
-  constructor();
+  constructor(state: GameState);
   /**
    * Create a Renderer with the specified width and height
    * @param width Width of canvas
    * @param height Height of canvas
    */
-  constructor(width: number, height: number);
+  constructor(state: GameState, width: number, height: number);
 
-  constructor(width?: number, height?: number) {
+  constructor(state: GameState, width?: number, height?: number) {
+    this.State = state;
     if (width && height)
     {
-      this.#width = width;
-      this.#height = height;
+      this.width = width;
+      this.height = height;
     }
     else {
-      this.#width = 500;
-      this.#height = BLOCK_SIZE * PLAYFIELD_HEIGHT + BLOCK_SIZE * 0.1;
+      this.width = 500;
+      this.height = BLOCK_SIZE * PLAYFIELD_HEIGHT + BLOCK_SIZE * 0.1;
     }
   }
 
   ResetTransform(p5: p5Types): void {
 		p5.scale(1, -1);
-		p5.translate(0, this.#height);
+		p5.translate(0, -this.height);
   }
 
-  Setup(p5: p5Types, canvasParentRef: Element): void {
-		p5.createCanvas(this.#width, this.#height).parent(canvasParentRef);
+  p5Setup(p5: p5Types, canvasParentRef: Element): void {
+		p5.createCanvas(this.width, this.height).parent(canvasParentRef);
     this.ResetTransform(p5);
 	}
 
-  Draw(_p5: p5Types): void {
-    return;
+  p5Draw(p5: p5Types): void {
+    p5.background(100);
   }
 }
 
