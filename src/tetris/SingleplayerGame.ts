@@ -61,11 +61,8 @@ export default class SingleplayerGame {
     if (seed instanceof GameState) {
       this.State = seed;
     }
-    else if (seed !== undefined) {
-      this.State = new GameState(seed);
-    }
     else {
-      this.State = new GameState();
+      this.State = new GameState(seed);
     }
   }
 }

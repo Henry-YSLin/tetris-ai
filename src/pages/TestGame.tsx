@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import FastestTopOutAI from '../tetris/player/FastestTopOutAI';
 import Player from '../tetris/player/Player';
 import SingleplayerGame from '../tetris/SingleplayerGame';
 import Sketch from 'react-p5';
@@ -7,6 +6,7 @@ import p5Types from 'p5'; //Import this for typechecking and intellisense
 import Tetrominos, { Tetromino, TetrominoColor } from '../tetris/Tetrominos';
 import IdleAI from '../tetris/player/IdleAI';
 import RandomAI from '../tetris/player/RandomAI';
+import TopOutAI from '../tetris/player/TopOutAI';
 import HumanPlayer from '../tetris/player/HumanPlayer';
 import GameInput from '../tetris/GameInput';
 import Point from '../tetris/utils/Point';
@@ -17,7 +17,7 @@ interface Props {}
 const BLOCK_SIZE = 20;
 const KEY_REPEAT_DELAY = 10;
 
-const player: Player = new HumanPlayer();
+const player: Player = new RandomAI();
 const game: SingleplayerGame = new SingleplayerGame(player);
 let keyHold: GameInput;
 let keyDelay = 0;

@@ -16,17 +16,17 @@ export const PLAYFIELD_HEIGHT = 20;
 /**
  * Number of game ticks per second
  */
-export const TICK_RATE = 1000;
+export const TICK_RATE = 60;
 
 /**
  * Number of ticks from contact to locking the piece
  */
-export const LOCK_DELAY = 400;
+export const LOCK_DELAY = 60;
 
 /**
  * Number of ticks between each drop by gravity
  */
-export const DROP_INTERVAL = 0;
+export const DROP_INTERVAL = 5;
 
 /**
  * Number of visible pieces in the queue

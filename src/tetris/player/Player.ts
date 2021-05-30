@@ -1,6 +1,11 @@
 import GameInput from '../GameInput';
 import { VisibleGameState } from '../GameState';
+import { Constructor } from '../utils/Mixin';
 
-export default interface Player {
-  Tick(gameState: VisibleGameState): GameInput;
+export default class Player {
+  Tick(_gameState: VisibleGameState): GameInput {
+    return GameInput.None;
+  }
 }
+
+export type Playable = Constructor<Player>;
