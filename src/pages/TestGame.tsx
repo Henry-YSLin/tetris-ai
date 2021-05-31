@@ -3,13 +3,13 @@ import Player from '../tetris/player/Player';
 import SingleplayerGame from '../tetris/SingleplayerGame';
 import Sketch from 'react-p5';
 import p5Types from 'p5'; //Import this for typechecking and intellisense
-import Tetrominos, { Tetromino } from '../tetris/Tetrominos';
+import Tetrominos, { TetrominoType } from '../tetris/Tetrominos';
 import IdleAI from '../tetris/player/IdleAI';
 import RandomAI from '../tetris/player/RandomAI';
 import TopOutAI from '../tetris/player/TopOutAI';
 import HumanPlayer from '../tetris/player/HumanPlayer';
 import GameInput from '../tetris/GameInput';
-import Point from '../tetris/utils/Point';
+import Vector from '../tetris/utils/Vector';
 import { GRID_HEIGHT, PLAYFIELD_HEIGHT } from '../tetris/Consts';
 import SingleplayerRenderer from '../tetris/renderer/SingleplayerRenderer';
 import { TetrominoColor } from '../tetris/renderer/Helper';
@@ -45,8 +45,8 @@ const TestGame: React.FC = (props: Props) => {
 		}
 		p5.scale(1, -1);
 		p5.translate(120, -(GRID_HEIGHT) * BLOCK_SIZE);
-		const drawTetromino = (p5: p5Types, type: Tetromino | null, points: Point[], alpha: number) => {
-			const c = TetrominoColor(p5, type ?? Tetromino.None);
+		const drawTetromino = (p5: p5Types, type: TetrominoType | null, points: Vector[], alpha: number) => {
+			const c = TetrominoColor(p5, type ?? TetrominoType.None);
 			c.setAlpha(alpha);
 			p5.fill(c);
 			points.forEach(p => {
@@ -66,12 +66,12 @@ const TestGame: React.FC = (props: Props) => {
 		}
 		for (let i = 0; i < state.GridHeight; i++) {
 			for (let j = 0; j < state.GridWidth; j++) {
-				p5.fill(TetrominoColor(p5, state.Get(j, i) ?? Tetromino.None));
+				p5.fill(TetrominoColor(p5, state.Get(j, i) ?? TetrominoType.None));
 				p5.rect(j * BLOCK_SIZE, (state.GridHeight - i - 1) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 			}
 		}
 		for (let i = 0; i < state.PieceQueue.length; i++) {
-			const points = Tetrominos[state.PieceQueue[i]].Rotations[0].map(p => p.Add(new Point(12, 15 - i * 4)));
+			const points = Tetrominos[state.PieceQueue[i]].Rotations[0].map(p => p.Add(new Vector(12, 15 - i * 4)));
 			drawTetromino(p5, state.PieceQueue[i], points, 255);
 		}
 		if (state.Falling) {
@@ -83,7 +83,7 @@ const TestGame: React.FC = (props: Props) => {
 			drawTetromino(p5, state.Falling?.Type, ghostPoints, 100);
 		}
 		if (state.Hold) {
-			const points = Tetrominos[state.Hold].Rotations[0].map(p => p.Add(new Point(-5, 15)));
+			const points = Tetrominos[state.Hold].Rotations[0].map(p => p.Add(new Vector(-5, 15)));
 			drawTetromino(p5, state.Hold, points, 255);
 		}
 	};

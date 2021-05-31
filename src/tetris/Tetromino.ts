@@ -1,13 +1,13 @@
-import { Tetrominos, Tetromino, Rotation, RotationDirection } from './Tetrominos';
-import Point from './utils/Point';
+import { Tetrominos, TetrominoType, Rotation, RotationDirection } from './Tetrominos';
+import Vector from './utils/Vector';
 import './utils/Array';
 import { GRID_WIDTH } from './Consts';
 import GameInput from './GameInput';
 
-export default class FallingTetromino {
-  Type: Tetromino;
+export default class Tetromino {
+  Type: TetrominoType;
   Rotation: Rotation;
-  Position: Point;
+  Position: Vector;
   /**
    * Lock the piece if it hasn't moved for LOCK_DELAY ticks
    */
@@ -26,9 +26,9 @@ export default class FallingTetromino {
   LastAction: GameInput;
 
   constructor(
-    type: Tetromino,
+    type: TetrominoType,
     rotation: Rotation = Rotation.R0,
-    position: Point | undefined = undefined,
+    position: Vector | undefined = undefined,
     lastActionTick = NaN,
     actionCount = 0,
     dropTick = NaN,
@@ -39,7 +39,7 @@ export default class FallingTetromino {
     if (position)
       this.Position = position;
     else {
-      this.Position = new Point(4, 21);
+      this.Position = new Vector(4, 21);
       this.Bottom = 21;                                         // spawns just above playfield
       this.Left = Math.floor(GRID_WIDTH / 2 - this.Width / 2);  // spawns centered, rounds to the left
     }
@@ -49,8 +49,8 @@ export default class FallingTetromino {
     this.LastAction = lastAction;
   }
 
-  Clone(): FallingTetromino {
-    return new FallingTetromino(
+  Clone(): Tetromino {
+    return new Tetromino(
       this.Type,
       this.Rotation,
       this.Position.Clone(),
@@ -61,17 +61,17 @@ export default class FallingTetromino {
     );
   }
 
-  static Spawn(type: Tetromino, ticksElapsed: number): FallingTetromino {
-    return new FallingTetromino(type, undefined, undefined, ticksElapsed, 0, ticksElapsed);
+  static Spawn(type: TetrominoType, ticksElapsed: number): Tetromino {
+    return new Tetromino(type, undefined, undefined, ticksElapsed, 0, ticksElapsed);
   }
 
 
   //#region Helper Functions
-  get InternalPoints(): readonly Point[] {
+  get InternalPoints(): readonly Vector[] {
     return Tetrominos[this.Type].Rotations[this.Rotation];
   }
 
-  get Points(): Point[] {
+  get Points(): Vector[] {
     return Tetrominos[this.Type].Rotations[this.Rotation].map(p => p.Add(this.Position));
   }
 

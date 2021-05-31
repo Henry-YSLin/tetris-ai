@@ -1,40 +1,54 @@
 import p5Types from 'p5';
-import { Tetromino } from '../Tetrominos';
-import Point from '../utils/Point';
+import { TetrominoType } from '../Tetrominos';
+import Vector from '../utils/Vector';
 
-export function TetrominoColor(p5: p5Types, tetromino: Tetromino): p5Types.Color {
+export function TetrominoColor(p5: p5Types, tetromino: TetrominoType): p5Types.Color {
   switch (tetromino) {
-    case Tetromino.None:
+    case TetrominoType.None:
       return p5.color(50);
-    case Tetromino.I:
+    case TetrominoType.I:
       return p5.color(77,208,225);
-    case Tetromino.J:
+    case TetrominoType.J:
       return p5.color(33,150,243);
-    case Tetromino.L:
+    case TetrominoType.L:
       return p5.color(255,152,0);
-    case Tetromino.O:
+    case TetrominoType.O:
       return p5.color(253,216,53);
-    case Tetromino.S:
+    case TetrominoType.S:
       return p5.color(76,175,80);
-    case Tetromino.T:
+    case TetrominoType.T:
       return p5.color(224,64,251);
-    case Tetromino.Z:
+    case TetrominoType.Z:
       return p5.color(229,115,115);
   }
 }
 
 export function DrawTetromino(
   p5: p5Types,
-  type: Tetromino | null,
-  origin: Point,
-  points: Point[],
+  type: TetrominoType | null,
+  origin: Vector,
+  points: Vector[],
   blockSize: number,
   alpha: number,
 ): void {
-  const c = TetrominoColor(p5, type ?? Tetromino.None);
+  const c = TetrominoColor(p5, type ?? TetrominoType.None);
   c.setAlpha(alpha);
   p5.fill(c);
   points.forEach(p => {
     p5.rect(origin.X + p.X * blockSize, origin.Y + p.Y * blockSize, blockSize, blockSize);
   });
+}
+
+export function p5text(
+  p5: p5Types,
+  str: string | number | boolean | object | any[],
+  x: number,
+  y: number,
+  x2?: number | undefined,
+  y2?: number | undefined,
+): void {
+  p5.push();
+  p5.scale(1, -1);
+  p5.text(str, x, -y, x2, -y2);
+  p5.pop();
 }

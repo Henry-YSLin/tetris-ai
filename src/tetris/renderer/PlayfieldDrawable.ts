@@ -1,34 +1,38 @@
 import p5Types from 'p5';
-import { BLOCK_SIZE } from '../Consts';
-import { Tetromino } from '../Tetrominos';
+import { TetrominoType } from '../Tetrominos';
 import { Constructor, MixinArgs } from '../utils/Mixin';
-import { TetrominoColor } from './Helper';
+import Vector from '../utils/Vector';
+import { BlockSizeConfigurable } from './BlockSizeConfigurable';
+import { DrawTetromino, TetrominoColor } from './Helper';
 import { Drawable } from './Renderer';
 
 export type PlayfieldDrawable = Constructor<{
   p5Draw(p5: p5Types): void,
-  ConfigurePlayfieldDrawable(blockSize: number): void
+  ConfigurePlayfieldDrawable(offset: Vector, scale: Vector): void
 }>;
 
-export default function PlayfieldDrawable<TBase extends Drawable>(Base: TBase): TBase & PlayfieldDrawable {
+export default function PlayfieldDrawable<TBase extends Drawable & BlockSizeConfigurable>(Base: TBase): TBase & PlayfieldDrawable {
   return class PlayfieldDrawable extends Base {
-    protected blockSize: number;
+    #offset: Vector;
+    #scale: Vector;
 
     constructor(...args: MixinArgs) {
       super(...args);
-      this.blockSize = BLOCK_SIZE;
+      this.#offset = new Vector(0, 0);
+      this.#scale = new Vector(1, 1);
     }
 
-    ConfigurePlayfieldDrawable(blockSize: number): void {
-      this.blockSize = blockSize;
+    ConfigurePlayfieldDrawable(offset: Vector, scale: Vector): void {
+      this.#offset = offset;
+      this.#scale = scale;
     }
 
     p5Draw(p5: p5Types): void {
       super.p5Draw(p5);
-      this.ResetTransform(p5);
+      this.SetTransform(p5, this.#scale.X, this.#scale.Y, this.#offset.X, this.#offset.Y);
 
       const state = this.State;
-      const {blockSize} = this;
+      const blockSize = this.BlockSize;
       if (!state) return;
       p5.stroke(0);
       for (let i = 0; i <= state.GridHeight; i++) {
@@ -39,9 +43,17 @@ export default function PlayfieldDrawable<TBase extends Drawable>(Base: TBase): 
       }
       for (let i = 0; i < state.GridHeight; i++) {
         for (let j = 0; j < state.GridWidth; j++) {
-          p5.fill(TetrominoColor(p5, state.Get(j, i) ?? Tetromino.None));
+          p5.fill(TetrominoColor(p5, state.Get(j, i) ?? TetrominoType.None));
           p5.rect(j * blockSize, i * blockSize, blockSize, blockSize);
         }
+      }
+      if (state.Falling) {
+        const falling = state.Falling.Points;
+        DrawTetromino(p5, state.Falling?.Type, new Vector(0, 0), falling, blockSize, 255);
+        const ghost = state.Falling.Clone();
+        state.HardDropPiece(ghost);
+        const ghostPoints = ghost.Points;
+        DrawTetromino(p5, state.Falling?.Type, new Vector(0, 0), ghostPoints, blockSize, 100);
       }
     }
   };

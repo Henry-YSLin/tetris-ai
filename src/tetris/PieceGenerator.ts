@@ -1,10 +1,10 @@
-import { Tetromino } from './Tetrominos';
+import { TetrominoType } from './Tetrominos';
 import seededRNG, { RNG } from './utils/Random';
 
 export default class PieceGenerator {
   #RNG: RNG | null;
   #seed: number | null;
-  #cache: Tetromino[];
+  #cache: TetrominoType[];
 
   /**
    * Create a mock PieceGenerator with the visible pieces only.
@@ -13,7 +13,7 @@ export default class PieceGenerator {
    * @param cache The visible queue of pieces
    * @param start The index of the first piece in queue
    */
-  constructor(cache: Tetromino[], start: number);
+  constructor(cache: TetrominoType[], start: number);
 
   /**
    * Creates a seeded PieceGenerator.
@@ -21,10 +21,10 @@ export default class PieceGenerator {
    */
   constructor(seed: number | undefined);
 
-  constructor(seed: Tetromino[] | number | undefined = undefined, start = NaN) {
+  constructor(seed: TetrominoType[] | number | undefined = undefined, start = NaN) {
     if (seed instanceof Array){
       this.#seed = null;
-      this.#cache = new Array(start + seed.length).fill(Tetromino.None);
+      this.#cache = new Array(start + seed.length).fill(TetrominoType.None);
       this.#cache.splice(start, seed.length, ...seed);
       this.#RNG = null;
       return;
@@ -43,17 +43,17 @@ export default class PieceGenerator {
 
   generate(): void {
     if (this.#seed === null || this.#RNG === null) {
-      this.#cache.push(Tetromino.None);
+      this.#cache.push(TetrominoType.None);
       return;
     }
     const choices = [
-      Tetromino.I,
-      Tetromino.J,
-      Tetromino.L,
-      Tetromino.O,
-      Tetromino.S,
-      Tetromino.T,
-      Tetromino.Z,
+      TetrominoType.I,
+      TetrominoType.J,
+      TetrominoType.L,
+      TetrominoType.O,
+      TetrominoType.S,
+      TetrominoType.T,
+      TetrominoType.Z,
     ];
     while (choices.length > 0) {
       const r = this.#RNG() % choices.length;
@@ -61,13 +61,13 @@ export default class PieceGenerator {
     }
   }
 
-  Get(index: number): Tetromino {
+  Get(index: number): TetrominoType {
     while (this.#cache.length <= index)
       this.generate();
     return this.#cache[index];
   }
 
-  GetRange(start: number, length: number) : Tetromino[] {
+  GetRange(start: number, length: number) : TetrominoType[] {
     while (this.#cache.length <= start + length)
       this.generate();
     return this.#cache.slice(start, start + length);

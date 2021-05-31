@@ -42,6 +42,7 @@
       "warn",
       { "argsIgnorePattern": "req|res|next|val|props|^_" }
     ],
-    "@typescript-eslint/no-empty-interface": "off"
+    "@typescript-eslint/no-empty-interface": "off",
+    "prefer-template": "warn"
   }
 }

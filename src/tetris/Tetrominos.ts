@@ -1,6 +1,6 @@
-import Point from './utils/Point';
+import Vector from './utils/Vector';
 
-export enum Tetromino {
+export enum TetrominoType {
   None,
   I,
   J,
@@ -24,133 +24,133 @@ export enum RotationDirection {
 }
 
 type WallKickInfo = Readonly<[
-  {[RotationDirection.CCW]:Readonly<Point[]>, [RotationDirection.CW]: Readonly<Point[]>},
-  {[RotationDirection.CCW]:Readonly<Point[]>, [RotationDirection.CW]: Readonly<Point[]>},
-  {[RotationDirection.CCW]:Readonly<Point[]>, [RotationDirection.CW]: Readonly<Point[]>},
-  {[RotationDirection.CCW]:Readonly<Point[]>, [RotationDirection.CW]: Readonly<Point[]>}
+  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
+  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
+  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
+  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>}
 ]>;
 const WallKick3x3: WallKickInfo = Object.freeze([
   {
-    [-1]: [new Point(0,0), new Point(1, 0), new Point(1, 1), new Point(0, -2), new Point(1, -2)],
-    [1]: [new Point(0,0), new Point(-1, 0), new Point(-1, 1), new Point(0, -2), new Point(-1, -2)],
+    [-1]: [new Vector(0,0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
+    [1]: [new Vector(0,0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
   },
   {
-    [-1]: [new Point(0,0), new Point(1, 0), new Point(1, -1), new Point(0, 2), new Point(1, 2)],
-    [1]: [new Point(0,0), new Point(1, 0), new Point(1, -1), new Point(0, 2), new Point(1, 2)],
+    [-1]: [new Vector(0,0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
+    [1]: [new Vector(0,0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
   },
   {
-    [-1]: [new Point(0,0), new Point(-1, 0), new Point(-1, 1), new Point(0, -2), new Point(-1, -2)],
-    [1]: [new Point(0,0), new Point(1, 0), new Point(1, 1), new Point(0, -2), new Point(1, -2)],
+    [-1]: [new Vector(0,0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
+    [1]: [new Vector(0,0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
   },
   {
-    [-1]: [new Point(0,0), new Point(-1, 0), new Point(-1, -1), new Point(0, 2), new Point(-1, 2)],
-    [1]: [new Point(0,0), new Point(-1, 0), new Point(-1, -1), new Point(0, 2), new Point(-1, 2)],
+    [-1]: [new Vector(0,0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
+    [1]: [new Vector(0,0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
   },
 ] as const);
 const WallKick4x4: WallKickInfo = Object.freeze([
   {
-    [-1]: [new Point(0,0), new Point(-1, 0), new Point(2, 0), new Point(-1, 2), new Point(2, -1)],
-    [1]: [new Point(0,0), new Point(-2, 0), new Point(1, 0), new Point(-2, -1), new Point(1, 2)],
+    [-1]: [new Vector(0,0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
+    [1]: [new Vector(0,0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
   },
   {
-    [-1]: [new Point(0,0), new Point(2, 0), new Point(-1, 0), new Point(2, 1), new Point(-1, -2)],
-    [1]: [new Point(0,0), new Point(-1, 0), new Point(2, 0), new Point(-1, 2), new Point(2, -1)],
+    [-1]: [new Vector(0,0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
+    [1]: [new Vector(0,0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
   },
   {
-    [-1]: [new Point(0,0), new Point(1, 0), new Point(-2, 0), new Point(1, -2), new Point(-2, 1)],
-    [1]: [new Point(0,0), new Point(2, 0), new Point(-1, 0), new Point(2, 1), new Point(-1, -2)],
+    [-1]: [new Vector(0,0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
+    [1]: [new Vector(0,0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
   },
   {
-    [-1]: [new Point(0,0), new Point(-2, 0), new Point(1, 0), new Point(-2, -1), new Point(1, 2)],
-    [1]: [new Point(0,0), new Point(1, 0), new Point(-2, 0), new Point(1, -2), new Point(-2, 1)],
+    [-1]: [new Vector(0,0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
+    [1]: [new Vector(0,0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
   },
 ] as const);
 const WallKickDisable: WallKickInfo = Object.freeze([
   {
-    [-1]: [new Point(0,0)],
-    [1]: [new Point(0,0)],
+    [-1]: [new Vector(0,0)],
+    [1]: [new Vector(0,0)],
   },
   {
-    [-1]: [new Point(0,0)],
-    [1]: [new Point(0,0)],
+    [-1]: [new Vector(0,0)],
+    [1]: [new Vector(0,0)],
   },
   {
-    [-1]: [new Point(0,0)],
-    [1]: [new Point(0,0)],
+    [-1]: [new Vector(0,0)],
+    [1]: [new Vector(0,0)],
   },
   {
-    [-1]: [new Point(0,0)],
-    [1]: [new Point(0,0)],
+    [-1]: [new Vector(0,0)],
+    [1]: [new Vector(0,0)],
   },
 ] as const);
 
 interface tetrominoInfo {
-  readonly Rotations: Readonly<Readonly<Point[]>[]>;
+  readonly Rotations: Readonly<Readonly<Vector[]>[]>;
   readonly WallKick: WallKickInfo;
 }
 type TetrominoInfo = Readonly<tetrominoInfo>;
-export const Tetrominos : Record<Tetromino, TetrominoInfo> = Object.freeze({
-  [Tetromino.None]: {
+export const Tetrominos : Record<TetrominoType, TetrominoInfo> = Object.freeze({
+  [TetrominoType.None]: {
     Rotations: [[]],
     WallKick: WallKickDisable,
   },
-  [Tetromino.I]: {
+  [TetrominoType.I]: {
     Rotations: [
-      [new Point(0, 2), new Point(1, 2), new Point(2, 2), new Point(3, 2)],
-      [new Point(2, 0), new Point(2, 1), new Point(2, 2), new Point(2, 3)],
-      [new Point(0, 1), new Point(1, 1), new Point(2, 1), new Point(3, 1)],
-      [new Point(1, 0), new Point(1, 1), new Point(1, 2), new Point(1, 3)],
+      [new Vector(0, 2), new Vector(1, 2), new Vector(2, 2), new Vector(3, 2)],
+      [new Vector(2, 0), new Vector(2, 1), new Vector(2, 2), new Vector(2, 3)],
+      [new Vector(0, 1), new Vector(1, 1), new Vector(2, 1), new Vector(3, 1)],
+      [new Vector(1, 0), new Vector(1, 1), new Vector(1, 2), new Vector(1, 3)],
     ],
     WallKick: WallKick4x4,
   },
-  [Tetromino.J]: {
+  [TetrominoType.J]: {
     Rotations: [
-      [new Point(0, 2), new Point(0, 1), new Point(1, 1), new Point(2, 1)],
-      [new Point(2, 2), new Point(1, 2), new Point(1, 1), new Point(1, 0)],
-      [new Point(0, 1), new Point(1, 1), new Point(2, 1), new Point(2, 0)],
-      [new Point(0, 0), new Point(1, 0), new Point(1, 1), new Point(1, 2)],
+      [new Vector(0, 2), new Vector(0, 1), new Vector(1, 1), new Vector(2, 1)],
+      [new Vector(2, 2), new Vector(1, 2), new Vector(1, 1), new Vector(1, 0)],
+      [new Vector(0, 1), new Vector(1, 1), new Vector(2, 1), new Vector(2, 0)],
+      [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(1, 2)],
     ],
     WallKick: WallKick3x3,
   },
-  [Tetromino.L]: {
+  [TetrominoType.L]: {
     Rotations: [
-      [new Point(0, 1), new Point(1, 1), new Point(2, 1), new Point(2, 2)],
-      [new Point(1, 2), new Point(1, 1), new Point(1, 0), new Point(2, 0)],
-      [new Point(0, 0), new Point(0, 1), new Point(1, 1), new Point(2, 1)],
-      [new Point(0, 2), new Point(1, 2), new Point(1, 1), new Point(1, 0)],
+      [new Vector(0, 1), new Vector(1, 1), new Vector(2, 1), new Vector(2, 2)],
+      [new Vector(1, 2), new Vector(1, 1), new Vector(1, 0), new Vector(2, 0)],
+      [new Vector(0, 0), new Vector(0, 1), new Vector(1, 1), new Vector(2, 1)],
+      [new Vector(0, 2), new Vector(1, 2), new Vector(1, 1), new Vector(1, 0)],
     ],
     WallKick: WallKick3x3,
   },
-  [Tetromino.O]: {
+  [TetrominoType.O]: {
     Rotations: [
-      [new Point(0, 0), new Point(0, 1), new Point(1, 0), new Point(1, 1)],
+      [new Vector(0, 0), new Vector(0, 1), new Vector(1, 0), new Vector(1, 1)],
     ],
     WallKick: WallKickDisable,
   },
-  [Tetromino.S]: {
+  [TetrominoType.S]: {
     Rotations: [
-      [new Point(0, 1), new Point(1, 1), new Point(1, 2), new Point(2, 2)],
-      [new Point(1, 2), new Point(1, 1), new Point(2, 1), new Point(2, 0)],
-      [new Point(0, 0), new Point(1, 0), new Point(1, 1), new Point(2, 1)],
-      [new Point(0, 2), new Point(0, 1), new Point(1, 1), new Point(1, 0)],
+      [new Vector(0, 1), new Vector(1, 1), new Vector(1, 2), new Vector(2, 2)],
+      [new Vector(1, 2), new Vector(1, 1), new Vector(2, 1), new Vector(2, 0)],
+      [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(2, 1)],
+      [new Vector(0, 2), new Vector(0, 1), new Vector(1, 1), new Vector(1, 0)],
     ],
     WallKick: WallKick3x3,
   },
-  [Tetromino.T]: {
+  [TetrominoType.T]: {
     Rotations: [
-      [new Point(0, 1), new Point(1, 1), new Point(1, 2), new Point(2, 1)],
-      [new Point(1, 2), new Point(1, 1), new Point(2, 1), new Point(1, 0)],
-      [new Point(0, 1), new Point(1, 0), new Point(1, 1), new Point(2, 1)],
-      [new Point(1, 2), new Point(0, 1), new Point(1, 1), new Point(1, 0)],
+      [new Vector(0, 1), new Vector(1, 1), new Vector(1, 2), new Vector(2, 1)],
+      [new Vector(1, 2), new Vector(1, 1), new Vector(2, 1), new Vector(1, 0)],
+      [new Vector(0, 1), new Vector(1, 0), new Vector(1, 1), new Vector(2, 1)],
+      [new Vector(1, 2), new Vector(0, 1), new Vector(1, 1), new Vector(1, 0)],
     ],
     WallKick: WallKick3x3,
   },
-  [Tetromino.Z]: {
+  [TetrominoType.Z]: {
     Rotations: [
-      [new Point(0, 2), new Point(1, 1), new Point(1, 2), new Point(2, 1)],
-      [new Point(2, 2), new Point(1, 1), new Point(2, 1), new Point(1, 0)],
-      [new Point(0, 1), new Point(1, 0), new Point(1, 1), new Point(2, 0)],
-      [new Point(1, 2), new Point(0, 1), new Point(1, 1), new Point(0, 0)],
+      [new Vector(0, 2), new Vector(1, 1), new Vector(1, 2), new Vector(2, 1)],
+      [new Vector(2, 2), new Vector(1, 1), new Vector(2, 1), new Vector(1, 0)],
+      [new Vector(0, 1), new Vector(1, 0), new Vector(1, 1), new Vector(2, 0)],
+      [new Vector(1, 2), new Vector(0, 1), new Vector(1, 1), new Vector(0, 0)],
     ],
     WallKick: WallKick3x3,
   },
