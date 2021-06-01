@@ -130,10 +130,10 @@ const TestGame: React.FC = (props: Props) => {
 	};
 
 	return <Sketch
-		setup={renderer.p5Setup.bind(renderer)}
-		draw={renderer.p5Draw.bind(renderer)}
-		keyPressed={renderer.p5KeyPressed.bind(renderer)}
-		keyReleased={renderer.p5KeyReleased.bind(renderer)}
+		setup={renderer.SetupHandler}
+		draw={renderer.DrawHandler}
+		keyPressed={renderer.KeyPressedHandler}
+		keyReleased={renderer.KeyReleasedHandler}
 	/>;
 };
 

@@ -56,6 +56,14 @@ export default class Renderer {
   p5Draw(p5: p5Types): void {
     p5.background(100);
   }
+
+  get DrawHandler(): (p5: p5Types) => void {
+    return this.p5Draw.bind(this);
+  }
+
+  get SetupHandler(): (p5: p5Types, canvasParentRef: Element) => void {
+    return this.p5Setup.bind(this);
+  }
 }
 
 export type Drawable = Constructor<Renderer>;

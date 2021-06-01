@@ -4,7 +4,9 @@ import './utils/Array';
 import { DROP_INTERVAL, GRID_HEIGHT, GRID_WIDTH, LOCK_DELAY, PLAYFIELD_HEIGHT, QUEUE_LENGTH } from './Consts';
 import PieceGenerator from './PieceGenerator';
 import Tetromino  from './Tetromino';
-import GameInput from './GameInput';
+import GameInput, { IsRotation } from './GameInput';
+import TypedEvent from './utils/TypedEvent';
+import GameAchievement, { AchievementType, IsTwist } from './GameAchievement';
 
 
 export class VisibleGameState {
@@ -15,7 +17,8 @@ export class VisibleGameState {
   TicksElapsed: number;
   PieceQueue: TetrominoType[];
   PieceIndex: number;
-  LastAction: GameInput;
+  Combo: number;
+  LastAchievement: AchievementType | null;
 
   constructor(
     pieceQueue: TetrominoType[] = [],
@@ -25,7 +28,8 @@ export class VisibleGameState {
     hold: TetrominoType = TetrominoType.None,
     elapsed = 0,
     blockHold = false,
-    lastAction = GameInput.None,
+    combo = 0,
+    lastAchievement: AchievementType | null = null,
   ) {
     this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
     if (grid)
@@ -36,7 +40,8 @@ export class VisibleGameState {
     this.TicksElapsed = elapsed;
     this.PieceQueue = pieceQueue;
     this.PieceIndex = pieceIndex;
-    this.LastAction = lastAction;
+    this.Combo = combo;
+    this.LastAchievement = lastAchievement;
   }
 }
 export class GameState {
@@ -56,6 +61,15 @@ export class GameState {
    * Index of the next piece in queue
    */
   PieceIndex: number;
+  /**
+   * The number of consecutive line clear
+   */
+  Combo: number;
+  #achievement: TypedEvent<GameAchievement>;
+  /**
+   * Used for detecting back-to-back achievements
+   */
+  LastAchievement: AchievementType | null;
 
   /**
    * Create a GameState from visible information, allowing gameplay simulations
@@ -71,6 +85,7 @@ export class GameState {
    * @param hold The tetromino type of the held piece
    * @param elapsed The ticks elapsed since game start
    * @param blockHold Whether the hold action is disallowed
+   * @param combo The number of consecutive line clear
    */
   constructor(
     pieceSeed?: number,
@@ -79,6 +94,8 @@ export class GameState {
     hold?: TetrominoType,
     elapsed?: number,
     blockHold?: boolean,
+    combo?: number,
+    lastAchievement?: AchievementType | null,
   );
 
   constructor(
@@ -88,6 +105,8 @@ export class GameState {
     hold: TetrominoType = TetrominoType.None,
     elapsed = 0,
     blockHold = false,
+    combo = 0,
+    lastAchievement: AchievementType | null = null,
   ) {
     if (pieceSeedOrState instanceof VisibleGameState) {
       const state = pieceSeedOrState;
@@ -98,6 +117,8 @@ export class GameState {
       this.TicksElapsed = state.TicksElapsed;
       this.#pieces = new PieceGenerator(state.PieceQueue, state.PieceIndex);
       this.PieceIndex = state.PieceIndex;
+      this.Combo = state.Combo;
+      this.LastAchievement = state.LastAchievement;
     }
     else {
       this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
@@ -107,7 +128,10 @@ export class GameState {
       this.TicksElapsed = elapsed;
       this.#pieces = new PieceGenerator(pieceSeedOrState);
       this.PieceIndex = pieceIndex;
+      this.Combo = combo;
+      this.LastAchievement = lastAchievement;
     }
+    this.#achievement = new TypedEvent();
   }
 
   /**
@@ -123,7 +147,12 @@ export class GameState {
       this.Hold,
       this.TicksElapsed,
       this.BlockHold,
+      this.Combo,
     );
+  }
+
+  get Achievement(): TypedEvent<GameAchievement> {
+    return this.#achievement;
   }
 
   get GridWidth(): number {
@@ -220,6 +249,51 @@ export class GameState {
         i--;
       }
     }
+    if (linesCleared === 0) {
+      this.Combo = 0;
+      return;
+    }
+    this.Combo++;
+    const achievement = new GameAchievement(
+      linesCleared,
+      linesCleared,
+      this.Combo,
+      IsTwist(this.LastAchievement ?? AchievementType.Single),
+    );
+    if (lastPiece?.Type === TetrominoType.T && IsRotation(lastPiece.LastAction)) {
+      // check for T-spin
+      const corners = [
+        [0, 0],
+        [2, 0],
+        [0, 2],
+        [2, 2],
+      ].reduce((prev, [x, y]) =>
+        this.Get(lastPiece.Position.X + x, lastPiece.Position.Y + y) !== TetrominoType.None
+          ? prev + 1
+          : prev
+        , 0,
+      );
+      if (corners >= 3) {
+        // is a T-spin
+        // check if its mini
+        const isMini = [
+          [1, 0],
+          [0, 1],
+          [1, 2],
+          [2, 1],
+        ].some(([x, y]) =>
+          !lastPiece.InternalPoints.find(p => p.X === x && p.Y === y)
+          && this.Get(lastPiece.Position.X + x, lastPiece.Position.Y + y) === TetrominoType.None,
+        );
+        if (isMini)
+          achievement.Type = AchievementType.TSpinMini;
+        else
+          achievement.Type = AchievementType.TSpin;
+      }
+    }
+    const last = achievement.Type;
+    this.#achievement.emit(achievement);
+    this.LastAchievement = last;
   }
 
   /**
@@ -311,7 +385,9 @@ export class GameState {
       f.Position.Y--;
     }
     f.Position.Y++;
-    f.LastAction = GameInput.HardDrop;
+    // Hard drop should not be recorded because hard drop after rotation
+    // still counts as a T-spin
+    // f.LastAction = GameInput.HardDrop;
     if (f === this.Falling) {
       return this.LockPiece();
     }

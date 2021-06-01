@@ -9,8 +9,10 @@ import { Drawable } from './Renderer';
 export type InputHandleable = Constructor<{
   p5Draw(p5: p5Types): void,
   p5KeyPressed(p5: p5Types): void,
+  KeyPressedHandler: (p5: p5Types) => void,
+  KeyReleasedHandler: (p5: p5Types) => void,
   p5KeyReleased(p5: p5Types): void,
-  ConfigureInputHandleable(player: Player): void
+  ConfigureInputHandleable(player: Player): void,
 }>;
 
 export default function InputHandleable<TBase extends Drawable>(Base: TBase): TBase & InputHandleable {
@@ -82,6 +84,14 @@ export default function InputHandleable<TBase extends Drawable>(Base: TBase): TB
         currentKey = GameInput.HardDrop;
       if (this.keyHold === currentKey)
         this.keyHold = GameInput.None;
+    }
+
+    get KeyPressedHandler(): (p5: p5Types) => void {
+      return this.p5KeyPressed.bind(this);
+    }
+
+    get KeyReleasedHandler(): (p5: p5Types) => void {
+      return this.p5KeyReleased.bind(this);
     }
   };
 }

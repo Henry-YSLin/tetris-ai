@@ -26,7 +26,7 @@ export const LOCK_DELAY = 60;
 /**
  * Number of ticks between each drop by gravity
  */
-export const DROP_INTERVAL = 5;
+export const DROP_INTERVAL = 15;
 
 /**
  * Number of visible pieces in the queue

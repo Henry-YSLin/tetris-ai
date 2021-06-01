@@ -5,8 +5,9 @@ import { Playable } from './Player';
 
 export type InputQueueable = Constructor<{
   Tick(_gameState: VisibleGameState): GameInput,
-  Update(_gameState: VisibleGameState, _acceptInput: boolean): GameInput,
-  Enqueue(input: GameInput): void }>;
+  Update(_gameState: VisibleGameState, acceptInput: boolean): GameInput,
+  Enqueue(input: GameInput): void,
+}>;
 
 export default function InputQueueable<TBase extends Playable>(Base: TBase): TBase & InputQueueable {
   return class InputQueueable extends Base {
@@ -24,8 +25,11 @@ export default function InputQueueable<TBase extends Playable>(Base: TBase): TBa
         return this.#queue.shift() ?? GameInput.None;
     }
 
-    Update(_gameState: VisibleGameState, _acceptInput: boolean): GameInput {
-      return this.#queue.shift() ?? GameInput.None;
+    Update(_gameState: VisibleGameState, acceptInput: boolean): GameInput {
+      if (acceptInput)
+        return this.#queue.shift() ?? GameInput.None;
+      else
+        return GameInput.None;
     }
 
     Enqueue(input: GameInput): void {
