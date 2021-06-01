@@ -55,13 +55,13 @@ export function p5text(
 }
 
 export enum GameSFX {
-  Lock = '/public/assets/sfx/sfx_lockdown.wav',
-  RotateSuccess = '/public/assets/sfx/sfx_rotate.wav',
-  RotateFail = '/public/assets/sfx/sfx_rotatefail.wav',
-  ShiftSuccess = '/public/assets/sfx/sfx_move.wav',
-  ShiftFail = '/public/assets/sfx/sfx_movefail.wav',
-  SoftDrop = '/public/assets/sfx/sfx_softdrop.wav',
-  Hold = '/public/assets/sfx/sfx_hold.wav',
+  Lock = '/assets/sfx/sfx_lockdown.wav',
+  RotateSuccess = '/assets/sfx/sfx_rotate.wav',
+  RotateFail = '/assets/sfx/sfx_rotatefail.wav',
+  ShiftSuccess = '/assets/sfx/sfx_move.wav',
+  ShiftFail = '/assets/sfx/sfx_movefail.wav',
+  SoftDrop = '/assets/sfx/sfx_softdrop.wav',
+  Hold = '/assets/sfx/sfx_hold.wav',
 }
 
 export function GetSFX(result: GameInputResult): GameSFX | null {
@@ -79,6 +79,6 @@ export function GetSFX(result: GameInputResult): GameSFX | null {
     case GameInput.SoftDrop:
       return GameSFX.SoftDrop;
     case GameInput.Hold:
-      return GameSFX.Hold;
+      return result.Success ? GameSFX.Hold : null;
   }
 }

@@ -33,7 +33,7 @@ module.exports = {
 		}),
 		new CopyPlugin({
       patterns: [
-        { from: 'public/assets/**/*.wav', to: '[path][name].[ext]' },
+        { from: 'assets/**/*.wav', to: '[path][name][ext]' },
       ],
     }),
 		new ImageminPlugin({
