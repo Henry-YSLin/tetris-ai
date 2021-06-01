@@ -7,6 +7,8 @@ const tailwindcss = require('tailwindcss');
 const autoprefixer = require('autoprefixer'); // help tailwindcss to work
 const ImageminPlugin = require('imagemin-webpack-plugin').default; // minimize images
 const imageminMozjpeg = require('imagemin-mozjpeg'); // minimize images
+const CopyPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
 	mode: 'development',
@@ -31,10 +33,16 @@ module.exports = {
 		filename: '[name].[hash].bundle.js', // for production use [contenthash], for developement use [hash]
 	},
 	plugins: [
+		new CleanWebpackPlugin(),
 		new MiniCssExtractPlugin({ filename: '[name].[contenthash].css', chunkFilename: '[id].[contenthash].css' }),
 		new HtmlWebpackPlugin({
-			template: path.join(__dirname, './index.html'),
+			template: path.join(__dirname, './public/index.html'),
 		}),
+		new CopyPlugin({
+      patterns: [
+        { from: 'public/assets/**/*.wav', to: '[path][name].[ext]' },
+      ],
+    }),
 		new ImageminPlugin({
 			// minimize images
 			pngquant: { quality: [0.5, 0.5] },

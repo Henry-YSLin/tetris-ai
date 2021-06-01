@@ -15,3 +15,12 @@ export function IsRotation(input: GameInput): boolean {
 export function IsShift(input: GameInput): boolean {
   return input === GameInput.ShiftLeft || input === GameInput.ShiftRight;
 }
+export class GameInputResult {
+  Input: GameInput;
+  Success: boolean;
+
+  constructor(input: GameInput, success: boolean) {
+    this.Input = input;
+    this.Success = success;
+  }
+}

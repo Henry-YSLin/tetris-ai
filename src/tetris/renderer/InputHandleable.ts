@@ -2,8 +2,8 @@ import p5Types from 'p5';
 import { KEY_REPEAT_DELAY } from '../Consts';
 import GameInput from '../GameInput';
 import HumanPlayer from '../player/HumanPlayer';
-import Player from '../player/Player';
 import { Constructor, MixinArgs } from '../utils/Mixin';
+import { PlayerUsable } from './PlayerUsable';
 import { Drawable } from './Renderer';
 
 export type InputHandleable = Constructor<{
@@ -12,24 +12,17 @@ export type InputHandleable = Constructor<{
   KeyPressedHandler: (p5: p5Types) => void,
   KeyReleasedHandler: (p5: p5Types) => void,
   p5KeyReleased(p5: p5Types): void,
-  ConfigureInputHandleable(player: Player): void,
 }>;
 
-export default function InputHandleable<TBase extends Drawable>(Base: TBase): TBase & InputHandleable {
+export default function InputHandleable<TBase extends Drawable & PlayerUsable>(Base: TBase): TBase & InputHandleable {
   return class InputHandleable extends Base {
-    Player: Player | null;
     protected keyHold: GameInput;
     protected keyDelay: number;
 
     constructor(...args: MixinArgs) {
       super(...args);
-      this.Player = null;
       this.keyHold = GameInput.None;
       this.keyDelay = 0;
-    }
-
-    ConfigureInputHandleable(player: Player): void {
-      this.Player = player;
     }
 
     p5Draw(p5: p5Types): void {

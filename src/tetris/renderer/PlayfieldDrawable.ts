@@ -3,6 +3,7 @@ import { TetrominoType } from '../Tetrominos';
 import { Constructor, MixinArgs } from '../utils/Mixin';
 import Vector from '../utils/Vector';
 import { BlockSizeConfigurable } from './BlockSizeConfigurable';
+import { GameStateUsable } from './GameStateUsable';
 import { DrawTetromino, TetrominoColor } from './Helper';
 import { Drawable } from './Renderer';
 
@@ -11,7 +12,7 @@ export type PlayfieldDrawable = Constructor<{
   ConfigurePlayfieldDrawable(offset: Vector, scale: Vector): void
 }>;
 
-export default function PlayfieldDrawable<TBase extends Drawable & BlockSizeConfigurable>(Base: TBase): TBase & PlayfieldDrawable {
+export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsable & BlockSizeConfigurable>(Base: TBase): TBase & PlayfieldDrawable {
   return class PlayfieldDrawable extends Base {
     #offset: Vector;
     #scale: Vector;
@@ -29,6 +30,7 @@ export default function PlayfieldDrawable<TBase extends Drawable & BlockSizeConf
 
     p5Draw(p5: p5Types): void {
       super.p5Draw(p5);
+      if (this.State === null) return;
       this.SetTransform(p5, this.#scale.X, this.#scale.Y, this.#offset.X, this.#offset.Y);
 
       const state = this.State;

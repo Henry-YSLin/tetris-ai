@@ -1,18 +1,22 @@
-import { TICK_RATE } from './Consts';
-import GameInput from './GameInput';
-import GameState from './GameState';
-import Player from './player/Player';
-import { RotationDirection } from './Tetrominos';
+import { TICK_RATE } from '../Consts';
+import GameInput, { GameInputResult } from '../GameInput';
+import GameState from '../GameState';
+import Game from './Game';
+import Player from '../player/Player';
+import { RotationDirection } from '../Tetrominos';
+import TypedEvent from '../utils/TypedEvent';
 
-export default class SingleplayerGame {
+export default class SingleplayerGame extends Game {
   State: GameState;
   Player: Player;
   #handle: number | null;
+  #input: TypedEvent<GameInputResult>;
 
   constructor(
     player: Player,
     seed: number | GameState | undefined = undefined,
   ) {
+    super();
     this.#handle = null;
     this.Player = player;
     if (seed instanceof GameState) {
@@ -21,6 +25,11 @@ export default class SingleplayerGame {
     else {
       this.State = new GameState(seed);
     }
+    this.#input = new TypedEvent();
+  }
+
+  get Input(): TypedEvent<GameInputResult> {
+    return this.#input;
   }
 
   get ClockRunning(): boolean {
@@ -39,30 +48,34 @@ export default class SingleplayerGame {
   Tick(): void {
     this.State.Tick();
     const input = this.Player.Tick(this.State.GetVisibleState());
+    let success = false;
     switch (input) {
       case GameInput.None:
-        return;
+        break;
       case GameInput.HardDrop:
-        this.State.HardDropPiece();
+        success = this.State.HardDropPiece();
         break;
       case GameInput.Hold:
-        this.State.HoldPiece();
+        success = this.State.HoldPiece();
         break;
       case GameInput.RotateCW:
-        this.State.RotatePiece(RotationDirection.CW);
+        success = this.State.RotatePiece(RotationDirection.CW);
         break;
       case GameInput.RotateCCW:
-        this.State.RotatePiece(RotationDirection.CCW);
+        success = this.State.RotatePiece(RotationDirection.CCW);
         break;
       case GameInput.ShiftLeft:
-        this.State.ShiftPiece(-1);
+        success = this.State.ShiftPiece(-1);
         break;
       case GameInput.ShiftRight:
-        this.State.ShiftPiece(1);
+        success = this.State.ShiftPiece(1);
         break;
       case GameInput.SoftDrop:
-        this.State.SoftDropPiece(false);
+        success = this.State.SoftDropPiece(false);
         break;
+    }
+    if (input !== GameInput.None) {
+      this.#input.emit(new GameInputResult(input, success));
     }
   }
 }

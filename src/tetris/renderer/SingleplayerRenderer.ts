@@ -1,24 +1,41 @@
+import GameStateUsable from './GameStateUsable';
+import PlayerUsable from './PlayerUsable';
+import GameUsable from './GameUsable';
 import PlayfieldDrawable from './PlayfieldDrawable';
 import HoldPieceDrawable from './HoldPieceDrawable';
 import PieceQueueDrawable from './PieceQueueDrawable';
 import FramerateDrawable from './FramerateDrawable';
 import InputHandleable from './InputHandleable';
 import BlockSizeConfigurable from './BlockSizeConfigurable';
+import PlayerSoundPlayable from './PlayerSoundPlayable';
 import Renderer from './Renderer';
-import GameState from '../GameState';
-import Player from '../player/Player';
 import { BLOCK_SIZE } from '../Consts';
 import Vector from '../utils/Vector';
+import SingleplayerGame from '../game/SingleplayerGame';
 export default class SingleplayerRenderer
-extends FramerateDrawable(PieceQueueDrawable(HoldPieceDrawable(PlayfieldDrawable(BlockSizeConfigurable(InputHandleable(Renderer))))))
+extends
+  FramerateDrawable(
+  PieceQueueDrawable(
+  HoldPieceDrawable(
+  PlayfieldDrawable(
+  PlayerSoundPlayable(
+  BlockSizeConfigurable(
+  InputHandleable(
+  GameUsable(
+  PlayerUsable(
+  GameStateUsable(
+    Renderer))))))))))
 {
-  constructor(player: Player, state: GameState, width?: number, height?: number) {
+  constructor(game: SingleplayerGame, width?: number, height?: number) {
     if (width && height)
-      super(state, width, height);
+      super(width, height);
     else
-      super(state);
-    this.ConfigureInputHandleable(player);
+      super();
+    this.ConfigureGameState(game.State);
+    this.ConfigurePlayer(game.Player);
+    this.ConfigureGame(game);
     this.ConfigureBlockSize(BLOCK_SIZE);
+    this.ConfigurePlayerSoundPlayable();
     this.ConfigurePlayfieldDrawable(new Vector(120, 0), new Vector(1, 1));
     this.ConfigureHoldPieceDrawable(new Vector(10, 200), new Vector(1, 1));
     this.ConfigurePieceQueueDrawable(new Vector(400, 0), new Vector(0.7, 0.7));

@@ -1,26 +1,23 @@
 import { Constructor } from '../utils/Mixin';
 import p5Types from 'p5';
 import { BLOCK_SIZE, PLAYFIELD_HEIGHT } from '../Consts';
-import GameState from '../GameState';
 
 export default class Renderer {
-  State: GameState;
   protected width: number;
   protected height: number;
 
   /**
    * Create a Renderer using the recommended size
    */
-  constructor(state: GameState);
+  constructor();
   /**
    * Create a Renderer with the specified width and height
    * @param width Width of canvas
    * @param height Height of canvas
    */
-  constructor(state: GameState, width: number, height: number);
+  constructor(width: number, height: number);
 
-  constructor(state: GameState, width?: number, height?: number) {
-    this.State = state;
+  constructor(width?: number, height?: number) {
     if (width && height)
     {
       this.width = width;

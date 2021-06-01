@@ -1,4 +1,5 @@
 import p5Types from 'p5';
+import GameInput, { GameInputResult } from '../GameInput';
 import { TetrominoType } from '../Tetrominos';
 import Vector from '../utils/Vector';
 
@@ -41,7 +42,7 @@ export function DrawTetromino(
 
 export function p5text(
   p5: p5Types,
-  str: string | number | boolean | object | any[],
+  str: string | number | boolean | object | any[], /* eslint-disable-line @typescript-eslint/ban-types */ /* eslint-disable-line @typescript-eslint/no-explicit-any */
   x: number,
   y: number,
   x2?: number | undefined,
@@ -49,6 +50,35 @@ export function p5text(
 ): void {
   p5.push();
   p5.scale(1, -1);
-  p5.text(str, x, -y, x2, -y2);
+  p5.text(str, x, -y, x2, y2 === undefined ? y2 : -y2);
   p5.pop();
+}
+
+export enum GameSFX {
+  Lock = '/public/assets/sfx/sfx_lockdown.wav',
+  RotateSuccess = '/public/assets/sfx/sfx_rotate.wav',
+  RotateFail = '/public/assets/sfx/sfx_rotatefail.wav',
+  ShiftSuccess = '/public/assets/sfx/sfx_move.wav',
+  ShiftFail = '/public/assets/sfx/sfx_movefail.wav',
+  SoftDrop = '/public/assets/sfx/sfx_softdrop.wav',
+  Hold = '/public/assets/sfx/sfx_hold.wav',
+}
+
+export function GetSFX(result: GameInputResult): GameSFX | null {
+  switch (result.Input) {
+    case GameInput.None:
+      return null;
+    case GameInput.HardDrop:
+      return GameSFX.Lock;
+    case GameInput.RotateCCW:
+    case GameInput.RotateCW:
+      return result.Success ? GameSFX.RotateSuccess : GameSFX.RotateFail;
+    case GameInput.ShiftLeft:
+    case GameInput.ShiftRight:
+      return result.Success ? GameSFX.ShiftSuccess : GameSFX.ShiftFail;
+    case GameInput.SoftDrop:
+      return GameSFX.SoftDrop;
+    case GameInput.Hold:
+      return GameSFX.Hold;
+  }
 }
