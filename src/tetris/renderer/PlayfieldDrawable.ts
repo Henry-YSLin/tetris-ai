@@ -55,7 +55,7 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
         const ghost = state.Falling.Clone();
         state.HardDropPiece(ghost);
         const ghostPoints = ghost.Points;
-        DrawTetromino(p5, state.Falling?.Type, new Vector(0, 0), ghostPoints, blockSize, 100);
+        DrawTetromino(p5, state.Falling?.Type, new Vector(0, 0), ghostPoints, blockSize, 50);
       }
     }
   };

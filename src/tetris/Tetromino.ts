@@ -66,7 +66,7 @@ export default class Tetromino {
   }
 
 
-  //#region Helper Functions
+  //#region Helper Getters
   get InternalPoints(): readonly Vector[] {
     return Tetrominos[this.Type].Rotations[this.Rotation];
   }
@@ -130,12 +130,12 @@ export default class Tetromino {
   get Height(): number {
     return this.InternalTop - this.InternalBottom;
   }
-
-  Rotate(direction: RotationDirection = RotationDirection.CW): boolean {
-    this.Rotation += direction;
-    const length = Tetrominos[this.Type].Rotations.length - 1;
-    if (this.Rotation >= length) this.Rotation = 0;
-    if (this.Rotation < 0) this.Rotation = length;
-  }
   //#endregion
+
+  Rotate(direction: RotationDirection = RotationDirection.CW): void {
+    this.Rotation += direction;
+    const {length} = Tetrominos[this.Type].Rotations;
+    if (this.Rotation >= length) this.Rotation = 0;
+    if (this.Rotation < 0) this.Rotation = length - 1;
+  }
 }
