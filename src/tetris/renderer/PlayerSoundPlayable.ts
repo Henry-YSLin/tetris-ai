@@ -5,6 +5,7 @@ import { GameUsable } from './GameUsable';
 import { InputSFX, GetSFX } from './Helper';
 import { Drawable } from './Renderer';
 import { Howl } from 'howler';
+import { DAS_INTERVAL } from '../Consts';
 
 export type PlayerSoundPlayable = Constructor<{
   p5Setup(p5: p5Types, canvasParentRef: Element): void,
@@ -15,12 +16,14 @@ export type PlayerSoundPlayable = Constructor<{
 export default function PlayerSoundPlayable<TBase extends Drawable & GameUsable>(Base: TBase): TBase & PlayerSoundPlayable {
   return class PlayerSoundPlayable extends Base {
     #inputQueue: GameInputResult[];
+    #lastInput: GameInputResult | null;
     #sounds: Map<InputSFX, Howl>;
 
     constructor(...args: MixinArgs) {
       super(...args);
       this.#inputQueue = [];
       this.#sounds = new Map<InputSFX, Howl>();
+      this.#lastInput = null;
     }
 
     ConfigurePlayerSoundPlayable(): void {
@@ -45,7 +48,18 @@ export default function PlayerSoundPlayable<TBase extends Drawable & GameUsable>
       super.p5Draw(p5);
       while (this.#inputQueue.length > 0) {
         const result = this.#inputQueue.shift();
+        const last = this.#lastInput;
+        this.#lastInput = result ?? null;
         if (!result) break;
+        if (last) {
+          if (
+            result.Tick - last.Tick <= DAS_INTERVAL + 1
+            && result.Success === last.Success
+            && result.Input === last.Input
+          ) {
+            continue;
+          }
+        }
         const sfx = GetSFX(result);
         if (!sfx) continue;
         this.#sounds.get(sfx)?.play();

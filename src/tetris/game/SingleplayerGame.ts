@@ -75,7 +75,7 @@ export default class SingleplayerGame extends Game {
         break;
     }
     if (input !== GameInput.None) {
-      this.#input.emit(new GameInputResult(input, success));
+      this.#input.emit(new GameInputResult(this.State.TicksElapsed, input, success));
     }
   }
 }

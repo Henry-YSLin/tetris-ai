@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Player from '../tetris/player/Player';
 import SingleplayerGame from '../tetris/game/SingleplayerGame';
 import Sketch from 'react-p5';
@@ -10,19 +10,33 @@ import SingleplayerRenderer from '../tetris/renderer/SingleplayerRenderer';
 
 interface Props {}
 
-const player: Player = new HumanPlayer();
-const game: SingleplayerGame = new SingleplayerGame(player);
-const renderer: SingleplayerRenderer = new SingleplayerRenderer(game);
-console.log(renderer);
-game.StartClock();
 
 const TestGame: React.FC = (props: Props) => {
-	return <Sketch
-		setup={renderer.SetupHandler}
-		draw={renderer.DrawHandler}
-		keyPressed={renderer.KeyPressedHandler}
-		keyReleased={renderer.KeyReleasedHandler}
-	/>;
+	const [player, setPlayer] = useState<Player>();
+	const [game, setGame] = useState<SingleplayerGame>();
+	const [renderer, setRenderer] = useState<SingleplayerRenderer>();
+	useEffect(() => {
+		const _player: Player = new HumanPlayer();
+		const _game: SingleplayerGame = new SingleplayerGame(_player);
+		const _renderer: SingleplayerRenderer = new SingleplayerRenderer(_game);
+		setPlayer(_player);
+		setGame(_game);
+		setRenderer(_renderer);
+		setTimeout(() => _game.StartClock(), 1000);
+		console.log(_renderer);
+		return () => {
+			_game.StopClock();
+		};
+	}, []);
+	if (renderer)
+		return <Sketch
+			setup={renderer.SetupHandler}
+			draw={renderer.DrawHandler}
+			keyPressed={renderer.KeyPressedHandler}
+			keyReleased={renderer.KeyReleasedHandler}
+		/>;
+	else
+		return <p>Loading</p>;
 };
 
 export default TestGame;

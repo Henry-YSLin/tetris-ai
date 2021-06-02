@@ -16,11 +16,21 @@ export function IsShift(input: GameInput): boolean {
   return input === GameInput.ShiftLeft || input === GameInput.ShiftRight;
 }
 export class GameInputResult {
+  Tick: number;
   Input: GameInput;
   Success: boolean;
 
-  constructor(input: GameInput, success: boolean) {
+  constructor(tick: number, input: GameInput, success: boolean) {
+    this.Tick = tick;
     this.Input = input;
     this.Success = success;
+  }
+
+  Clone(): GameInputResult {
+    return new GameInputResult(
+      this.Tick,
+      this.Input,
+      this.Success,
+    );
   }
 }

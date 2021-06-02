@@ -1,5 +1,5 @@
 import p5Types from 'p5';
-import { KEY_REPEAT_DELAY } from '../Consts';
+import { DAS_DELAY, DAS_INTERVAL } from '../Consts';
 import GameInput from '../GameInput';
 import HumanPlayer from '../player/HumanPlayer';
 import { Constructor, MixinArgs } from '../utils/Mixin';
@@ -31,7 +31,7 @@ export default function InputHandleable<TBase extends Drawable & PlayerUsable>(B
         if (this.Player instanceof HumanPlayer) {
           if (this.keyDelay <= 0) {
             this.Player.Enqueue(this.keyHold);
-            this.keyDelay = KEY_REPEAT_DELAY;
+            this.keyDelay = DAS_INTERVAL;
           }
           this.keyDelay--;
         }
@@ -55,7 +55,7 @@ export default function InputHandleable<TBase extends Drawable & PlayerUsable>(B
       if (p5.key === ' ')
         this.keyHold = GameInput.HardDrop;
       this.Player.Enqueue(this.keyHold);
-      this.keyDelay = KEY_REPEAT_DELAY;
+      this.keyDelay = DAS_DELAY;
     }
 
     p5KeyReleased(p5: p5Types): void {

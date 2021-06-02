@@ -131,10 +131,11 @@ export default class Tetromino {
     return this.InternalTop - this.InternalBottom;
   }
 
-  Rotate(direction: RotationDirection = RotationDirection.CW): void {
+  Rotate(direction: RotationDirection = RotationDirection.CW): boolean {
     this.Rotation += direction;
-    if (this.Rotation > 3) this.Rotation = 0;
-    if (this.Rotation < 0) this.Rotation = 3;
+    const length = Tetrominos[this.Type].Rotations.length - 1;
+    if (this.Rotation >= length) this.Rotation = 0;
+    if (this.Rotation < 0) this.Rotation = length;
   }
   //#endregion
 }

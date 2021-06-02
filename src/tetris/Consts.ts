@@ -46,4 +46,9 @@ export const BLOCK_SIZE = 15;
 /**
  * Number of frames to wait before repeating input
  */
-export const KEY_REPEAT_DELAY = 10;
+export const DAS_DELAY = 10;
+
+/**
+ * Number of frames to wait between repeated inputs
+ */
+export const DAS_INTERVAL = 3;
