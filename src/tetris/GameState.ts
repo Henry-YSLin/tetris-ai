@@ -6,7 +6,7 @@ import PieceGenerator from './PieceGenerator';
 import Tetromino  from './Tetromino';
 import GameInput, { IsRotation } from './GameInput';
 import TypedEvent from './utils/TypedEvent';
-import GameAchievement, { AchievementType, IsTwist } from './GameAchievement';
+import GameAchievement, { AchievementType, BackToBackEligible } from './GameAchievement';
 
 
 export class VisibleGameState {
@@ -18,7 +18,7 @@ export class VisibleGameState {
   PieceQueue: TetrominoType[];
   PieceIndex: number;
   Combo: number;
-  LastAchievement: AchievementType | null;
+  LastAchievement: GameAchievement | null;
 
   constructor(
     pieceQueue: TetrominoType[] = [],
@@ -29,7 +29,7 @@ export class VisibleGameState {
     elapsed = 0,
     blockHold = false,
     combo = 0,
-    lastAchievement: AchievementType | null = null,
+    lastAchievement: GameAchievement | null = null,
   ) {
     this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
     if (grid)
@@ -69,7 +69,7 @@ export class GameState {
   /**
    * Used for detecting back-to-back achievements
    */
-  LastAchievement: AchievementType | null;
+  LastAchievement: GameAchievement | null;
 
   /**
    * Create a GameState from visible information, allowing gameplay simulations
@@ -95,7 +95,7 @@ export class GameState {
     elapsed?: number,
     blockHold?: boolean,
     combo?: number,
-    lastAchievement?: AchievementType | null,
+    lastAchievement?: GameAchievement | null,
   );
 
   constructor(
@@ -106,7 +106,7 @@ export class GameState {
     elapsed = 0,
     blockHold = false,
     combo = 0,
-    lastAchievement: AchievementType | null = null,
+    lastAchievement: GameAchievement | null = null,
   ) {
     if (pieceSeedOrState instanceof VisibleGameState) {
       const state = pieceSeedOrState;
@@ -241,25 +241,7 @@ export class GameState {
    */
   ClearLines(lastPiece: Tetromino | undefined = undefined): void {
     let linesCleared = 0;
-    for (let i = 0; i < this.GridHeight; i++) {
-      if (!this.Grid[i].some(t => t === TetrominoType.None)) {
-        this.Grid.splice(i, 1);
-        this.Grid.push(new Array(this.GridWidth).fill(TetrominoType.None));
-        linesCleared++;
-        i--;
-      }
-    }
-    if (linesCleared === 0) {
-      this.Combo = 0;
-      return;
-    }
-    this.Combo++;
-    const achievement = new GameAchievement(
-      linesCleared,
-      linesCleared,
-      this.Combo,
-      IsTwist(this.LastAchievement ?? AchievementType.Single),
-    );
+    let type: AchievementType | null = null;
     if (lastPiece?.Type === TetrominoType.T && IsRotation(lastPiece.LastAction)) {
       // check for T-spin
       const corners = [
@@ -273,6 +255,7 @@ export class GameState {
           : prev
         , 0,
       );
+      console.log('Corners: ', corners);
       if (corners >= 3) {
         // is a T-spin
         // check if its mini
@@ -283,15 +266,40 @@ export class GameState {
           [2, 1],
         ].some(([x, y]) =>
           !lastPiece.InternalPoints.find(p => p.X === x && p.Y === y)
-          && this.Get(lastPiece.Position.X + x, lastPiece.Position.Y + y) === TetrominoType.None,
+          && this.Get(lastPiece.Position.X + x, lastPiece.Position.Y + y) !== TetrominoType.None,
         );
         if (isMini)
-          achievement.Type = AchievementType.TSpinMini;
+          type = AchievementType.TSpinMini;
         else
-          achievement.Type = AchievementType.TSpin;
+          type = AchievementType.TSpin;
       }
     }
-    const last = achievement.Type;
+    for (let i = 0; i < this.GridHeight; i++) {
+      if (!this.Grid[i].some(t => t === TetrominoType.None)) {
+        this.Grid.splice(i, 1);
+        this.Grid.push(new Array(this.GridWidth).fill(TetrominoType.None));
+        linesCleared++;
+        i--;
+      }
+    }
+    if (linesCleared === 0) {
+      this.Combo = 0;
+      if (type === null)
+        return;
+    }
+    const achievement = new GameAchievement(
+      linesCleared,
+      type ?? AchievementType.LineClear,
+      this.Combo,
+      this.LastAchievement ? BackToBackEligible(this.LastAchievement) : false,
+    );
+    if (linesCleared > 0)
+      this.Combo++;
+    if (!this.Grid.some(row => row.some(c => c !== TetrominoType.None))) {
+      achievement.Type = AchievementType.PerfectClear;
+    }
+    achievement.BackToBack = BackToBackEligible(achievement) && achievement.BackToBack;
+    const last = achievement.Clone();
     this.#achievement.emit(achievement);
     this.LastAchievement = last;
   }
@@ -381,13 +389,14 @@ export class GameState {
       f = this.Falling;
     }
     else return false;
+    const lastPos = f.Position.Y;
     while (this.IsPieceValid(f)) {
       f.Position.Y--;
     }
     f.Position.Y++;
-    // Hard drop should not be recorded because hard drop after rotation
-    // still counts as a T-spin
-    // f.LastAction = GameInput.HardDrop;
+    // Hard drop should only be recorded if the drop distance > 0
+    if (lastPos !== f.Position.Y)
+      f.LastAction = GameInput.HardDrop;
     if (f === this.Falling) {
       return this.LockPiece();
     }

@@ -1,4 +1,5 @@
 import p5Types from 'p5';
+import GameAchievement, { AchievementType } from '../GameAchievement';
 import GameInput, { GameInputResult } from '../GameInput';
 import { TetrominoType } from '../Tetrominos';
 import Vector from '../utils/Vector';
@@ -54,7 +55,7 @@ export function p5text(
   p5.pop();
 }
 
-export enum GameSFX {
+export enum InputSFX {
   Lock = '/assets/sfx/sfx_lockdown.wav',
   RotateSuccess = '/assets/sfx/sfx_rotate.wav',
   RotateFail = '/assets/sfx/sfx_rotatefail.wav',
@@ -64,21 +65,162 @@ export enum GameSFX {
   Hold = '/assets/sfx/sfx_hold.wav',
 }
 
-export function GetSFX(result: GameInputResult): GameSFX | null {
-  switch (result.Input) {
-    case GameInput.None:
-      return null;
-    case GameInput.HardDrop:
-      return GameSFX.Lock;
-    case GameInput.RotateCCW:
-    case GameInput.RotateCW:
-      return result.Success ? GameSFX.RotateSuccess : GameSFX.RotateFail;
-    case GameInput.ShiftLeft:
-    case GameInput.ShiftRight:
-      return result.Success ? GameSFX.ShiftSuccess : GameSFX.ShiftFail;
-    case GameInput.SoftDrop:
-      return GameSFX.SoftDrop;
-    case GameInput.Hold:
-      return result.Success ? GameSFX.Hold : null;
+export enum AchievementSFX {
+  Single = '/assets/sfx/sfx_single.wav',
+  Double = '/assets/sfx/sfx_double.wav',
+  Triple = '/assets/sfx/sfx_triple.wav',
+  Tetris = '/assets/sfx/sfx_tetris.wav',
+  TSpin = '/assets/sfx/sfx_tspin_zero.wav',
+  TSpinMini = '/assets/sfx/sfx_tspin_mini.wav',
+  TSpinSingle = '/assets/sfx/sfx_tspin_single.wav',
+  TSpinDouble = '/assets/sfx/sfx_tspin_double.wav',
+  TSpinTriple = '/assets/sfx/sfx_tspin_triple.wav',
+  B2bTSpinMini = '/assets/sfx/sfx_b2b_tspin_mini.wav',
+  B2bTSpinSingle = '/assets/sfx/sfx_b2b_tspin_single.wav',
+  B2bTSpinDouble = '/assets/sfx/sfx_b2b_tspin_double.wav',
+  B2bTSpinTriple = '/assets/sfx/sfx_b2b_tspin_triple.wav',
+  B2bTetris = '/assets/sfx/sfx_b2b_tetris.wav',
+  PerfectClear = '/assets/sfx/sfx_perfectclear.wav',
+  Combo1 = '/assets/sfx/sfx_combo1.wav',
+  Combo2 = '/assets/sfx/sfx_combo2.wav',
+  Combo3 = '/assets/sfx/sfx_combo3.wav',
+  Combo4 = '/assets/sfx/sfx_combo4.wav',
+  Combo5 = '/assets/sfx/sfx_combo5.wav',
+  Combo6 = '/assets/sfx/sfx_combo6.wav',
+  Combo7 = '/assets/sfx/sfx_combo7.wav',
+  Combo8 = '/assets/sfx/sfx_combo8.wav',
+  Combo9 = '/assets/sfx/sfx_combo9.wav',
+  Combo10 = '/assets/sfx/sfx_combo10.wav',
+  Combo11 = '/assets/sfx/sfx_combo11.wav',
+  Combo12 = '/assets/sfx/sfx_combo12.wav',
+  Combo13 = '/assets/sfx/sfx_combo13.wav',
+  Combo14 = '/assets/sfx/sfx_combo14.wav',
+  Combo15 = '/assets/sfx/sfx_combo15.wav',
+  Combo16 = '/assets/sfx/sfx_combo16.wav',
+  Combo17 = '/assets/sfx/sfx_combo17.wav',
+  Combo18 = '/assets/sfx/sfx_combo18.wav',
+  Combo19 = '/assets/sfx/sfx_combo19.wav',
+  Combo20 = '/assets/sfx/sfx_combo20.wav',
+}
+
+export enum AchievementVoice {
+  Single = '/assets/voice/voice_single.wav',
+  Double = '/assets/voice/voice_double.wav',
+  Triple = '/assets/voice/voice_triple.wav',
+  Tetris = '/assets/voice/voice_tetris.wav',
+  TSpin = '/assets/voice/voice_tspin.wav',
+  TSpinMini = '/assets/voice/voice_tspinmini.wav',
+  TSpinSingle = '/assets/voice/voice_tspinsingle.wav',
+  TSpinDouble = '/assets/voice/voice_tspindouble.wav',
+  TSpinTriple = '/assets/voice/voice_tspintriple.wav',
+  B2bTSpinMini = '/assets/voice/voice_b2btspinmini.wav',
+  B2bTSpinSingle = '/assets/voice/voice_b2btspinsingle.wav',
+  B2bTSpinDouble = '/assets/voice/voice_b2btspindouble.wav',
+  B2bTSpinTriple = '/assets/voice/voice_b2btspintriple.wav',
+  B2bTetris = '/assets/voice/voice_b2btetris.wav',
+  PerfectClear = '/assets/voice/voice_perfectclear.wav',
+  Combo1 = '/assets/voice/voice_combo01.wav',
+  Combo2 = '/assets/voice/voice_combo02.wav',
+  Combo3 = '/assets/voice/voice_combo03.wav',
+  Combo4 = '/assets/voice/voice_combo04.wav',
+  Combo5 = '/assets/voice/voice_combo05.wav',
+}
+
+export function isAchievementSFX(maybeAchievementSFX: string): maybeAchievementSFX is keyof typeof AchievementSFX {
+  return Object.keys(AchievementSFX).find(x => x === maybeAchievementSFX) !== undefined;
+}
+
+export function isAchievementVoice(maybeAchievementVoice: string): maybeAchievementVoice is keyof typeof AchievementVoice {
+  return Object.keys(AchievementVoice).find(x => x === maybeAchievementVoice) !== undefined;
+}
+
+export function GetSFX(result: GameInputResult): InputSFX | null;
+
+export function GetSFX(result: GameAchievement): AchievementSFX[] | null;
+
+export function GetSFX(result: GameInputResult | GameAchievement) : InputSFX | AchievementSFX[] | null {
+  if (result instanceof GameInputResult) {
+    switch (result.Input) {
+      case GameInput.None:
+        return null;
+      case GameInput.HardDrop:
+        return InputSFX.Lock;
+      case GameInput.RotateCCW:
+      case GameInput.RotateCW:
+        return result.Success ? InputSFX.RotateSuccess : InputSFX.RotateFail;
+      case GameInput.ShiftLeft:
+      case GameInput.ShiftRight:
+        return result.Success ? InputSFX.ShiftSuccess : InputSFX.ShiftFail;
+      case GameInput.SoftDrop:
+        return InputSFX.SoftDrop;
+      case GameInput.Hold:
+        return result.Success ? InputSFX.Hold : null;
+    }
   }
+  if (result instanceof GameAchievement) {
+    const ret: AchievementSFX[] = [];
+    if (result.Combo > 0) {
+      const comboSfx = `Combo${Math.min(20, result.Combo)}`;
+      if (isAchievementSFX(comboSfx))
+        ret.push(AchievementSFX[comboSfx]);
+    }
+    if (result.Type === AchievementType.PerfectClear) {
+      ret.push(AchievementSFX.PerfectClear);
+      return ret;
+    }
+    let achievementSfx = '';
+    if (result.BackToBack)
+      achievementSfx += 'B2b';
+    if (result.Type === AchievementType.TSpinMini) {
+      achievementSfx += 'TSpinMini';
+    }
+    else {
+      if (result.Type === AchievementType.TSpin)
+        achievementSfx += 'TSpin';
+      if (result.LinesCleared === 1)
+        achievementSfx += 'Single';
+      else if (result.LinesCleared === 2)
+        achievementSfx += 'Double';
+      else if (result.LinesCleared === 3)
+        achievementSfx += 'Triple';
+      else if (result.LinesCleared === 4)
+        achievementSfx += 'Tetris';
+    }
+    if (isAchievementSFX(achievementSfx))
+      ret.push(AchievementSFX[achievementSfx]);
+    return ret;
+  }
+  return null;
+}
+
+export function GetVoice(result: GameAchievement): AchievementVoice | null {
+  if (result.Type === AchievementType.PerfectClear) {
+    return AchievementVoice.PerfectClear;
+  }
+  let achievementVoice = '';
+  if (result.BackToBack)
+    achievementVoice += 'B2b';
+  if (result.Type === AchievementType.TSpinMini) {
+    achievementVoice += 'TSpinMini';
+  }
+  else {
+    if (result.Type === AchievementType.TSpin)
+      achievementVoice += 'TSpin';
+    if (result.LinesCleared === 1)
+      achievementVoice += 'Single';
+    else if (result.LinesCleared === 2)
+      achievementVoice += 'Double';
+    else if (result.LinesCleared === 3)
+      achievementVoice += 'Triple';
+    else if (result.LinesCleared === 4)
+      achievementVoice += 'Tetris';
+  }
+  if (isAchievementVoice(achievementVoice) && achievementVoice !== 'Single')
+    return AchievementVoice[achievementVoice];
+  if (result.Combo > 0) {
+    const comboVoice = `Combo${Math.min(5, result.Combo)}`;
+    if (isAchievementVoice(comboVoice))
+      return AchievementVoice[comboVoice];
+  }
+  return null;
 }

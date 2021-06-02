@@ -2,7 +2,7 @@ import p5Types from 'p5';
 import { GameInputResult } from '../GameInput';
 import { Constructor, MixinArgs } from '../utils/Mixin';
 import { GameUsable } from './GameUsable';
-import { GameSFX, GetSFX } from './Helper';
+import { InputSFX, GetSFX } from './Helper';
 import { Drawable } from './Renderer';
 import { Howl } from 'howler';
 
@@ -15,12 +15,12 @@ export type PlayerSoundPlayable = Constructor<{
 export default function PlayerSoundPlayable<TBase extends Drawable & GameUsable>(Base: TBase): TBase & PlayerSoundPlayable {
   return class PlayerSoundPlayable extends Base {
     #inputQueue: GameInputResult[];
-    #sounds: Map<GameSFX, Howl>;
+    #sounds: Map<InputSFX, Howl>;
 
     constructor(...args: MixinArgs) {
       super(...args);
       this.#inputQueue = [];
-      this.#sounds = new Map<GameSFX, Howl>();
+      this.#sounds = new Map<InputSFX, Howl>();
     }
 
     ConfigurePlayerSoundPlayable(): void {
@@ -28,16 +28,12 @@ export default function PlayerSoundPlayable<TBase extends Drawable & GameUsable>
         console.error('ConfigurePlayerSoundPlayable called before this.Game is assigned. Beware of the call order of Configure_ functions.');
         return;
       }
-      this.Game.Input.on(this.enqueueInputResult.bind(this));
-    }
-
-    private enqueueInputResult(result: GameInputResult): void {
-      this.#inputQueue.push(result);
+      this.Game.Input.on((result) => this.#inputQueue.push(result));
     }
 
     p5Setup(p5: p5Types, canvasParentRef: Element): void {
       super.p5Setup(p5, canvasParentRef);
-      Object.entries(GameSFX).forEach(([, value]) => this.#sounds.set(
+      Object.entries(InputSFX).forEach(([, value]) => this.#sounds.set(
         value,
         new Howl({
           src: [value],

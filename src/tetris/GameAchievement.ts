@@ -1,15 +1,8 @@
 export enum AchievementType {
-  Single = 1,
-  Double,
-  Triple,
-  Tetris,
+  LineClear,
   TSpin,
-  TSpinMini
-}
-export function IsTwist(achievement: AchievementType): boolean {
-  return achievement === AchievementType.Tetris
-    || achievement === AchievementType.TSpin
-    || achievement === AchievementType.TSpinMini;
+  TSpinMini,
+  PerfectClear,
 }
 export class GameAchievement {
   LinesCleared: number;
@@ -28,5 +21,20 @@ export class GameAchievement {
     this.Combo = combo;
     this.BackToBack = backToBack;
   }
+
+  Clone(): GameAchievement {
+    return new GameAchievement(
+      this.LinesCleared,
+      this.Type,
+      this.Combo,
+      this.BackToBack,
+    );
+  }
 }
 export default GameAchievement;
+
+export function BackToBackEligible(achievement: GameAchievement): boolean {
+  return achievement.Type === AchievementType.LineClear && achievement.LinesCleared >= 4
+    || achievement.Type === AchievementType.TSpin
+    || achievement.Type === AchievementType.TSpinMini;
+}
