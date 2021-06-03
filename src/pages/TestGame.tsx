@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Player from '../tetris/player/Player';
 import SingleplayerGame from '../tetris/game/SingleplayerGame';
 import Sketch from 'react-p5';
-import IdleAI from '../tetris/player/IdleAI';
-import RandomAI from '../tetris/player/RandomAI';
-import TopOutAI from '../tetris/player/TopOutAI';
 import HumanPlayer from '../tetris/player/HumanPlayer';
 import SingleplayerRenderer from '../tetris/renderer/SingleplayerRenderer';
 
@@ -12,8 +9,8 @@ interface Props {}
 
 
 const TestGame: React.FC = (props: Props) => {
-	const [player, setPlayer] = useState<Player>();
-	const [game, setGame] = useState<SingleplayerGame>();
+	const [, setPlayer] = useState<Player>();
+	const [, setGame] = useState<SingleplayerGame>();
 	const [renderer, setRenderer] = useState<SingleplayerRenderer>();
 	useEffect(() => {
 		const _player: Player = new HumanPlayer();
@@ -23,7 +20,6 @@ const TestGame: React.FC = (props: Props) => {
 		setGame(_game);
 		setRenderer(_renderer);
 		setTimeout(() => _game.StartClock(), 1000);
-		console.log(_renderer);
 		return () => {
 			_game.StopClock();
 		};

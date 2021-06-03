@@ -52,3 +52,8 @@ export const DAS_DELAY = 10;
  * Number of frames to wait between repeated inputs
  */
 export const DAS_INTERVAL = 3;
+
+/**
+ * Number of frames a normal animation lasts for
+ */
+export const ANIMATION_DURATION = 20;

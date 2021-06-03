@@ -49,7 +49,6 @@ export default function AchievementSoundPlayable<TBase extends Drawable & GameSt
         if (!result) break;
         const sfx = GetSFX(result);
         if (!sfx) continue;
-        console.log(sfx);
         sfx.forEach(s => this.#sounds.get(s)?.play());
       }
     }

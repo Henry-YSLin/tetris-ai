@@ -1,9 +1,8 @@
 import p5Types from 'p5';
-import { TetrominoType } from '../Tetrominos';
 import { Constructor, MixinArgs } from '../utils/Mixin';
 import Vector from '../utils/Vector';
 import { BlockSizeConfigurable } from './BlockSizeConfigurable';
-import { DrawTetromino, p5text, TetrominoColor } from './Helper';
+import { p5text } from './Helper';
 import { Drawable } from './Renderer';
 
 export type FramerateDrawable = Constructor<{

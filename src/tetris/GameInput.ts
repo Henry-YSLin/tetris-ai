@@ -1,3 +1,5 @@
+import Tetromino from './Tetromino';
+
 export enum GameInput {
   None,
   SoftDrop,
@@ -19,11 +21,13 @@ export class GameInputResult {
   Tick: number;
   Input: GameInput;
   Success: boolean;
+  Falling: Tetromino | null;
 
-  constructor(tick: number, input: GameInput, success: boolean) {
+  constructor(tick: number, input: GameInput, success: boolean, falling: Tetromino | null) {
     this.Tick = tick;
     this.Input = input;
     this.Success = success;
+    this.Falling = falling;
   }
 
   Clone(): GameInputResult {
@@ -31,6 +35,7 @@ export class GameInputResult {
       this.Tick,
       this.Input,
       this.Success,
+      this.Falling,
     );
   }
 }

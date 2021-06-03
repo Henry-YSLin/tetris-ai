@@ -5,13 +5,13 @@ export enum AchievementType {
   PerfectClear,
 }
 export class GameAchievement {
-  LinesCleared: number;
+  LinesCleared: number[];
   Type: AchievementType;
   Combo: number;
   BackToBack: boolean;
 
   constructor(
-    linesCleared: number,
+    linesCleared: number[],
     type: AchievementType,
     combo: number,
     backToBack: boolean,
@@ -34,7 +34,7 @@ export class GameAchievement {
 export default GameAchievement;
 
 export function BackToBackEligible(achievement: GameAchievement): boolean {
-  return achievement.Type === AchievementType.LineClear && achievement.LinesCleared >= 4
+  return achievement.Type === AchievementType.LineClear && achievement.LinesCleared.length >= 4
     || achievement.Type === AchievementType.TSpin
     || achievement.Type === AchievementType.TSpinMini;
 }

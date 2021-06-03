@@ -48,6 +48,7 @@ export default class SingleplayerGame extends Game {
   Tick(): void {
     this.State.Tick();
     const input = this.Player.Tick(this.State.GetVisibleState());
+    const falling = this.State.Falling;
     let success = false;
     switch (input) {
       case GameInput.None:
@@ -75,7 +76,7 @@ export default class SingleplayerGame extends Game {
         break;
     }
     if (input !== GameInput.None) {
-      this.#input.emit(new GameInputResult(this.State.TicksElapsed, input, success));
+      this.#input.emit(new GameInputResult(this.State.TicksElapsed, input, success, falling));
     }
   }
 }

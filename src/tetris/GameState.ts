@@ -44,6 +44,7 @@ export class VisibleGameState {
     this.LastAchievement = lastAchievement;
   }
 }
+
 export class GameState {
   Grid: TetrominoType[][];
   Falling: Tetromino | null;
@@ -65,11 +66,12 @@ export class GameState {
    * The number of consecutive line clear
    */
   Combo: number;
-  #achievement: TypedEvent<GameAchievement>;
   /**
    * Used for detecting back-to-back achievements
    */
   LastAchievement: GameAchievement | null;
+
+  #achievement: TypedEvent<GameAchievement>;
 
   /**
    * Create a GameState from visible information, allowing gameplay simulations
@@ -240,7 +242,7 @@ export class GameState {
    * @param lastPiece The most recently locked piece
    */
   ClearLines(lastPiece: Tetromino | undefined = undefined): void {
-    let linesCleared = 0;
+    const linesCleared: number[] = [];
     let type: AchievementType | null = null;
     if (lastPiece?.Type === TetrominoType.T && IsRotation(lastPiece.LastAction)) {
       // check for T-spin
@@ -255,7 +257,6 @@ export class GameState {
           : prev
         , 0,
       );
-      console.log('Corners: ', corners);
       if (corners >= 3) {
         // is a T-spin
         // check if its mini
@@ -274,15 +275,14 @@ export class GameState {
           type = AchievementType.TSpin;
       }
     }
-    for (let i = 0; i < this.GridHeight; i++) {
+    for (let i = this.GridHeight - 1; i >=0; i--) {
       if (!this.Grid[i].some(t => t === TetrominoType.None)) {
         this.Grid.splice(i, 1);
         this.Grid.push(new Array(this.GridWidth).fill(TetrominoType.None));
-        linesCleared++;
-        i--;
+        linesCleared.push(i);
       }
     }
-    if (linesCleared === 0) {
+    if (linesCleared.length === 0) {
       this.Combo = 0;
       if (type === null)
         return;
@@ -293,7 +293,7 @@ export class GameState {
       this.Combo,
       this.LastAchievement ? BackToBackEligible(this.LastAchievement) : false,
     );
-    if (linesCleared > 0)
+    if (linesCleared.length > 0)
       this.Combo++;
     if (!this.Grid.some(row => row.some(c => c !== TetrominoType.None))) {
       achievement.Type = AchievementType.PerfectClear;

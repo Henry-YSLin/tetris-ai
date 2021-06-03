@@ -4,6 +4,11 @@ import GameInput, { GameInputResult } from '../GameInput';
 import { TetrominoType } from '../Tetrominos';
 import Vector from '../utils/Vector';
 
+export function WithAlpha(color: p5Types.Color, alpha: number): p5Types.Color {
+  color.setAlpha(alpha);
+  return color;
+}
+
 export function TetrominoColor(p5: p5Types, tetromino: TetrominoType): p5Types.Color {
   switch (tetromino) {
     case TetrominoType.None:
@@ -33,9 +38,7 @@ export function DrawTetromino(
   blockSize: number,
   alpha: number,
 ): void {
-  const c = TetrominoColor(p5, type ?? TetrominoType.None);
-  c.setAlpha(alpha);
-  p5.fill(c);
+  p5.fill(WithAlpha(TetrominoColor(p5, type ?? TetrominoType.None), alpha));
   points.forEach(p => {
     p5.rect(origin.X + p.X * blockSize, origin.Y + p.Y * blockSize, blockSize, blockSize);
   });
@@ -177,13 +180,13 @@ export function GetSFX(result: GameInputResult | GameAchievement) : InputSFX | A
     else {
       if (result.Type === AchievementType.TSpin)
         achievementSfx += 'TSpin';
-      if (result.LinesCleared === 1)
+      if (result.LinesCleared.length === 1)
         achievementSfx += 'Single';
-      else if (result.LinesCleared === 2)
+      else if (result.LinesCleared.length === 2)
         achievementSfx += 'Double';
-      else if (result.LinesCleared === 3)
+      else if (result.LinesCleared.length === 3)
         achievementSfx += 'Triple';
-      else if (result.LinesCleared === 4)
+      else if (result.LinesCleared.length === 4)
         achievementSfx += 'Tetris';
     }
     if (isAchievementSFX(achievementSfx))
@@ -206,13 +209,13 @@ export function GetVoice(result: GameAchievement): AchievementVoice | null {
   else {
     if (result.Type === AchievementType.TSpin)
       achievementVoice += 'TSpin';
-    if (result.LinesCleared === 1)
+    if (result.LinesCleared.length === 1)
       achievementVoice += 'Single';
-    else if (result.LinesCleared === 2)
+    else if (result.LinesCleared.length === 2)
       achievementVoice += 'Double';
-    else if (result.LinesCleared === 3)
+    else if (result.LinesCleared.length === 3)
       achievementVoice += 'Triple';
-    else if (result.LinesCleared === 4)
+    else if (result.LinesCleared.length === 4)
       achievementVoice += 'Tetris';
   }
   if (isAchievementVoice(achievementVoice) && achievementVoice !== 'Single')

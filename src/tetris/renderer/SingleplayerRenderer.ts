@@ -7,6 +7,7 @@ import PieceQueueDrawable from './PieceQueueDrawable';
 import FramerateDrawable from './FramerateDrawable';
 import InputHandleable from './InputHandleable';
 import BlockSizeConfigurable from './BlockSizeConfigurable';
+import PlayfieldAnimatable from './PlayfieldAnimatable';
 import PlayerSoundPlayable from './PlayerSoundPlayable';
 import AchievementSoundPlayable from './AchievementSoundPlayable';
 import AchievementVoicePlayable from './AchievementVoicePlayable';
@@ -23,12 +24,13 @@ extends
   AchievementSoundPlayable(
   AchievementVoicePlayable(
   PlayerSoundPlayable(
+  PlayfieldAnimatable(
   BlockSizeConfigurable(
   InputHandleable(
   GameUsable(
   PlayerUsable(
   GameStateUsable(
-    Renderer))))))))))))
+    Renderer)))))))))))))
 {
   constructor(game: SingleplayerGame, width?: number, height?: number) {
     if (width && height)
@@ -39,6 +41,7 @@ extends
     this.ConfigurePlayer(game.Player);
     this.ConfigureGame(game);
     this.ConfigureBlockSize(BLOCK_SIZE);
+    this.ConfigurePlayfieldAnimatable();
     this.ConfigurePlayerSoundPlayable();
     this.ConfigureAchievementSoundPlayable();
     this.ConfigureAchievementVoicePlayable();

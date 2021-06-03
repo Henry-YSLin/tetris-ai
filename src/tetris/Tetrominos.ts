@@ -15,19 +15,19 @@ export enum Rotation {
   R0,
   R90,
   R180,
-  R270
+  R270,
 }
 
 export enum RotationDirection {
   CW = 1,
-  CCW = -1
+  CCW = -1,
 }
 
 type WallKickInfo = Readonly<[
   {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
   {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
   {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
-  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>}
+  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
 ]>;
 const WallKick3x3: WallKickInfo = Object.freeze([
   {

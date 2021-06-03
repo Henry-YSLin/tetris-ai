@@ -27,7 +27,7 @@
     "semi": "off",
     "@typescript-eslint/semi": ["error", "always"],
     "quotes": ["warn", "single"],
-    "no-console": "warn",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
     "consistent-return": "off",
     "func-names": "off",
     "no-param-reassign": "off",
