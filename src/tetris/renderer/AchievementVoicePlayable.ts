@@ -9,21 +9,24 @@ import GameAchievement from '../GameAchievement';
 export type AchievementVoicePlayable = Constructor<{
   p5Setup(p5: p5Types, canvasParentRef: Element): void,
   p5Draw(p5: p5Types): void,
-  ConfigureAchievementVoicePlayable(): void,
+  ConfigureAchievementVoicePlayable(volume: number): void,
 }>;
 
 export default function AchievementVoicePlayable<TBase extends Drawable & GameStateUsable>(Base: TBase): TBase & AchievementVoicePlayable {
   return class AchievementVoicePlayable extends Base {
     #achievementQueue: GameAchievement[];
     #sounds: Map<AchievementVoice, Howl>;
+    #volume: number;
 
     constructor(...args: MixinArgs) {
       super(...args);
       this.#achievementQueue = [];
       this.#sounds = new Map<AchievementVoice, Howl>();
+      this.#volume = 0.5;
     }
 
-    ConfigureAchievementVoicePlayable(): void {
+    ConfigureAchievementVoicePlayable(volume: number): void {
+      this.#volume = volume;
       if (this.State === null) {
         console.error('ConfigureAchievementVoicePlayable called before this.State is assigned. Beware of the call order of Configure_ functions.');
         return;
@@ -37,6 +40,7 @@ export default function AchievementVoicePlayable<TBase extends Drawable & GameSt
         value,
         new Howl({
           src: [value],
+          volume: this.#volume,
         }),
       ));
     }

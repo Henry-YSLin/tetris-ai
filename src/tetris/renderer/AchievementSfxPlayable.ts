@@ -9,21 +9,24 @@ import GameAchievement from '../GameAchievement';
 export type AchievementSfxPlayable = Constructor<{
   p5Setup(p5: p5Types, canvasParentRef: Element): void,
   p5Draw(p5: p5Types): void,
-  ConfigureAchievementSfxPlayable(): void,
+  ConfigureAchievementSfxPlayable(volume: number): void,
 }>;
 
 export default function AchievementSfxPlayable<TBase extends Drawable & GameStateUsable>(Base: TBase): TBase & AchievementSfxPlayable {
   return class AchievementSfxPlayable extends Base {
     #achievementQueue: GameAchievement[];
     #sounds: Map<AchievementSFX, Howl>;
+    #volume: number;
 
     constructor(...args: MixinArgs) {
       super(...args);
       this.#achievementQueue = [];
       this.#sounds = new Map<AchievementSFX, Howl>();
+      this.#volume = 0.5;
     }
 
-    ConfigureAchievementSfxPlayable(): void {
+    ConfigureAchievementSfxPlayable(volume: number): void {
+      this.#volume = volume;
       if (this.State === null) {
         console.error('ConfigureAchievementSfxPlayable called before this.State is assigned. Beware of the call order of Configure_ functions.');
         return;
@@ -37,6 +40,7 @@ export default function AchievementSfxPlayable<TBase extends Drawable & GameStat
         value,
         new Howl({
           src: [value],
+          volume: this.#volume,
         }),
       ));
     }

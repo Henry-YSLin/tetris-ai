@@ -57,3 +57,8 @@ export const DAS_INTERVAL = 3;
  * Number of frames a normal animation lasts for
  */
 export const ANIMATION_DURATION = 20;
+
+/**
+ * Master volume for all sounds
+ */
+export const SOUND_VOLUME = 0.5;

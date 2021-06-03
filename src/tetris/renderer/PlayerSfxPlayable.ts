@@ -10,7 +10,7 @@ import { DAS_INTERVAL } from '../Consts';
 export type PlayerSfxPlayable = Constructor<{
   p5Setup(p5: p5Types, canvasParentRef: Element): void,
   p5Draw(p5: p5Types): void,
-  ConfigurePlayerSfxPlayable(): void,
+  ConfigurePlayerSfxPlayable(volume: number): void,
 }>;
 
 export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable>(Base: TBase): TBase & PlayerSfxPlayable {
@@ -18,15 +18,18 @@ export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable>(B
     #inputQueue: GameInputResult[];
     #lastInput: GameInputResult | null;
     #sounds: Map<InputSFX, Howl>;
+    #volume: number;
 
     constructor(...args: MixinArgs) {
       super(...args);
       this.#inputQueue = [];
       this.#sounds = new Map<InputSFX, Howl>();
       this.#lastInput = null;
+      this.#volume = 0.5;
     }
 
-    ConfigurePlayerSfxPlayable(): void {
+    ConfigurePlayerSfxPlayable(volume: number): void {
+      this.#volume = volume;
       if (this.Game === null) {
         console.error('ConfigurePlayerSfxPlayable called before this.Game is assigned. Beware of the call order of Configure_ functions.');
         return;
@@ -40,6 +43,7 @@ export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable>(B
         value,
         new Howl({
           src: [value],
+          volume: this.#volume,
         }),
       ));
     }

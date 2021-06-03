@@ -13,7 +13,7 @@ import AchievementSfxPlayable from './AchievementSfxPlayable';
 import AchievementVoicePlayable from './AchievementVoicePlayable';
 import AchievementTextDrawable from './AchievementTextDrawable';
 import Renderer from './Renderer';
-import { BLOCK_SIZE, PLAYFIELD_HEIGHT } from '../Consts';
+import { BLOCK_SIZE, PLAYFIELD_HEIGHT, SOUND_VOLUME } from '../Consts';
 import Vector from '../utils/Vector';
 import SingleplayerGame from '../game/SingleplayerGame';
 export default class SingleplayerRenderer
@@ -44,9 +44,9 @@ extends
     this.ConfigureGame(game);
     this.ConfigureBlockSize(BLOCK_SIZE);
     this.ConfigurePlayfieldAnimatable();
-    this.ConfigurePlayerSfxPlayable();
-    this.ConfigureAchievementSfxPlayable();
-    this.ConfigureAchievementVoicePlayable();
+    this.ConfigurePlayerSfxPlayable(SOUND_VOLUME);
+    this.ConfigureAchievementSfxPlayable(SOUND_VOLUME);
+    this.ConfigureAchievementVoicePlayable(SOUND_VOLUME);
     this.ConfigureAchievementTextDrawable(new Vector(this.BlockSize * 11, this.BlockSize * ((this.State?.PlayfieldHeight ?? PLAYFIELD_HEIGHT) + 1)), new Vector(1, 1));
     this.ConfigurePlayfieldDrawable(new Vector(this.BlockSize * 6, 0), new Vector(1, 1));
     this.ConfigureHoldPieceDrawable(new Vector(10, 200), new Vector(1, 1));
