@@ -40,7 +40,7 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
       p5.fill(50);
       p5.noStroke();
       p5.rect(0, 0, state.GridWidth * blockSize, state.GridHeight * blockSize);
-      p5.stroke(0);
+      p5.stroke(0, 0, 0, 100);
       for (let i = 0; i <= state.GridHeight; i++) {
         p5.line(0, i * blockSize, state.GridWidth * blockSize, i * blockSize);
       }
@@ -61,7 +61,7 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
         });
       }
 
-      p5.stroke(0);
+      p5.stroke(0, 0, 0, 150);
       let heightMap: number[] | null = null;
       if (IsPlayfieldAnimatable(this)) {
         heightMap = [];
@@ -93,8 +93,8 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
       }
       if (IsPlayfieldAnimatable(this)) {
         p5.noStroke();
+        p5.fill(255, 255, 255, 100);
         this.LineClearAnimations.forEach(animation => {
-          p5.fill(255, 255, 255, 100);
           p5.rect(0, animation.Data.OrigY * blockSize, state.GridWidth * blockSize / 2 * animation.CurrentValue, blockSize);
           p5.rect(state.GridWidth * blockSize, animation.Data.OrigY * blockSize, -state.GridWidth * blockSize / 2 * animation.CurrentValue, blockSize);
         });

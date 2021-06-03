@@ -41,7 +41,7 @@ export const AI_ACTION_DELAY = 20;
 /**
  * Size of a block in pixels
  */
-export const BLOCK_SIZE = 15;
+export const BLOCK_SIZE = 20;
 
 /**
  * Number of frames to wait before repeating input

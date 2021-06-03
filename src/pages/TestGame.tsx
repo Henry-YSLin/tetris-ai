@@ -25,12 +25,16 @@ const TestGame: React.FC = (props: Props) => {
 		};
 	}, []);
 	if (renderer)
-		return <Sketch
-			setup={renderer.SetupHandler}
-			draw={renderer.DrawHandler}
-			keyPressed={renderer.KeyPressedHandler}
-			keyReleased={renderer.KeyReleasedHandler}
-		/>;
+		return (
+			<div className="min-h-screen w-screen flex justify-center items-center">
+				<Sketch
+					setup={renderer.SetupHandler}
+					draw={renderer.DrawHandler}
+					keyPressed={renderer.KeyPressedHandler}
+					keyReleased={renderer.KeyReleasedHandler}
+				/>
+			</div>
+		);
 	else
 		return <p>Loading</p>;
 };

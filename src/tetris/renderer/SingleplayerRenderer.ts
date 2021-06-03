@@ -45,9 +45,9 @@ extends
     this.ConfigurePlayerSoundPlayable();
     this.ConfigureAchievementSoundPlayable();
     this.ConfigureAchievementVoicePlayable();
-    this.ConfigurePlayfieldDrawable(new Vector(120, 0), new Vector(1, 1));
+    this.ConfigurePlayfieldDrawable(new Vector(this.BlockSize * 6, 0), new Vector(1, 1));
     this.ConfigureHoldPieceDrawable(new Vector(10, 200), new Vector(1, 1));
-    this.ConfigurePieceQueueDrawable(new Vector(400, 0), new Vector(0.7, 0.7));
+    this.ConfigurePieceQueueDrawable(new Vector(this.BlockSize * 27, 0), new Vector(0.7, 0.7));
     this.ConfigureFramerateDrawable(new Vector(0, this.height - 10), new Vector(1, 1));
   }
 }
