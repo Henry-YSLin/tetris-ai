@@ -6,14 +6,14 @@ import { Howl } from 'howler';
 import { GameStateUsable } from './GameStateUsable';
 import GameAchievement from '../GameAchievement';
 
-export type AchievementSoundPlayable = Constructor<{
+export type AchievementSfxPlayable = Constructor<{
   p5Setup(p5: p5Types, canvasParentRef: Element): void,
   p5Draw(p5: p5Types): void,
-  ConfigureAchievementSoundPlayable(): void,
+  ConfigureAchievementSfxPlayable(): void,
 }>;
 
-export default function AchievementSoundPlayable<TBase extends Drawable & GameStateUsable>(Base: TBase): TBase & AchievementSoundPlayable {
-  return class AchievementSoundPlayable extends Base {
+export default function AchievementSfxPlayable<TBase extends Drawable & GameStateUsable>(Base: TBase): TBase & AchievementSfxPlayable {
+  return class AchievementSfxPlayable extends Base {
     #achievementQueue: GameAchievement[];
     #sounds: Map<AchievementSFX, Howl>;
 
@@ -23,9 +23,9 @@ export default function AchievementSoundPlayable<TBase extends Drawable & GameSt
       this.#sounds = new Map<AchievementSFX, Howl>();
     }
 
-    ConfigureAchievementSoundPlayable(): void {
+    ConfigureAchievementSfxPlayable(): void {
       if (this.State === null) {
-        console.error('ConfigureAchievementSoundPlayable called before this.State is assigned. Beware of the call order of Configure_ functions.');
+        console.error('ConfigureAchievementSfxPlayable called before this.State is assigned. Beware of the call order of Configure_ functions.');
         return;
       }
       this.State.Achievement.on((achievement) => this.#achievementQueue.push(achievement));

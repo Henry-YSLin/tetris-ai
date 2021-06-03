@@ -124,11 +124,11 @@ export default class Tetromino {
   }
 
   get Width(): number {
-    return this.InternalRight - this.InternalLeft;
+    return this.InternalRight - this.InternalLeft + 1;
   }
 
   get Height(): number {
-    return this.InternalTop - this.InternalBottom;
+    return this.InternalTop - this.InternalBottom + 1;
   }
   //#endregion
 

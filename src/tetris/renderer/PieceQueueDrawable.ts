@@ -6,6 +6,7 @@ import { BlockSizeConfigurable } from './BlockSizeConfigurable';
 import { GameStateUsable } from './GameStateUsable';
 import { DrawTetromino } from './Helper';
 import { Drawable } from './Renderer';
+import './../utils/Array';
 
 export type PieceQueueDrawable = Constructor<{
   p5Draw(p5: p5Types): void,
@@ -36,9 +37,15 @@ export default function PieceQueueDrawable<TBase extends Drawable & GameStateUsa
       const state = this.State;
       const blockSize = this.BlockSize;
       const {length} = state.PieceQueue;
-      for (let i = 0; i < length; i++) {
+      let height = 0;
+      for (let i = length - 1; i >= 0; i--) {
         const points = Tetrominos[state.PieceQueue[i]].Rotations[0].slice();
-        DrawTetromino(p5, state.PieceQueue[i], new Vector(0, this.height - (i + 1) * blockSize * 4), points, blockSize, 255);
+        const Xs = points.map(p => p.X);
+        const Ys = points.map(p => p.Y);
+        const h = Ys.max() - Ys.min() + 1;
+        const w = Xs.max() - Xs.min() + 1;
+        DrawTetromino(p5, state.PieceQueue[i], new Vector((2 - w / 2) * blockSize, height - Ys.min() * blockSize), points, blockSize, 255);
+        height += (h + 1) * blockSize;
       }
     }
   };

@@ -23,7 +23,6 @@ type LineClearAnimationData = {
 export type PlayfieldAnimatableContent = {
   HardDropAnimations: Animation<HardDropAnimationData>[];
   LineClearAnimations: Animation<LineClearAnimationData>[];
-  p5Setup(p5: p5Types, canvasParentRef: Element): void,
   p5Draw(p5: p5Types): void,
   ConfigurePlayfieldAnimatable(): void,
 };
@@ -74,10 +73,6 @@ export default function PlayfieldAnimatable<TBase extends Drawable & GameStateUs
           offset += ANIMATION_DURATION / 5;
         });
       });
-    }
-
-    p5Setup(p5: p5Types, canvasParentRef: Element): void {
-      super.p5Setup(p5, canvasParentRef);
     }
 
     p5Draw(p5: p5Types): void {

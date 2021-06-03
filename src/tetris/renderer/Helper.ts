@@ -191,6 +191,13 @@ export function GetSFX(result: GameInputResult | GameAchievement) : InputSFX | A
     }
     if (isAchievementSFX(achievementSfx))
       ret.push(AchievementSFX[achievementSfx]);
+    else if (achievementSfx.startsWith('B2b')) {
+      // Attempt to get the normal version if there is no back-to-back version
+      achievementSfx = achievementSfx.substr(3);
+      if (isAchievementSFX(achievementSfx)) {
+        ret.push(AchievementSFX[achievementSfx]);
+      }
+    }
     return ret;
   }
   return null;
@@ -220,6 +227,13 @@ export function GetVoice(result: GameAchievement): AchievementVoice | null {
   }
   if (isAchievementVoice(achievementVoice) && achievementVoice !== 'Single')
     return AchievementVoice[achievementVoice];
+  else if (achievementVoice.startsWith('B2b')) {
+    // Attempt to get the normal version if there is no back-to-back version
+    achievementVoice = achievementVoice.substr(3);
+    if (isAchievementVoice(achievementVoice)) {
+      return AchievementVoice[achievementVoice];
+    }
+  }
   if (result.Combo > 0) {
     const comboVoice = `Combo${Math.min(5, result.Combo)}`;
     if (isAchievementVoice(comboVoice))

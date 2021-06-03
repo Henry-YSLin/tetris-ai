@@ -24,8 +24,8 @@ export default class Renderer {
       this.height = height;
     }
     else {
-      this.width = 500;
-      this.height = BLOCK_SIZE * PLAYFIELD_HEIGHT + BLOCK_SIZE * 0.1;
+      this.width = BLOCK_SIZE * 22;
+      this.height = BLOCK_SIZE * (PLAYFIELD_HEIGHT + 0.1) + 100;
     }
   }
 
@@ -37,8 +37,9 @@ export default class Renderer {
     translateY: number,
   ): void {
     p5.resetMatrix();
-		p5.scale(scaleX, -scaleY);
+		p5.scale(1, -1);
 		p5.translate(translateX, -this.height + translateY);
+    p5.scale(scaleX, scaleY);
   }
 
   ResetTransform(p5: p5Types): void {

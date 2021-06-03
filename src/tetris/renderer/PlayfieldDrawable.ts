@@ -9,6 +9,7 @@ import { DrawTetromino, TetrominoColor, WithAlpha } from './Helper';
 import { Drawable } from './Renderer';
 
 export type PlayfieldDrawable = Constructor<{
+  p5Setup(p5: p5Types, canvasParentRef: Element): void,
   p5Draw(p5: p5Types): void,
   ConfigurePlayfieldDrawable(offset: Vector, scale: Vector): void
 }>;
@@ -17,16 +18,28 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
   return class PlayfieldDrawable extends Base {
     #offset: Vector;
     #scale: Vector;
+    #pg: p5Types.Graphics | null;
 
     constructor(...args: MixinArgs) {
       super(...args);
       this.#offset = new Vector(0, 0);
       this.#scale = new Vector(1, 1);
+      this.#pg = null;
     }
 
     ConfigurePlayfieldDrawable(offset: Vector, scale: Vector): void {
       this.#offset = offset;
       this.#scale = scale;
+    }
+
+    p5Setup(p5: p5Types, canvasParentRef: Element): void {
+      super.p5Setup(p5, canvasParentRef);
+      if (this.State) {
+        this.#pg = p5.createGraphics(
+          this.State.GridWidth * this.BlockSize,
+          (this.State.PlayfieldHeight + 0.1) * this.BlockSize,
+        );
+      }
     }
 
     p5Draw(p5: p5Types): void {
@@ -36,23 +49,23 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
 
       const state = this.State;
       const blockSize = this.BlockSize;
+      if (!this.#pg) return;
+      const pg = this.#pg;
       if (!state) return;
-      p5.fill(50);
-      p5.noStroke();
-      p5.rect(0, 0, state.GridWidth * blockSize, state.GridHeight * blockSize);
-      p5.stroke(0, 0, 0, 100);
+      pg.background(50);
+      pg.stroke(0, 0, 0, 100);
       for (let i = 0; i <= state.GridHeight; i++) {
-        p5.line(0, i * blockSize, state.GridWidth * blockSize, i * blockSize);
+        pg.line(0, i * blockSize, state.GridWidth * blockSize, i * blockSize);
       }
       for (let i = 0; i <= state.GridWidth; i++) {
-        p5.line(i * blockSize, 0, i * blockSize, state.GridHeight * blockSize);
+        pg.line(i * blockSize, 0, i * blockSize, state.GridHeight * blockSize);
       }
 
       if (IsPlayfieldAnimatable(this)) {
-        p5.noStroke();
+        pg.noStroke();
         this.HardDropAnimations.forEach(animation => {
-          p5.fill(WithAlpha(TetrominoColor(p5, animation.Data.type), 20));
-          p5.rect(
+          pg.fill(WithAlpha(TetrominoColor(pg, animation.Data.type), 20));
+          pg.rect(
             animation.Data.left * blockSize,
             animation.Data.end * blockSize,
             (animation.Data.right - animation.Data.left + 1) * blockSize,
@@ -61,7 +74,7 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
         });
       }
 
-      p5.stroke(0, 0, 0, 150);
+      pg.stroke(0, 0, 0, 150);
       let heightMap: number[] | null = null;
       if (IsPlayfieldAnimatable(this)) {
         heightMap = [];
@@ -78,27 +91,29 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
         for (let j = 0; j < state.GridWidth; j++) {
           const type = state.Get(j, i) ?? TetrominoType.None;
           if (type !== TetrominoType.None) {
-            p5.fill(TetrominoColor(p5, type));
-            p5.rect(j * blockSize, getAnimatedHeight(i) * blockSize, blockSize, blockSize);
+            pg.fill(TetrominoColor(pg, type));
+            pg.rect(j * blockSize, getAnimatedHeight(i) * blockSize, blockSize, blockSize);
           }
         }
       }
       if (state.Falling) {
         const falling = state.Falling.Points.map(p => new Vector(p.X, getAnimatedHeight(p.Y)));
-        DrawTetromino(p5, state.Falling?.Type, new Vector(0, 0), falling, blockSize, 255);
+        DrawTetromino(pg, state.Falling?.Type, new Vector(0, 0), falling, blockSize, 255);
         const ghost = state.Falling.Clone();
         state.HardDropPiece(ghost);
         const ghostPoints = ghost.Points.map(p => new Vector(p.X, getAnimatedHeight(p.Y)));
-        DrawTetromino(p5, state.Falling?.Type, new Vector(0, 0), ghostPoints, blockSize, 50);
+        DrawTetromino(pg, state.Falling?.Type, new Vector(0, 0), ghostPoints, blockSize, 50);
       }
       if (IsPlayfieldAnimatable(this)) {
-        p5.noStroke();
-        p5.fill(255, 255, 255, 100);
+        pg.noStroke();
+        pg.fill(255, 255, 255, 100);
         this.LineClearAnimations.forEach(animation => {
-          p5.rect(0, animation.Data.OrigY * blockSize, state.GridWidth * blockSize / 2 * animation.CurrentValue, blockSize);
-          p5.rect(state.GridWidth * blockSize, animation.Data.OrigY * blockSize, -state.GridWidth * blockSize / 2 * animation.CurrentValue, blockSize);
+          pg.rect(0, animation.Data.OrigY * blockSize, state.GridWidth * blockSize / 2 * animation.CurrentValue, blockSize);
+          pg.rect(state.GridWidth * blockSize, animation.Data.OrigY * blockSize, -state.GridWidth * blockSize / 2 * animation.CurrentValue, blockSize);
         });
       }
+
+      p5.image(pg, 0, 0);
     }
   };
 }

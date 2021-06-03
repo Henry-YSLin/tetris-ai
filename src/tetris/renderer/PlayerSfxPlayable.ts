@@ -7,14 +7,14 @@ import { Drawable } from './Renderer';
 import { Howl } from 'howler';
 import { DAS_INTERVAL } from '../Consts';
 
-export type PlayerSoundPlayable = Constructor<{
+export type PlayerSfxPlayable = Constructor<{
   p5Setup(p5: p5Types, canvasParentRef: Element): void,
   p5Draw(p5: p5Types): void,
-  ConfigurePlayerSoundPlayable(): void,
+  ConfigurePlayerSfxPlayable(): void,
 }>;
 
-export default function PlayerSoundPlayable<TBase extends Drawable & GameUsable>(Base: TBase): TBase & PlayerSoundPlayable {
-  return class PlayerSoundPlayable extends Base {
+export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable>(Base: TBase): TBase & PlayerSfxPlayable {
+  return class PlayerSfxPlayable extends Base {
     #inputQueue: GameInputResult[];
     #lastInput: GameInputResult | null;
     #sounds: Map<InputSFX, Howl>;
@@ -26,9 +26,9 @@ export default function PlayerSoundPlayable<TBase extends Drawable & GameUsable>
       this.#lastInput = null;
     }
 
-    ConfigurePlayerSoundPlayable(): void {
+    ConfigurePlayerSfxPlayable(): void {
       if (this.Game === null) {
-        console.error('ConfigurePlayerSoundPlayable called before this.Game is assigned. Beware of the call order of Configure_ functions.');
+        console.error('ConfigurePlayerSfxPlayable called before this.Game is assigned. Beware of the call order of Configure_ functions.');
         return;
       }
       this.Game.Input.on((result) => this.#inputQueue.push(result));
