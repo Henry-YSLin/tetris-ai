@@ -1,5 +1,5 @@
 import p5Types from 'p5';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import { Drawable } from './Renderer';
 import { GameStateUsable } from './GameStateUsable';
 import Animation from '../utils/Animation';
@@ -26,7 +26,7 @@ export default function GameEventTextDrawable<TBase extends Drawable & GameState
 
     GameEventAnimation: Animation<GameEventAnimationData> | null;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.GameEventAnimation = null;
       this.#offset = new Vector(0, 0);

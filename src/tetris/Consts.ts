@@ -62,3 +62,9 @@ export const ANIMATION_DURATION = 20;
  * Master volume for all sounds
  */
 export const SOUND_VOLUME = 0.5;
+
+/**
+ * Number of ticks to wait in the garbage meter before garbage liens are
+ * actually created
+ */
+export const GARBAGE_DELAY = 4 * 60;

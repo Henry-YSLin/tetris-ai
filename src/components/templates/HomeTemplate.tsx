@@ -14,7 +14,13 @@ const HomeTemplate: React.FC = () => {
 				>
 					here
 				</Link>{' '}
-				to play pre-alpha Tetris
+				to play pre-alpha Tetris<br/>
+				<Link
+					to="/multi/local"
+					className='text-green-400 underline'
+				>
+					Local Multi
+				</Link>
 			</h2>
 		</div>
 	);

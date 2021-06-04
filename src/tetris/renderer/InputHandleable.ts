@@ -2,7 +2,7 @@ import p5Types from 'p5';
 import { DAS_DELAY, DAS_INTERVAL } from '../Consts';
 import GameInput from '../GameInput';
 import HumanPlayer from '../player/HumanPlayer';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import { PlayerUsable } from './PlayerUsable';
 import { Drawable } from './Renderer';
 
@@ -19,7 +19,7 @@ export default function InputHandleable<TBase extends Drawable & PlayerUsable>(B
     protected keyHold: GameInput;
     protected keyDelay: number;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.keyHold = GameInput.None;
       this.keyDelay = 0;

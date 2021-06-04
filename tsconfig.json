@@ -12,6 +12,7 @@
     "module": "esnext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
+    "noImplicitAny": true,
     "jsx": "react",
     "removeComments": true,
     "outDir": "dist"

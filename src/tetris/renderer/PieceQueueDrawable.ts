@@ -1,6 +1,6 @@
 import p5Types from 'p5';
 import Tetrominos from '../Tetrominos';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import Vector from '../utils/Vector';
 import { BlockSizeConfigurable } from './BlockSizeConfigurable';
 import { GameStateUsable } from './GameStateUsable';
@@ -18,7 +18,7 @@ export default function PieceQueueDrawable<TBase extends Drawable & GameStateUsa
     #offset: Vector;
     #scale: Vector;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.#offset = new Vector(0, 0);
       this.#scale = new Vector(1, 1);
@@ -36,7 +36,7 @@ export default function PieceQueueDrawable<TBase extends Drawable & GameStateUsa
 
       const state = this.State;
       const blockSize = this.BlockSize;
-      const {length} = state.PieceQueue;
+      const { length } = state.PieceQueue;
       let height = 0;
       for (let i = length - 1; i >= 0; i--) {
         const points = Tetrominos[state.PieceQueue[i]].Rotations[0].slice();

@@ -1,7 +1,7 @@
 import p5Types from 'p5';
 import { IsPlayfieldAnimatable } from './PlayfieldAnimatable';
 import { TetrominoType } from '../Tetrominos';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import Vector from '../utils/Vector';
 import { BlockSizeConfigurable } from './BlockSizeConfigurable';
 import { GameStateUsable } from './GameStateUsable';
@@ -20,7 +20,7 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
     #scale: Vector;
     #pg: p5Types.Graphics | null;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.#offset = new Vector(0, 0);
       this.#scale = new Vector(1, 1);

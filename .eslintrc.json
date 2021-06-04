@@ -24,6 +24,11 @@
   ],
 
   "rules": {
+    // "indent": "off",
+    // "@typescript-eslint/indent": [
+    //   "warn",
+    //   { "MemberExpression": 2, "VariableDeclarator": "first" }
+    // ],
     "semi": "off",
     "@typescript-eslint/semi": ["error", "always"],
     "quotes": ["warn", "single"],
@@ -32,18 +37,28 @@
     "func-names": "off",
     "no-param-reassign": "off",
     "no-return-await": "off",
+    "no-trailing-spaces": "warn",
+    "arrow-spacing": "warn",
+    "comma-spacing": "warn",
     "no-underscore-dangle": "off",
+    "no-warning-comments": [
+      "warn",
+      { "terms": ["todo", "debug", "note"], "location": "start" }
+    ],
     "class-methods-use-this": "off",
     "comma-dangle": "off",
     "@typescript-eslint/comma-dangle": ["warn", "always-multiline"],
     "@typescript-eslint/no-var-requires": "off",
     "prefer-destructuring": ["warn", { "object": true, "array": false }],
     "no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": ["error", { "ignoreRestArgs": true }],
     "@typescript-eslint/no-unused-vars": [
       "warn",
       { "argsIgnorePattern": "req|res|next|val|props|^_" }
     ],
     "@typescript-eslint/no-empty-interface": "off",
-    "prefer-template": "warn"
+    "prefer-template": "warn",
+    "object-curly-spacing": ["warn", "always"],
+    "space-infix-ops": "warn"
   }
 }

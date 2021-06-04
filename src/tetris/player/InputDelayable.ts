@@ -1,7 +1,7 @@
 import { AI_ACTION_DELAY } from '../Consts';
 import GameInput from '../GameInput';
 import { VisibleGameState } from '../GameState';
-import { Constructor, MixinArgs, Subtract } from '../utils/Mixin';
+import { Constructor, Subtract } from '../utils/Mixin';
 import { InputQueueable } from './InputQueueable';
 import { Playable } from './Player';
 
@@ -14,7 +14,7 @@ export default function InputDelayable<TBase extends Playable>(Base: Subtract<TB
   return class InputDelayable extends Base {
     #lastActionTick: number;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.#lastActionTick = 0;
     }

@@ -1,5 +1,5 @@
 import p5Types from 'p5';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import Vector from '../utils/Vector';
 import { BlockSizeConfigurable } from './BlockSizeConfigurable';
 import { p5text } from './Helper';
@@ -15,7 +15,7 @@ export default function FramerateDrawable<TBase extends Drawable & BlockSizeConf
     #offset: Vector;
     #scale: Vector;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.#offset = new Vector(0, 0);
       this.#scale = new Vector(1, 1);

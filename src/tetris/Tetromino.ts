@@ -76,19 +76,19 @@ export default class Tetromino {
   }
 
   get InternalLeft(): number {
-    return this.InternalPoints.map(x=>x.X).min();
+    return this.InternalPoints.map(x => x.X).min();
   }
 
   get InternalRight(): number {
-    return this.InternalPoints.map(x=>x.X).max();
+    return this.InternalPoints.map(x => x.X).max();
   }
 
   get InternalTop(): number {
-    return this.InternalPoints.map(x=>x.Y).max();
+    return this.InternalPoints.map(x => x.Y).max();
   }
 
   get InternalBottom(): number {
-    return this.InternalPoints.map(x=>x.Y).min();
+    return this.InternalPoints.map(x => x.Y).min();
   }
 
   get Left(): number {

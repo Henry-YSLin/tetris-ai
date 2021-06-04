@@ -1,5 +1,5 @@
 import { BLOCK_SIZE } from '../Consts';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import { Drawable } from './Renderer';
 
 export type BlockSizeConfigurable = Constructor<{
@@ -11,7 +11,7 @@ export default function BlockSizeConfigurable<TBase extends Drawable>(Base: TBas
   return class BlockSizeConfigurable extends Base {
     protected blockSize: number;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.blockSize = BLOCK_SIZE;
     }

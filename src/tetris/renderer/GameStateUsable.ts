@@ -1,5 +1,5 @@
 import GameState from '../GameState';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import { Drawable } from './Renderer';
 
 export type GameStateUsable = Constructor<{
@@ -11,7 +11,7 @@ export default function GameStateUsable<TBase extends Drawable>(Base: TBase): TB
   return class GameStateUsable extends Base {
     State: GameState | null;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.State = null;
     }

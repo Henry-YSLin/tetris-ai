@@ -1,3 +1,4 @@
+import Player from './player/Player';
 import Tetromino from './Tetromino';
 
 export enum GameInput {
@@ -22,12 +23,14 @@ export class GameInputResult {
   Input: GameInput;
   Success: boolean;
   Falling: Tetromino | null;
+  Player: Player;
 
-  constructor(tick: number, input: GameInput, success: boolean, falling: Tetromino | null) {
+  constructor(tick: number, input: GameInput, success: boolean, falling: Tetromino | null, player: Player) {
     this.Tick = tick;
     this.Input = input;
     this.Success = success;
     this.Falling = falling;
+    this.Player = player;
   }
 
   Clone(): GameInputResult {
@@ -36,6 +39,7 @@ export class GameInputResult {
       this.Input,
       this.Success,
       this.Falling,
+      this.Player,
     );
   }
 }

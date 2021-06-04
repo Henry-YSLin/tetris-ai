@@ -4,6 +4,7 @@ export enum AchievementType {
   TSpinMini,
   PerfectClear,
 }
+
 export class GameAchievement {
   LinesCleared: number[];
   Type: AchievementType;
@@ -48,6 +49,69 @@ export class GameAchievement {
     if (this.BackToBack) ret *= 1.1;
     if (this.Combo) ret *= Math.pow(1.05, this.Combo);
     return ret;
+  }
+
+  /**
+   * Lines of garbage sent by this achievement
+   */
+  get Garbage(): { Targeted: number, Universal: number } {
+    let targeted = 0;
+    let universal = 0;
+    if (this.BackToBack) targeted++;
+    switch (this.Combo) {
+      case 0:
+      case 1:
+        break;
+      case 2:
+      case 3:
+        targeted += 1;
+        break;
+      case 4:
+      case 5:
+        targeted += 2;
+        break;
+      case 6:
+      case 7:
+        targeted += 3;
+        break;
+      case 8:
+      case 9:
+      case 10:
+        targeted += 4;
+        break;
+      default:
+        targeted += 5;
+        break;
+    }
+    if (this.Type === AchievementType.PerfectClear) {
+      universal += 6;
+    }
+    else if (this.Type === AchievementType.LineClear) {
+      switch (this.LinesCleared.length) {
+        case 0:
+        case 1:
+          break;
+        case 2:
+          targeted++;
+          break;
+        case 3:
+          targeted += 2;
+          break;
+        default:
+          targeted += 4;
+          break;
+      }
+    }
+    else if (this.Type === AchievementType.TSpinMini) {
+      targeted += this.LinesCleared.length;
+    }
+    else if (this.Type === AchievementType.TSpin) {
+      targeted += this.LinesCleared.length * 2;
+
+      // special bonus for B2b T-spin triple
+      if (this.BackToBack && this.LinesCleared.length === 3) targeted++;
+    }
+    return { Targeted: targeted, Universal: universal };
   }
 
   toString(): [string, string] {

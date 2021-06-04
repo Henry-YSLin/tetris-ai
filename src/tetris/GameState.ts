@@ -296,7 +296,7 @@ export class GameState {
           type = AchievementType.TSpin;
       }
     }
-    for (let i = this.GridHeight - 1; i >=0; i--) {
+    for (let i = this.GridHeight - 1; i >= 0; i--) {
       if (!this.Grid[i].some(t => t === TetrominoType.None)) {
         this.Grid.splice(i, 1);
         this.Grid.push(new Array(this.GridWidth).fill(TetrominoType.None));
@@ -334,7 +334,9 @@ export class GameState {
    */
   LockPiece(): boolean {
     if (this.Falling === null) return false;
-    if (!this.IsPieceValid()) return false;
+    while (!this.IsPieceValid()) {
+      this.Falling.Position.Y++;
+    }
     this.Falling.Points.forEach(p => this.Grid[p.Y][p.X] = this.Falling?.Type ?? TetrominoType.None);
     this.ClearLines(this.Falling);
     if (this.Falling.Points.map(p => p.Y).min() >= this.PlayfieldHeight) {

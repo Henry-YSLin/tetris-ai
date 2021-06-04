@@ -1,24 +1,25 @@
 import p5Types from 'p5';
 import { GameInputResult } from '../GameInput';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import { GameUsable } from './GameUsable';
 import { InputSFX, GetSFX } from './Helper';
 import { Drawable } from './Renderer';
 import { Howl } from 'howler';
 import { DAS_INTERVAL } from '../Consts';
+import { PlayerUsable } from './PlayerUsable';
 
 export type PlayerSfxPlayable = Constructor<{
   p5Setup(p5: p5Types, canvasParentRef: Element): void,
   ConfigurePlayerSfxPlayable(volume: number): void,
 }>;
 
-export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable>(Base: TBase): TBase & PlayerSfxPlayable {
+export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable & PlayerUsable>(Base: TBase): TBase & PlayerSfxPlayable {
   return class PlayerSfxPlayable extends Base {
     #lastInput: GameInputResult | null;
     #sounds: Map<InputSFX, Howl>;
     #volume: number;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.#sounds = new Map<InputSFX, Howl>();
       this.#lastInput = null;
@@ -31,7 +32,12 @@ export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable>(B
         console.error('ConfigurePlayerSfxPlayable called before this.Game is assigned. Beware of the call order of Configure_ functions.');
         return;
       }
+      if (this.Player === null) {
+        console.error('ConfigurePlayerSfxPlayable called before this.Player is assigned. Beware of the call order of Configure_ functions.');
+        return;
+      }
       this.Game.Input.on((result) => {
+        if (result.Player !== this.Player) return;
         const last = this.#lastInput;
         this.#lastInput = result ?? null;
         if (last) {

@@ -4,7 +4,7 @@ declare global {
     max(this: Array<T>): T;
     maxBy(this: Array<T>, iterator: <TReturn>(item: T) => TReturn): T;
     min(this: Array<T>): T;
-    minBy(this: Array<T>, iterator: <TReturn>(item: T) => TReturn): T;
+    minBy<TReturn>(this: Array<T>, iterator: (item: T) => TReturn): T;
   }
 }
 

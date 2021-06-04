@@ -1,5 +1,5 @@
 import p5Types from 'p5';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import Renderer, { Drawable } from './Renderer';
 import { GameStateUsable } from './GameStateUsable';
 import Animation from '../utils/Animation';
@@ -7,6 +7,7 @@ import { GameUsable } from './GameUsable';
 import GameInput from '../GameInput';
 import { ANIMATION_DURATION } from '../Consts';
 import { TetrominoType } from '../Tetrominos';
+import { PlayerUsable } from './PlayerUsable';
 
 type HardDropAnimationData = {
   left: number;
@@ -33,12 +34,12 @@ export function IsPlayfieldAnimatable(maybe: Renderer) : maybe is Renderer & Pla
 
 export type PlayfieldAnimatable = Constructor<PlayfieldAnimatableContent>;
 
-export default function PlayfieldAnimatable<TBase extends Drawable & GameStateUsable & GameUsable>(Base: TBase): TBase & PlayfieldAnimatable {
+export default function PlayfieldAnimatable<TBase extends Drawable & GameStateUsable & GameUsable & PlayerUsable>(Base: TBase): TBase & PlayfieldAnimatable {
   return class PlayfieldAnimatable extends Base {
     HardDropAnimations: Animation<HardDropAnimationData>[];
     LineClearAnimations: Animation<LineClearAnimationData>[];
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.HardDropAnimations = [];
       this.LineClearAnimations = [];
@@ -53,17 +54,20 @@ export default function PlayfieldAnimatable<TBase extends Drawable & GameStateUs
         console.error('ConfigurePlayfieldAnimatable called before this.Game is assigned. Beware of the call order of Configure_ functions.');
         return;
       }
+      if (this.Player === null) {
+        console.error('ConfigurePlayfieldAnimatable called before this.Player is assigned. Beware of the call order of Configure_ functions.');
+        return;
+      }
       this.Game.Input.on((result) => {
-        if (result.Input === GameInput.HardDrop && result.Success) {
-          if (result.Falling) {
-            this.HardDropAnimations.push(new Animation(1, 0, ANIMATION_DURATION, {
-              left: result.Falling.Left,
-              right: result.Falling.Right,
-              end: result.Falling.Top,
-              type: result.Falling.Type,
-            }, 0, Animation.EaseOutQuint));
-          }
-        }
+        if (result.Player !== this.Player) return;
+        if (result.Input !== GameInput.HardDrop || !result.Success) return;
+        if (!result.Falling) return;
+        this.HardDropAnimations.push(new Animation(1, 0, ANIMATION_DURATION, {
+          left: result.Falling.Left,
+          right: result.Falling.Right,
+          end: result.Falling.Top,
+          type: result.Falling.Type,
+        }, 0, Animation.EaseOutQuint));
       });
       this.State.Achievement.on((achievement) => {
         let offset = 0;

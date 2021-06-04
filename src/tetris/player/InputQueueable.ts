@@ -1,6 +1,6 @@
 import GameInput from '../GameInput';
 import { VisibleGameState } from '../GameState';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import { Playable } from './Player';
 
 export type InputQueueable = Constructor<{
@@ -13,7 +13,7 @@ export default function InputQueueable<TBase extends Playable>(Base: TBase): TBa
   return class InputQueueable extends Base {
     #queue: GameInput[];
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.#queue = [];
     }

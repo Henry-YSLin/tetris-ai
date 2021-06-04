@@ -1,5 +1,5 @@
 import p5Types from 'p5';
-import { Constructor, MixinArgs } from '../utils/Mixin';
+import { Constructor } from '../utils/Mixin';
 import { GetSFX, GameEventSFX } from './Helper';
 import { Drawable } from './Renderer';
 import { Howl } from 'howler';
@@ -15,7 +15,7 @@ export default function GameEventSfxPlayable<TBase extends Drawable & GameStateU
     #sounds: Map<GameEventSFX, Howl>;
     #volume: number;
 
-    constructor(...args: MixinArgs) {
+    constructor(...args: any[]) {
       super(...args);
       this.#sounds = new Map<GameEventSFX, Howl>();
       this.#volume = 0.5;

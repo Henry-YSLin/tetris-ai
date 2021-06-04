@@ -56,7 +56,7 @@ export default class PieceGenerator {
       TetrominoType.Z,
     ];
     while (choices.length > 0) {
-      const r = this.#RNG() % choices.length;
+      const r = Math.floor(this.#RNG() * choices.length) % choices.length;
       this.#cache.push(choices.splice(r, 1)[0]);
     }
   }
