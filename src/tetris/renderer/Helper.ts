@@ -27,6 +27,8 @@ export function TetrominoColor(p5: p5Types, tetromino: TetrominoType): p5Types.C
       return p5.color(224,64,251);
     case TetrominoType.Z:
       return p5.color(229,115,115);
+    case TetrominoType.Garbage:
+      return p5.color(150);
   }
 }
 
@@ -68,7 +70,7 @@ export enum InputSFX {
   Hold = 'assets/sfx/sfx_hold.wav',
 }
 
-export enum AchievementSFX {
+export enum GameEventSFX {
   Single = 'assets/sfx/sfx_single.wav',
   Double = 'assets/sfx/sfx_double.wav',
   Triple = 'assets/sfx/sfx_triple.wav',
@@ -104,9 +106,11 @@ export enum AchievementSFX {
   Combo18 = 'assets/sfx/sfx_combo18.wav',
   Combo19 = 'assets/sfx/sfx_combo19.wav',
   Combo20 = 'assets/sfx/sfx_combo20.wav',
+
+  GameOver = 'assets/sfx/sfx_gameover.wav',
 }
 
-export enum AchievementVoice {
+export enum GameEventVoice {
   Single = 'assets/voice/voice_single.wav',
   Double = 'assets/voice/voice_double.wav',
   Triple = 'assets/voice/voice_triple.wav',
@@ -129,19 +133,19 @@ export enum AchievementVoice {
   Combo5 = 'assets/voice/voice_combo05.wav',
 }
 
-export function isAchievementSFX(maybeAchievementSFX: string): maybeAchievementSFX is keyof typeof AchievementSFX {
-  return Object.keys(AchievementSFX).find(x => x === maybeAchievementSFX) !== undefined;
+export function isGameEventSFX(maybe: string): maybe is keyof typeof GameEventSFX {
+  return Object.keys(GameEventSFX).find(x => x === maybe) !== undefined;
 }
 
-export function isAchievementVoice(maybeAchievementVoice: string): maybeAchievementVoice is keyof typeof AchievementVoice {
-  return Object.keys(AchievementVoice).find(x => x === maybeAchievementVoice) !== undefined;
+export function isGameEventVoice(maybe: string): maybe is keyof typeof GameEventVoice {
+  return Object.keys(GameEventVoice).find(x => x === maybe) !== undefined;
 }
 
 export function GetSFX(result: GameInputResult): InputSFX | null;
 
-export function GetSFX(result: GameAchievement): AchievementSFX[] | null;
+export function GetSFX(result: GameAchievement): GameEventSFX[] | null;
 
-export function GetSFX(result: GameInputResult | GameAchievement) : InputSFX | AchievementSFX[] | null {
+export function GetSFX(result: GameInputResult | GameAchievement) : InputSFX | GameEventSFX[] | null {
   if (result instanceof GameInputResult) {
     switch (result.Input) {
       case GameInput.None:
@@ -161,41 +165,41 @@ export function GetSFX(result: GameInputResult | GameAchievement) : InputSFX | A
     }
   }
   if (result instanceof GameAchievement) {
-    const ret: AchievementSFX[] = [];
+    const ret: GameEventSFX[] = [];
     if (result.Combo > 0) {
       const comboSfx = `Combo${Math.min(20, result.Combo)}`;
-      if (isAchievementSFX(comboSfx))
-        ret.push(AchievementSFX[comboSfx]);
+      if (isGameEventSFX(comboSfx))
+        ret.push(GameEventSFX[comboSfx]);
     }
     if (result.Type === AchievementType.PerfectClear) {
-      ret.push(AchievementSFX.PerfectClear);
+      ret.push(GameEventSFX.PerfectClear);
       return ret;
     }
-    let achievementSfx = '';
+    let gameEventSfx = '';
     if (result.BackToBack)
-      achievementSfx += 'B2b';
+      gameEventSfx += 'B2b';
     if (result.Type === AchievementType.TSpinMini) {
-      achievementSfx += 'TSpinMini';
+      gameEventSfx += 'TSpinMini';
     }
     else {
       if (result.Type === AchievementType.TSpin)
-        achievementSfx += 'TSpin';
+        gameEventSfx += 'TSpin';
       if (result.LinesCleared.length === 1)
-        achievementSfx += 'Single';
+        gameEventSfx += 'Single';
       else if (result.LinesCleared.length === 2)
-        achievementSfx += 'Double';
+        gameEventSfx += 'Double';
       else if (result.LinesCleared.length === 3)
-        achievementSfx += 'Triple';
+        gameEventSfx += 'Triple';
       else if (result.LinesCleared.length === 4)
-        achievementSfx += 'Tetris';
+        gameEventSfx += 'Tetris';
     }
-    if (isAchievementSFX(achievementSfx))
-      ret.push(AchievementSFX[achievementSfx]);
-    else if (achievementSfx.startsWith('B2b')) {
+    if (isGameEventSFX(gameEventSfx))
+      ret.push(GameEventSFX[gameEventSfx]);
+    else if (gameEventSfx.startsWith('B2b')) {
       // Attempt to get the normal version if there is no back-to-back version
-      achievementSfx = achievementSfx.substr(3);
-      if (isAchievementSFX(achievementSfx)) {
-        ret.push(AchievementSFX[achievementSfx]);
+      gameEventSfx = gameEventSfx.substr(3);
+      if (isGameEventSFX(gameEventSfx)) {
+        ret.push(GameEventSFX[gameEventSfx]);
       }
     }
     return ret;
@@ -203,41 +207,41 @@ export function GetSFX(result: GameInputResult | GameAchievement) : InputSFX | A
   return null;
 }
 
-export function GetVoice(result: GameAchievement): AchievementVoice | null {
+export function GetVoice(result: GameAchievement): GameEventVoice | null {
   if (result.Type === AchievementType.PerfectClear) {
-    return AchievementVoice.PerfectClear;
+    return GameEventVoice.PerfectClear;
   }
-  let achievementVoice = '';
+  let gameEventVoice = '';
   if (result.BackToBack)
-    achievementVoice += 'B2b';
+    gameEventVoice += 'B2b';
   if (result.Type === AchievementType.TSpinMini) {
-    achievementVoice += 'TSpinMini';
+    gameEventVoice += 'TSpinMini';
   }
   else {
     if (result.Type === AchievementType.TSpin)
-      achievementVoice += 'TSpin';
+      gameEventVoice += 'TSpin';
     if (result.LinesCleared.length === 1)
-      achievementVoice += 'Single';
+      gameEventVoice += 'Single';
     else if (result.LinesCleared.length === 2)
-      achievementVoice += 'Double';
+      gameEventVoice += 'Double';
     else if (result.LinesCleared.length === 3)
-      achievementVoice += 'Triple';
+      gameEventVoice += 'Triple';
     else if (result.LinesCleared.length === 4)
-      achievementVoice += 'Tetris';
+      gameEventVoice += 'Tetris';
   }
-  if (isAchievementVoice(achievementVoice) && achievementVoice !== 'Single')
-    return AchievementVoice[achievementVoice];
-  else if (achievementVoice.startsWith('B2b')) {
+  if (isGameEventVoice(gameEventVoice) && gameEventVoice !== 'Single')
+    return GameEventVoice[gameEventVoice];
+  else if (gameEventVoice.startsWith('B2b')) {
     // Attempt to get the normal version if there is no back-to-back version
-    achievementVoice = achievementVoice.substr(3);
-    if (isAchievementVoice(achievementVoice)) {
-      return AchievementVoice[achievementVoice];
+    gameEventVoice = gameEventVoice.substr(3);
+    if (isGameEventVoice(gameEventVoice)) {
+      return GameEventVoice[gameEventVoice];
     }
   }
   if (result.Combo > 0) {
     const comboVoice = `Combo${Math.min(5, result.Combo)}`;
-    if (isAchievementVoice(comboVoice))
-      return AchievementVoice[comboVoice];
+    if (isGameEventVoice(comboVoice))
+      return GameEventVoice[comboVoice];
   }
   return null;
 }

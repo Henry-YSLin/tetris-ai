@@ -3,7 +3,7 @@ import GameInput, { GameInputResult } from '../GameInput';
 import GameState from '../GameState';
 import Game from './Game';
 import Player from '../player/Player';
-import { RotationDirection } from '../Tetrominos';
+import { RotationDirection, TetrominoType } from '../Tetrominos';
 import TypedEvent from '../utils/TypedEvent';
 
 export default class SingleplayerGame extends Game {
@@ -46,6 +46,7 @@ export default class SingleplayerGame extends Game {
   }
 
   Tick(): void {
+    if (this.State.IsDead) return;
     this.State.Tick();
     const input = this.Player.Tick(this.State.GetVisibleState());
     const falling = this.State.Falling;
@@ -77,6 +78,12 @@ export default class SingleplayerGame extends Game {
     }
     if (input !== GameInput.None) {
       this.#input.emit(new GameInputResult(this.State.TicksElapsed, input, success, falling));
+    }
+    if (this.State.TicksElapsed % 500 === 0) {
+      const garbageLine = new Array(this.State.GridWidth).fill(TetrominoType.Garbage);
+      garbageLine[Math.floor(Math.random() * this.State.GridWidth)] = TetrominoType.None;
+      this.State.Grid.unshift(garbageLine);
+      this.State.Grid.pop();
     }
   }
 }

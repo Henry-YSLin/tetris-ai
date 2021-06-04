@@ -19,6 +19,7 @@ export class VisibleGameState {
   PieceIndex: number;
   Combo: number;
   LastAchievement: GameAchievement | null;
+  IsDead: boolean;
 
   constructor(
     pieceQueue: TetrominoType[] = [],
@@ -30,6 +31,7 @@ export class VisibleGameState {
     blockHold = false,
     combo = 0,
     lastAchievement: GameAchievement | null = null,
+    isDead = false,
   ) {
     this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
     if (grid)
@@ -42,6 +44,7 @@ export class VisibleGameState {
     this.PieceIndex = pieceIndex;
     this.Combo = combo;
     this.LastAchievement = lastAchievement;
+    this.IsDead = isDead;
   }
 }
 
@@ -70,8 +73,10 @@ export class GameState {
    * Used for detecting back-to-back achievements
    */
   LastAchievement: GameAchievement | null;
+  IsDead: boolean;
 
   #achievement: TypedEvent<GameAchievement>;
+  #dead: TypedEvent<void>;
 
   /**
    * Create a GameState from visible information, allowing gameplay simulations
@@ -98,6 +103,7 @@ export class GameState {
     blockHold?: boolean,
     combo?: number,
     lastAchievement?: GameAchievement | null,
+    isDead?: boolean,
   );
 
   constructor(
@@ -109,6 +115,7 @@ export class GameState {
     blockHold = false,
     combo = 0,
     lastAchievement: GameAchievement | null = null,
+    isDead = false,
   ) {
     if (pieceSeedOrState instanceof VisibleGameState) {
       const state = pieceSeedOrState;
@@ -121,6 +128,7 @@ export class GameState {
       this.PieceIndex = state.PieceIndex;
       this.Combo = state.Combo;
       this.LastAchievement = state.LastAchievement;
+      this.IsDead = state.IsDead;
     }
     else {
       this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
@@ -132,8 +140,10 @@ export class GameState {
       this.PieceIndex = pieceIndex;
       this.Combo = combo;
       this.LastAchievement = lastAchievement;
+      this.IsDead = isDead;
     }
     this.#achievement = new TypedEvent();
+    this.#dead = new TypedEvent();
   }
 
   /**
@@ -150,11 +160,17 @@ export class GameState {
       this.TicksElapsed,
       this.BlockHold,
       this.Combo,
+      this.LastAchievement?.Clone(),
+      this.IsDead,
     );
   }
 
   get Achievement(): TypedEvent<GameAchievement> {
     return this.#achievement;
+  }
+
+  get Dead(): TypedEvent<void> {
+    return this.#dead;
   }
 
   get GridWidth(): number {
@@ -217,6 +233,11 @@ export class GameState {
     if (this.Falling !== null) return false;
     this.Falling = Tetromino.Spawn(this.#pieces.Get(this.PieceIndex++), this.TicksElapsed);
     this.BlockHold = false;
+    if (!this.IsPieceValid()) {
+      this.IsDead = true;
+      this.#dead.emit();
+      return false;
+    }
     return true;
   }
 
@@ -287,6 +308,9 @@ export class GameState {
       if (type === null)
         return;
     }
+    else if (linesCleared.length > 1 && type === AchievementType.TSpinMini) {
+      type = AchievementType.TSpin;
+    }
     const achievement = new GameAchievement(
       linesCleared,
       type ?? AchievementType.LineClear,
@@ -313,6 +337,10 @@ export class GameState {
     if (!this.IsPieceValid()) return false;
     this.Falling.Points.forEach(p => this.Grid[p.Y][p.X] = this.Falling?.Type ?? TetrominoType.None);
     this.ClearLines(this.Falling);
+    if (this.Falling.Points.map(p => p.Y).min() >= this.PlayfieldHeight) {
+      this.IsDead = true;
+      this.#dead.emit();
+    }
     this.Falling = null;
     return true;
   }
@@ -406,6 +434,7 @@ export class GameState {
   }
 
   Tick(): void {
+    if (this.IsDead) return;
     if (this.Falling === null) {
       this.DequeuePiece();
     }

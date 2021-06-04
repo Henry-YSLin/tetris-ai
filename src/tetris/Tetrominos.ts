@@ -9,6 +9,7 @@ export enum TetrominoType {
   S,
   T,
   Z,
+  Garbage,
 }
 
 export enum Rotation {
@@ -153,6 +154,12 @@ export const Tetrominos : Record<TetrominoType, TetrominoInfo> = Object.freeze({
       [new Vector(1, 2), new Vector(0, 1), new Vector(1, 1), new Vector(0, 0)],
     ],
     WallKick: WallKick3x3,
+  },
+  [TetrominoType.Garbage]: {
+    Rotations: [
+      [new Vector(0, 0)],
+    ],
+    WallKick: WallKickDisable,
   },
 } as const);
 export default Tetrominos;

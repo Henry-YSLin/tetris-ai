@@ -53,7 +53,7 @@ export class GameAchievement {
   toString(): [string, string] {
     let subtitle = '';
     let title = '';
-    if (this.Combo > 0) subtitle += `${this.Combo} Combo `;
+    if (this.Combo > 0) subtitle += `${this.Combo} REN `;
     if (this.BackToBack) subtitle += 'Back-to-back ';
     switch (this.Type) {
       case AchievementType.PerfectClear:

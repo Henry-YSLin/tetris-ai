@@ -113,6 +113,9 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
         });
       }
 
+      if (state.IsDead)
+        pg.filter(pg.GRAY);
+
       p5.image(pg, 0, 0);
     }
   };
