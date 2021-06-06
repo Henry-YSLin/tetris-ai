@@ -1,6 +1,7 @@
 import GameInput from '../GameInput';
 import { VisibleGameState } from '../GameState';
 import { Constructor } from '../utils/Mixin';
+import { IsInputDelayable } from './InputDelayable';
 import { Playable } from './Player';
 
 export type InputQueueable = Constructor<{
@@ -19,7 +20,7 @@ export default function InputQueueable<TBase extends Playable>(Base: TBase): TBa
     }
 
     Tick(gameState: VisibleGameState): GameInput {
-      if ('Update' in Base)
+      if (IsInputDelayable(this))
         return super.Tick(gameState);
       else
         return this.#queue.shift() ?? GameInput.None;

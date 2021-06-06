@@ -1,6 +1,6 @@
 import { TetrominoType } from './Tetrominos';
 import './utils/Array';
-import { GARBAGE_DELAY } from './Consts';
+import { GARBAGE_DELAY, GRID_HEIGHT, GRID_WIDTH, PLAYFIELD_HEIGHT } from './Consts';
 import Tetromino  from './Tetromino';
 import GameAchievement from './GameAchievement';
 import GameState, { VisibleGameState } from './GameState';
@@ -37,6 +37,9 @@ export class VisibleMultiGameState extends VisibleGameState {
     pieceQueue: TetrominoType[] = [],
     pieceIndex = 0,
     grid: TetrominoType[][] | undefined = undefined,
+    gridWidth: number = GRID_WIDTH,
+    gridHeight: number = GRID_HEIGHT,
+    playfieldHeight: number = PLAYFIELD_HEIGHT,
     falling: Tetromino | null = null,
     hold: TetrominoType = TetrominoType.None,
     elapsed = 0,
@@ -50,6 +53,9 @@ export class VisibleMultiGameState extends VisibleGameState {
       pieceQueue,
       pieceIndex,
       grid,
+      gridWidth,
+      gridHeight,
+      playfieldHeight,
       falling,
       hold,
       elapsed,
@@ -140,6 +146,9 @@ export class MultiGameState extends GameState {
       this.PieceQueue,
       this.PieceIndex,
       this.Grid,
+      this.GridWidth,
+      this.GridHeight,
+      this.PlayfieldHeight,
       this.Falling,
       this.Hold,
       this.TicksElapsed,

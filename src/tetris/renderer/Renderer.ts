@@ -36,14 +36,16 @@ export default class Renderer {
     translateX: number,
     translateY: number,
   ): void {
-    p5.resetMatrix();
-		p5.scale(1, -1);
-		p5.translate(translateX, -this.height + translateY);
+    this.ResetTransform(p5);
+		p5.translate(translateX, translateY);
     p5.scale(scaleX, scaleY);
   }
 
   ResetTransform(p5: p5Types): void {
-    this.SetTransform(p5, 1, 1, 0, 0);
+    p5.resetMatrix();
+		p5.scale(1, -1);
+		p5.translate(0, -this.height);
+    p5.scale(1, 1);
   }
 
   p5Setup(p5: p5Types, canvasParentRef: Element): void {

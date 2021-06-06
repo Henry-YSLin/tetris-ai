@@ -11,6 +11,9 @@ import GameAchievement, { AchievementType, BackToBackEligible } from './GameAchi
 
 export class VisibleGameState {
   Grid: TetrominoType[][];
+  GridWidth: number;
+  GridHeight: number;
+  PlayfieldHeight: number;
   Falling: Tetromino | null;
   Hold: TetrominoType;
   BlockHold: boolean;
@@ -25,6 +28,9 @@ export class VisibleGameState {
     pieceQueue: TetrominoType[] = [],
     pieceIndex = 0,
     grid: TetrominoType[][] | undefined = undefined,
+    gridWidth: number = GRID_WIDTH,
+    gridHeight: number = GRID_HEIGHT,
+    playfieldHeight: number = PLAYFIELD_HEIGHT,
     falling: Tetromino | null = null,
     hold: TetrominoType = TetrominoType.None,
     elapsed = 0,
@@ -36,6 +42,9 @@ export class VisibleGameState {
     this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
     if (grid)
       grid.forEach((arr, i) => arr.forEach((p, j) => this.Grid[i][j] = p));
+    this.GridWidth = gridWidth;
+    this.GridHeight = gridHeight;
+    this.PlayfieldHeight = playfieldHeight;
     this.Falling = falling ? falling.Clone() : null;
     this.Hold = hold;
     this.BlockHold = blockHold;
@@ -155,6 +164,9 @@ export class GameState {
       this.PieceQueue,
       this.PieceIndex,
       this.Grid,
+      this.GridWidth,
+      this.GridHeight,
+      this.PlayfieldHeight,
       this.Falling,
       this.Hold,
       this.TicksElapsed,
