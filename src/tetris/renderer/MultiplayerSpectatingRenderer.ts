@@ -46,7 +46,7 @@ extends
     this.ConfigureGame(game);
     this.ConfigureBlockSize(BLOCK_SIZE);
     this.ConfigurePlayfieldAnimatable();
-    this.ConfigurePlayerSfxPlayable(SOUND_VOLUME / 20);
+    this.ConfigurePlayerSfxPlayable(0);
     this.ConfigureGameEventSfxPlayable(SOUND_VOLUME / 20);
     this.ConfigureGameEventVoicePlayable(SOUND_VOLUME / 20);
     this.ConfigureGameEventTextDrawable(new Vector(this.BlockSize * 11, this.BlockSize * ((this.State?.PlayfieldHeight ?? PLAYFIELD_HEIGHT) + 1)), new Vector(1, 1));

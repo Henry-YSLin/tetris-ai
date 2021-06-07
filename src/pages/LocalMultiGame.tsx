@@ -18,7 +18,7 @@ const LocalMultiGame: React.FC = (props: Props) => {
 	useEffect(() => {
 		const _player1: Player = new HumanPlayer();
 		const _AIPlayers: Player[] = [];
-		for (let i = 0; i < 1; i++) _AIPlayers.push(new DecentAI());
+		for (let i = 0; i < 3; i++) _AIPlayers.push(new DecentAI());
  		const _game: LocalMutiplayerGame = new LocalMutiplayerGame([{ player:_player1 }, ..._AIPlayers.map(p => ({ player: p }))]);
 		const _renderer1: MultiplayerMainRenderer = new MultiplayerMainRenderer(_game, _game.Participants[0]);
 		const _AIRenderers: MultiplayerSpectatingRenderer[] = [];
