@@ -46,9 +46,9 @@ extends
     this.ConfigureGame(game);
     this.ConfigureBlockSize(BLOCK_SIZE);
     this.ConfigurePlayfieldAnimatable();
-    this.ConfigurePlayerSfxPlayable(SOUND_VOLUME / 2);
-    this.ConfigureGameEventSfxPlayable(SOUND_VOLUME / 2);
-    this.ConfigureGameEventVoicePlayable(SOUND_VOLUME / 2);
+    this.ConfigurePlayerSfxPlayable(SOUND_VOLUME / 20);
+    this.ConfigureGameEventSfxPlayable(SOUND_VOLUME / 20);
+    this.ConfigureGameEventVoicePlayable(SOUND_VOLUME / 20);
     this.ConfigureGameEventTextDrawable(new Vector(this.BlockSize * 11, this.BlockSize * ((this.State?.PlayfieldHeight ?? PLAYFIELD_HEIGHT) + 1)), new Vector(1, 1));
     this.ConfigurePlayfieldDrawable(new Vector(this.BlockSize * 6, 0), new Vector(1, 1));
     this.ConfigureHoldPieceDrawable(new Vector(10, 200), new Vector(1, 1));

@@ -14,9 +14,9 @@ if (!Array.prototype.max) {
     writable: false,
     configurable: false,
     value: function<T>(this: Array<T>): T {
-      let len = this.length, max = this[0];
+      let len = this.length, max = this[this.length - 1];
       while (len--) {
-        if (this[len] > max) {
+        if (this[len] >= max) {
           max = this[len];
         }
       }
@@ -32,12 +32,12 @@ if (!Array.prototype.maxBy) {
     configurable: false,
     value: function<T, TKey>(this: Array<T>, iterator: <TKey>(item: T) => TKey): T {
       let len = this.length;
-      let max: TKey = iterator(this[0]);
-      let maxItem: T = this[0];
+      let max: TKey = iterator(this[this.length - 1]);
+      let maxItem: T = this[this.length - 1];
 
       while (len--) {
         const tmp: TKey = iterator(this[len]);
-        if (tmp > max) {
+        if (tmp >= max) {
           max = tmp;
           maxItem = this[len];
         }
@@ -53,9 +53,9 @@ if (!Array.prototype.min) {
     writable: false,
     configurable: false,
     value: function<T>(this: Array<T>): T {
-      let len = this.length, min = this[0];
+      let len = this.length, min = this[this.length - 1];
       while (len--) {
-        if (this[len] < min) {
+        if (this[len] <= min) {
           min = this[len];
         }
       }
@@ -71,12 +71,12 @@ if (!Array.prototype.minBy) {
     configurable: false,
     value: function<T, TKey>(this: Array<T>, iterator: <TKey>(item: T) => TKey): T {
       let len = this.length;
-      let min: TKey = iterator(this[0]);
-      let minItem: T = this[0];
+      let min: TKey = iterator(this[this.length - 1]);
+      let minItem: T = this[this.length - 1];
 
       while (len--) {
         const tmp: TKey = iterator(this[len]);
-        if (tmp < min) {
+        if (tmp <= min) {
           min = tmp;
           minItem = this[len];
         }

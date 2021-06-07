@@ -36,7 +36,7 @@ export const QUEUE_LENGTH = 6;
 /**
  * The least number of ticks to wait between AI actions
  */
-export const AI_ACTION_DELAY = 20;
+export const AI_ACTION_DELAY = 5;
 
 /**
  * Size of a block in pixels

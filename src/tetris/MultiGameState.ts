@@ -3,7 +3,7 @@ import './utils/Array';
 import { GARBAGE_DELAY, GRID_HEIGHT, GRID_WIDTH, PLAYFIELD_HEIGHT } from './Consts';
 import Tetromino  from './Tetromino';
 import GameAchievement from './GameAchievement';
-import GameState, { VisibleGameState } from './GameState';
+import GameState, { HoldInfo, VisibleGameState } from './GameState';
 import GarbageGenerator from './GarbageGenerator';
 
 export class GarbageEntry {
@@ -41,7 +41,7 @@ export class VisibleMultiGameState extends VisibleGameState {
     gridHeight: number = GRID_HEIGHT,
     playfieldHeight: number = PLAYFIELD_HEIGHT,
     falling: Tetromino | null = null,
-    hold: TetrominoType = TetrominoType.None,
+    hold: HoldInfo | null = null,
     elapsed = 0,
     blockHold = false,
     combo = 0,
@@ -92,7 +92,7 @@ export class MultiGameState extends GameState {
     pieceSeed?: number,
     pieceIndex?: number,
     falling?: Tetromino,
-    hold?: TetrominoType,
+    hold?: HoldInfo | null,
     elapsed?: number,
     blockHold?: boolean,
     combo?: number,
@@ -106,7 +106,7 @@ export class MultiGameState extends GameState {
     pieceSeedOrState: VisibleMultiGameState | number | undefined = undefined,
     pieceIndex = 0,
     falling: Tetromino | null = null,
-    hold: TetrominoType = TetrominoType.None,
+    hold: HoldInfo | null = null,
     elapsed = 0,
     blockHold = false,
     combo = 0,

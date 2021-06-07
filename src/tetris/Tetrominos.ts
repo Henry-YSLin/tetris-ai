@@ -32,56 +32,56 @@ type WallKickInfo = Readonly<[
 ]>;
 const WallKick3x3: WallKickInfo = Object.freeze([
   {
-    [-1]: [new Vector(0,0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
-    [1]: [new Vector(0,0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
+    [-1]: [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
+    [1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
   },
   {
-    [-1]: [new Vector(0,0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
-    [1]: [new Vector(0,0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
+    [-1]: [new Vector(0, 0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
+    [1]: [new Vector(0, 0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
   },
   {
-    [-1]: [new Vector(0,0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
-    [1]: [new Vector(0,0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
+    [-1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
+    [1]: [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
   },
   {
-    [-1]: [new Vector(0,0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
-    [1]: [new Vector(0,0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
+    [-1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
+    [1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
   },
 ] as const);
 const WallKick4x4: WallKickInfo = Object.freeze([
   {
-    [-1]: [new Vector(0,0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
-    [1]: [new Vector(0,0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
+    [-1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
+    [1]: [new Vector(0, 0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
   },
   {
-    [-1]: [new Vector(0,0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
-    [1]: [new Vector(0,0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
+    [-1]: [new Vector(0, 0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
+    [1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
   },
   {
-    [-1]: [new Vector(0,0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
-    [1]: [new Vector(0,0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
+    [-1]: [new Vector(0, 0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
+    [1]: [new Vector(0, 0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
   },
   {
-    [-1]: [new Vector(0,0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
-    [1]: [new Vector(0,0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
+    [-1]: [new Vector(0, 0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
+    [1]: [new Vector(0, 0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
   },
 ] as const);
 const WallKickDisable: WallKickInfo = Object.freeze([
   {
-    [-1]: [new Vector(0,0)],
-    [1]: [new Vector(0,0)],
+    [-1]: [new Vector(0, 0)],
+    [1]: [new Vector(0, 0)],
   },
   {
-    [-1]: [new Vector(0,0)],
-    [1]: [new Vector(0,0)],
+    [-1]: [new Vector(0, 0)],
+    [1]: [new Vector(0, 0)],
   },
   {
-    [-1]: [new Vector(0,0)],
-    [1]: [new Vector(0,0)],
+    [-1]: [new Vector(0, 0)],
+    [1]: [new Vector(0, 0)],
   },
   {
-    [-1]: [new Vector(0,0)],
-    [1]: [new Vector(0,0)],
+    [-1]: [new Vector(0, 0)],
+    [1]: [new Vector(0, 0)],
   },
 ] as const);
 

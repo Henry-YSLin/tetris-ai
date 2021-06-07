@@ -14,19 +14,19 @@ export function TetrominoColor(p5: p5Types, tetromino: TetrominoType): p5Types.C
     case TetrominoType.None:
       return p5.color(50);
     case TetrominoType.I:
-      return p5.color(77,208,225);
+      return p5.color(77, 208, 225);
     case TetrominoType.J:
-      return p5.color(33,150,243);
+      return p5.color(33, 150, 243);
     case TetrominoType.L:
-      return p5.color(255,152,0);
+      return p5.color(255, 152, 0);
     case TetrominoType.O:
-      return p5.color(253,216,53);
+      return p5.color(253, 216, 53);
     case TetrominoType.S:
-      return p5.color(76,175,80);
+      return p5.color(76, 175, 80);
     case TetrominoType.T:
-      return p5.color(224,64,251);
+      return p5.color(224, 64, 251);
     case TetrominoType.Z:
-      return p5.color(229,115,115);
+      return p5.color(229, 115, 115);
     case TetrominoType.Garbage:
       return p5.color(150);
   }

@@ -15,7 +15,7 @@ export class VisibleGameState {
   GridHeight: number;
   PlayfieldHeight: number;
   Falling: Tetromino | null;
-  Hold: TetrominoType;
+  Hold: HoldInfo | null;
   BlockHold: boolean;
   TicksElapsed: number;
   PieceQueue: TetrominoType[];
@@ -32,7 +32,7 @@ export class VisibleGameState {
     gridHeight: number = GRID_HEIGHT,
     playfieldHeight: number = PLAYFIELD_HEIGHT,
     falling: Tetromino | null = null,
-    hold: TetrominoType = TetrominoType.None,
+    hold: HoldInfo | null,
     elapsed = 0,
     blockHold = false,
     combo = 0,
@@ -46,7 +46,7 @@ export class VisibleGameState {
     this.GridHeight = gridHeight;
     this.PlayfieldHeight = playfieldHeight;
     this.Falling = falling ? falling.Clone() : null;
-    this.Hold = hold;
+    this.Hold = hold ? hold.Clone() : null;
     this.BlockHold = blockHold;
     this.TicksElapsed = elapsed;
     this.PieceQueue = pieceQueue;
@@ -57,10 +57,27 @@ export class VisibleGameState {
   }
 }
 
+export class HoldInfo {
+  Type: TetrominoType;
+  PieceIndex: number;
+
+  constructor(type: TetrominoType, pieceIndex: number) {
+    this.Type = type;
+    this.PieceIndex = pieceIndex;
+  }
+
+  Clone(): HoldInfo {
+    return new HoldInfo(
+      this.Type,
+      this.PieceIndex,
+    );
+  }
+}
+
 export class GameState {
   Grid: TetrominoType[][];
   Falling: Tetromino | null;
-  Hold: TetrominoType;
+  Hold: HoldInfo | null;
   /**
    * Whether to disallow hold, reset when a new tetromino is dequeued
    */
@@ -107,7 +124,7 @@ export class GameState {
     pieceSeed?: number,
     pieceIndex?: number,
     falling?: Tetromino,
-    hold?: TetrominoType,
+    hold?: HoldInfo | null,
     elapsed?: number,
     blockHold?: boolean,
     combo?: number,
@@ -119,7 +136,7 @@ export class GameState {
     pieceSeedOrState: VisibleGameState | number | undefined = undefined,
     pieceIndex = 0,
     falling: Tetromino | null = null,
-    hold: TetrominoType = TetrominoType.None,
+    hold: HoldInfo | null = null,
     elapsed = 0,
     blockHold = false,
     combo = 0,
@@ -142,7 +159,7 @@ export class GameState {
     else {
       this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
       this.Falling = falling;
-      this.Hold = hold;
+      this.Hold = hold ?? null;
       this.BlockHold = blockHold;
       this.TicksElapsed = elapsed;
       this.#pieces = new PieceGenerator(pieceSeedOrState);
@@ -237,13 +254,21 @@ export class GameState {
     return true;
   }
 
+  HasHold(holdInfo: HoldInfo | null | undefined = undefined): boolean {
+    if (holdInfo === undefined)
+      return this.Hold !== null && this.Hold.Type !== TetrominoType.None;
+    else
+      return holdInfo !== null && holdInfo.Type !== TetrominoType.None;
+  }
+
   /**
    * Attempt to dequeue a piece from the queue and start dropping it
    * @returns Whether the dequeue is successful
    */
   DequeuePiece(): boolean {
     if (this.Falling !== null) return false;
-    this.Falling = Tetromino.Spawn(this.#pieces.Get(this.PieceIndex++), this.TicksElapsed);
+    this.Falling = Tetromino.Spawn(this.#pieces.Get(this.PieceIndex), this.TicksElapsed, this.PieceIndex);
+    this.PieceIndex++;
     this.BlockHold = false;
     if (!this.IsPieceValid()) {
       this.IsDead = true;
@@ -261,10 +286,13 @@ export class GameState {
     if (this.Falling === null) return false;
     if (this.BlockHold) return false;
     let hold = this.Hold;
-    this.Hold = this.Falling.Type;
-    if (hold === TetrominoType.None)
-      hold = this.#pieces.Get(this.PieceIndex++);
-    this.Falling = Tetromino.Spawn(hold, this.TicksElapsed);
+    this.Hold = new HoldInfo(this.Falling.Type, this.PieceIndex - 1);
+    if (!this.HasHold(hold)) {
+      hold = new HoldInfo(this.#pieces.Get(this.PieceIndex), this.PieceIndex);
+      this.PieceIndex++;
+    }
+    if (hold)
+      this.Falling = Tetromino.Spawn(hold.Type, this.TicksElapsed, hold.PieceIndex);
     this.BlockHold = true;
     this.Falling.LastAction = GameInput.Hold;
     return true;

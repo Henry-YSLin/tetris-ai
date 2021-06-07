@@ -18,6 +18,7 @@ class HeightMap {
       while (col[j] === TetrominoType.None) j--;
       this.Map.push(j + 1);
     }
+    console.log(this.Map);
   }
 
   FindPattern(...pattern: number[]): number[]  {
@@ -45,8 +46,10 @@ export default class DecentAI extends InputQueueable(AIPlayer) {
   Update(gameState: VisibleGameState, acceptInput: boolean): GameInput {
     const falling = gameState.Falling;
     if (falling === null) this.#lastPiece = null;
-    if (this.#lastPiece === null && falling !== null || this.#lastPiece?.Type !== falling?.Type && falling !== null) {
+    if (this.#lastPiece === null && falling !== null
+      || this.#lastPiece !== null && falling !== null && this.#lastPiece.PieceIndex !== falling.PieceIndex) {
       this.#lastPiece = falling;
+      console.log('============');
       const map = new HeightMap(gameState);
       const getHeightMap = (points: Vector[]): number[] => {
         const minX = points.map(p => p.X).min();
@@ -68,13 +71,14 @@ export default class DecentAI extends InputQueueable(AIPlayer) {
           const simulation = new GameState(gameState);
           const choices = indices.map(([rot, c]) => {
             const f = falling.Clone();
-            f.Position.Y = c -= Tetrominos[f.Type].Rotations[rot].map(p => p.X).min();
+            f.Position.X = c -= Tetrominos[f.Type].Rotations[rot].map(p => p.X).min();
             f.Rotation = rot;
             simulation.HardDropPiece(f);
-            return [rot, c, f.Points.map(p => p.Y).max()];
+            return [rot, c, f.Top];
           });
           console.log(choices);
           [rotation, col] = choices.minBy(c => c[2]);
+          console.log(choices.minBy(c => c[2]));
           for (let i = 0; i < rotation; i++)
             this.Enqueue(GameInput.RotateCW);
         }

@@ -24,6 +24,10 @@ export default class Tetromino {
    * Used for detecting T-spin
    */
   LastAction: GameInput;
+  /**
+   * Position of this tetromino in the piece queue
+   */
+  PieceIndex: number;
 
   constructor(
     type: TetrominoType,
@@ -33,6 +37,7 @@ export default class Tetromino {
     actionCount = 0,
     dropTick = NaN,
     lastAction = GameInput.None,
+    pieceIndex = 0,
   ) {
     this.Type = type;
     this.Rotation = rotation;
@@ -47,6 +52,7 @@ export default class Tetromino {
     this.ActionCount = actionCount;
     this.DropTick = dropTick;
     this.LastAction = lastAction;
+    this.PieceIndex = pieceIndex;
   }
 
   Clone(): Tetromino {
@@ -58,11 +64,12 @@ export default class Tetromino {
       this.ActionCount,
       this.DropTick,
       this.LastAction,
+      this.PieceIndex,
     );
   }
 
-  static Spawn(type: TetrominoType, ticksElapsed: number): Tetromino {
-    return new Tetromino(type, undefined, undefined, ticksElapsed, 0, ticksElapsed);
+  static Spawn(type: TetrominoType, ticksElapsed: number, pieceIndex: number): Tetromino {
+    return new Tetromino(type, undefined, undefined, ticksElapsed, 0, ticksElapsed, undefined, pieceIndex);
   }
 
 
@@ -134,7 +141,7 @@ export default class Tetromino {
 
   Rotate(direction: RotationDirection = RotationDirection.CW): void {
     this.Rotation += direction;
-    const {length} = Tetrominos[this.Type].Rotations;
+    const { length } = Tetrominos[this.Type].Rotations;
     if (this.Rotation >= length) this.Rotation = 0;
     if (this.Rotation < 0) this.Rotation = length - 1;
   }

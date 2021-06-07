@@ -4,7 +4,6 @@ import Player from '../player/Player';
 import { RotationDirection } from '../Tetrominos';
 import TypedEvent from '../utils/TypedEvent';
 import MultiGameState, { GarbageEntry } from '../MultiGameState';
-import HumanPlayer from '../player/HumanPlayer';
 import MultiplayerGame, { Participant } from './MultiplayerGame';
 
 export default class LocalMutiplayerGame extends MultiplayerGame {
