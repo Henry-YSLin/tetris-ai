@@ -50,6 +50,7 @@ export default class Renderer {
 
   p5Setup(p5: p5Types, canvasParentRef: Element): void {
 		p5.createCanvas(this.width, this.height).parent(canvasParentRef);
+    p5.frameRate(60);
     this.ResetTransform(p5);
 	}
 

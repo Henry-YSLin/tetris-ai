@@ -34,7 +34,7 @@ class HeightMap {
   }
 }
 
-export default class DecentAI extends InputQueueable(AIPlayer) {
+export default class EasyAI extends InputQueueable(AIPlayer) {
   #lastPiece: Tetromino | null;
 
   constructor() {
@@ -58,32 +58,61 @@ export default class DecentAI extends InputQueueable(AIPlayer) {
         }
         return ret;
       };
-      let col = Math.floor(Math.random() * gameState.GridWidth);
-      let rotation = 0;
-      const indices = Tetrominos[falling.Type].Rotations.flatMap((points, idx) => map.FindPattern(...getHeightMap(points.slice())).map(x => [idx, x]));
-      if (indices.length === 0 && !gameState.BlockHold) {
+
+      let column = Math.floor(Math.random() * gameState.GridWidth);
+      let rotation = Math.floor(Math.random() * 4);
+
+      type PlacementInfo = {
+        rot: number;
+        col: number;
+        top: number;
+        isMatch: boolean;
+      };
+
+      const choices: PlacementInfo[] = [];
+      const simulation = new GameState(gameState);
+
+      for (let i = 0; i < Tetrominos[falling.Type].Rotations.length; i++) {
+        const minX = Tetrominos[falling.Type].Rotations[i].map(p => p.X).min();
+        for (let j = -minX; j < gameState.GridWidth - minX; j++) {
+          const f = falling.Clone();
+          f.Position.X = j;
+          f.Rotation = i;
+          simulation.HardDropPiece(f);
+          choices.push({ rot: i, col: j, top: f.Top, isMatch: false });
+        }
+      }
+
+      Tetrominos[falling.Type].Rotations
+        .flatMap((points, rot) => map.FindPattern(...getHeightMap(points.slice()))
+          .forEach(col => {
+            const index = choices.find(x => x.rot === rot && x.col === col - Tetrominos[falling.Type].Rotations[rot].map(p => p.X).min());
+            if (index) index.isMatch = true;
+          }),
+        );
+
+      const goodChoices = choices.filter(x => x.isMatch === true);
+      if (goodChoices.length === 0 && !gameState.BlockHold) {
         this.Enqueue(GameInput.Hold);
       }
       else {
-        if (indices.length > 0) {
-          const simulation = new GameState(gameState);
-          const choices = indices.map(([rot, c]) => {
-            const f = falling.Clone();
-            f.Position.X = c -= Tetrominos[f.Type].Rotations[rot].map(p => p.X).min();
-            f.Rotation = rot;
-            simulation.HardDropPiece(f);
-            return [rot, c, f.Top];
-          });
-          [rotation, col] = choices.minBy(c => c[2]);
-          for (let i = 0; i < rotation; i++)
-            this.Enqueue(GameInput.RotateCW);
+        let choice: PlacementInfo;
+        if (goodChoices.length > 0) {
+          choice = goodChoices.minBy(c => c.top);
         }
-        if (col > falling.Position.X) {
-          for (let i = 0; i < col - falling.Position.X; i++)
+        else {
+          choice = choices.minBy(c => c.top);
+        }
+        rotation = choice.rot;
+        column = choice.col;
+        for (let i = 0; i < rotation; i++)
+          this.Enqueue(GameInput.RotateCW);
+        if (column > falling.Position.X) {
+          for (let i = 0; i < column - falling.Position.X; i++)
             this.Enqueue(GameInput.ShiftRight);
         }
-        else if (col < falling.Position.X) {
-          for (let i = 0; i < falling.Position.X - col; i++)
+        else if (column < falling.Position.X) {
+          for (let i = 0; i < falling.Position.X - column; i++)
             this.Enqueue(GameInput.ShiftLeft);
         }
         this.Enqueue(GameInput.HardDrop);

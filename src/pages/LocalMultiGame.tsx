@@ -6,7 +6,8 @@ import LocalMutiplayerGame from '../tetris/game/LocalMultiplayerGame';
 import MultiplayerMainRenderer from '../tetris/renderer/MultiplayerMainRenderer';
 import MultiplayerSpectatingRenderer from '../tetris/renderer/MultiplayerSpectatingRenderer';
 import Renderer from '../tetris/renderer/Renderer';
-import DecentAI from '../tetris/player/DecentAI';
+import EasyAI from '../tetris/player/EasyAI';
+import HardAI from '../tetris/player/HardAI';
 
 interface Props {}
 
@@ -16,9 +17,9 @@ const LocalMultiGame: React.FC = (props: Props) => {
 	const [, setGame] = useState<LocalMutiplayerGame>();
 	const [renderers, setRenderers] = useState<Renderer[]>();
 	useEffect(() => {
-		const _player1: Player = new HumanPlayer();
+		const _player1: Player = new EasyAI();
 		const _AIPlayers: Player[] = [];
-		for (let i = 0; i < 3; i++) _AIPlayers.push(new DecentAI());
+		for (let i = 0; i < 3; i++) _AIPlayers.push(new EasyAI());
  		const _game: LocalMutiplayerGame = new LocalMutiplayerGame([{ player:_player1 }, ..._AIPlayers.map(p => ({ player: p }))]);
 		const _renderer1: MultiplayerMainRenderer = new MultiplayerMainRenderer(_game, _game.Participants[0]);
 		const _AIRenderers: MultiplayerSpectatingRenderer[] = [];
