@@ -4,7 +4,6 @@ import InputQueueable from './InputQueueable';
 import AIPlayer from './AIPlayer';
 import Tetromino from '../Tetromino';
 import Tetrominos, { TetrominoType } from '../Tetrominos';
-import Vector from '../utils/Vector';
 
 class PlacementInfo {
   rot: number;
@@ -55,11 +54,13 @@ export default class HardAI extends InputQueueable(AIPlayer) {
 
     for (let i = 0; i < Tetrominos[falling.Type].Rotations.length; i++) {
       const minX = Tetrominos[falling.Type].Rotations[i].map(p => p.X).min();
-      for (let j = -minX; j < gameState.GridWidth - minX; j++) {
+      const maxX = Tetrominos[falling.Type].Rotations[i].map(p => p.X).max();
+      for (let j = -minX; j < gameState.GridWidth - maxX; j++) {
         const choice = new PlacementInfo(i, j);
         const simulation = new GameState(gameState);
-        const f = simulation.Falling;
-        if (!f) break;
+        if (!falling) continue;
+        const f = falling.Clone();
+        simulation.Falling = f;
         f.Position.X = j;
         f.Rotation = i;
         simulation.HardDropPiece();
@@ -102,7 +103,7 @@ export default class HardAI extends InputQueueable(AIPlayer) {
         const rotation = choice.rot;
 
         for (let i = 0; i < rotation; i++)
-        this.Enqueue(GameInput.RotateCW);
+          this.Enqueue(GameInput.RotateCW);
         if (column > falling.Position.X) {
           for (let i = 0; i < column - falling.Position.X; i++)
             this.Enqueue(GameInput.ShiftRight);

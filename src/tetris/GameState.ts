@@ -146,6 +146,9 @@ export class GameState {
     if (pieceSeedOrState instanceof VisibleGameState) {
       const state = pieceSeedOrState;
       this.Grid = state.Grid;
+      this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
+      if (state.Grid)
+        state.Grid.forEach((arr, i) => arr.forEach((p, j) => this.Grid[i][j] = p));
       this.Falling = state.Falling;
       this.Hold = state.Hold;
       this.BlockHold = state.BlockHold;

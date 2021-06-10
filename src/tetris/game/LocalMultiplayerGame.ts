@@ -30,7 +30,8 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
       // TODO: target selection
       const availableTargets = states.filter(x => !x.IsDead);
       const target = availableTargets[Math.floor(Math.random() * availableTargets.length)];
-      target.GarbageMeter.push(new GarbageEntry(garbage.Targeted, target.TicksElapsed));
+      if (target)
+        target.GarbageMeter.push(new GarbageEntry(garbage.Targeted, target.TicksElapsed));
     }));
     this.#input = new TypedEvent();
   }
