@@ -4,6 +4,7 @@ import InputQueueable from './InputQueueable';
 import AIPlayer from './AIPlayer';
 import Tetromino from '../Tetromino';
 import Tetrominos, { TetrominoType } from '../Tetrominos';
+import GameAchievement from '../GameAchievement';
 
 export class PlacementInfo {
   rot: number;
@@ -14,6 +15,7 @@ export class PlacementInfo {
   openHoles: number;
   blocksAboveHoles: number;
   iWells: number;
+  achievement: GameAchievement | null;
 
   #cache: number | null;
 
@@ -27,6 +29,7 @@ export class PlacementInfo {
     this.blocksAboveHoles = 0;
     this.iWells = 0;
     this.#cache = null;
+    this.achievement = null;
   }
 
   Rating(ratingFunction: (choice: PlacementInfo) => number): number {
@@ -65,6 +68,7 @@ export default class HardAI extends InputQueueable(AIPlayer) {
     ret -= choice.openHoles;
     ret -= choice.blocksAboveHoles;
     ret -= choice.iWells;
+    ret += (choice.achievement?.Rating ?? 0) * 10;
     return ret;
   }
 
@@ -77,6 +81,9 @@ export default class HardAI extends InputQueueable(AIPlayer) {
       for (let j = -minX; j < gameState.GridWidth - maxX; j++) {
         const choice = new PlacementInfo(i, j);
         const simulation = new GameState(gameState);
+
+        simulation.Achievement.once((achievement) => choice.achievement = achievement);
+
         if (!falling) continue;
         const f = falling.Clone();
         simulation.Falling = f;

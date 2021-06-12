@@ -20,6 +20,7 @@ const LocalMultiGame: React.FC = (props: Props) => {
 	useEffect(() => {
 		const _player1: Player = new HumanPlayer();
 		const _AIPlayers: Player[] = [];
+		_AIPlayers.push(new EasyAI());
 		_AIPlayers.push(new HardAI());
 		_AIPlayers.push(new HardRenAI());
  		const _game: LocalMutiplayerGame = new LocalMutiplayerGame([{ player:_player1 }, ..._AIPlayers.map(p => ({ player: p }))]);
