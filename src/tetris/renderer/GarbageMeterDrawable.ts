@@ -38,7 +38,11 @@ export default function GarbageMeterDrawable<TBase extends Drawable & MultiGameS
       p5.fill(50);
       p5.rect(0, 0, blockSize, blockSize * state.PlayfieldHeight);
       p5.fill(TetrominoColor(p5, TetrominoType.Garbage));
-      const meterHeight = state.GarbageMeter.reduce((prev, curr) => prev + curr.Lines, 0);
+      let meterHeight = state.GarbageMeter.reduce((prev, curr) => prev + curr.Lines, 0);
+      if (meterHeight > state.PlayfieldHeight) {
+        meterHeight = state.PlayfieldHeight;
+        p5.fill('red');
+      }
       for (let i = 0; i < meterHeight; i++) {
         p5.rect(0, i * blockSize, blockSize, blockSize);
       }

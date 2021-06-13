@@ -10,6 +10,8 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
   Participants: Participant[];
   #handle: number | null;
   #input: TypedEvent<GameInputResult>;
+  #isGameEnded: boolean;
+  #gameEnded: TypedEvent<void>;
 
   constructor(
     players: { player: Player, seed?: number | MultiGameState }[],
@@ -34,10 +36,25 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
         target.GarbageMeter.push(new GarbageEntry(garbage.Targeted, target.TicksElapsed));
     }));
     this.#input = new TypedEvent();
+    this.#isGameEnded = false;
+    this.#gameEnded = new TypedEvent();
+  }
+
+  get IsGameEnded(): boolean {
+    if (this.#isGameEnded) return true;
+    if (this.Participants.filter(p => !p.State.IsDead).length <= 1) {
+      this.#isGameEnded = true;
+      return true;
+    }
+    return false;
   }
 
   get Input(): TypedEvent<GameInputResult> {
     return this.#input;
+  }
+
+  get GameEnded(): TypedEvent<void> {
+    return this.#gameEnded;
   }
 
   get ClockRunning(): boolean {
@@ -57,6 +74,7 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
     this.Participants.forEach(p => {
       if (p.State.IsDead) return;
       p.State.Tick();
+      if (p.State.IsDead) return;
       const input = p.Player.Tick(p.State.GetVisibleState());
       const falling = p.State.Falling;
       let success = false;
@@ -89,5 +107,8 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
         this.#input.emit(new GameInputResult(p.State.TicksElapsed, input, success, falling, p.Player));
       }
     });
+    if (!this.#isGameEnded && this.IsGameEnded) {
+      this.#gameEnded.emit();
+    }
   }
 }

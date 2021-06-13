@@ -34,7 +34,7 @@ class HeightMap {
   }
 }
 
-export default class EasyAI extends InputQueueable(AIPlayer) {
+export default class HeightMapAI extends InputQueueable(AIPlayer) {
   #lastPiece: Tetromino | null;
 
   constructor() {

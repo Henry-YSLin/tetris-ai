@@ -10,11 +10,13 @@ export class PlacementInfo {
   rot: number;
   col: number;
   pieceTop: number;
-  globalTop: number;
+  heightMap: number[];
   enclosedHoles: number;
   openHoles: number;
   blocksAboveHoles: number;
   iWells: number;
+  isDead: boolean;
+  holdPiece: TetrominoType;
   achievement: GameAchievement | null;
 
   #cache: number | null;
@@ -23,13 +25,23 @@ export class PlacementInfo {
     this.rot = _rot;
     this.col = _col;
     this.pieceTop = 0;
-    this.globalTop = 0;
+    this.heightMap = [];
     this.enclosedHoles = 0;
     this.openHoles = 0;
     this.blocksAboveHoles = 0;
     this.iWells = 0;
+    this.isDead = false;
+    this.holdPiece = TetrominoType.None;
     this.#cache = null;
     this.achievement = null;
+  }
+
+  get globalTop(): number {
+    return this.heightMap.max();
+  }
+
+  get bumpiness(): number {
+    return this.heightMap.reduce((prev, curr, idx) => prev + (idx === 0 ? 0 : Math.abs(curr - this.heightMap[idx - 1])), 0);
   }
 
   Rating(ratingFunction: (choice: PlacementInfo) => number): number {
@@ -38,6 +50,12 @@ export class PlacementInfo {
     }
     const ret = ratingFunction(this);
     this.#cache = ret;
+    return ret;
+  }
+
+  static get Never(): PlacementInfo {
+    const ret = new PlacementInfo(0, 0);
+    ret.#cache = Number.MIN_VALUE;
     return ret;
   }
 }
@@ -52,7 +70,7 @@ function floodfill(x: number, y: number, grid: TetrominoType[][], map: boolean[]
   }
 }
 
-export default class HardAI extends InputQueueable(AIPlayer) {
+export default class ChoiceRatingAI extends InputQueueable(AIPlayer) {
   #lastPiece: Tetromino | null;
 
   constructor() {
@@ -69,6 +87,9 @@ export default class HardAI extends InputQueueable(AIPlayer) {
     ret -= choice.blocksAboveHoles;
     ret -= choice.iWells;
     ret += (choice.achievement?.Rating ?? 0) * 10;
+    ret -= choice.bumpiness;
+    ret += choice.holdPiece === TetrominoType.I ? 10 : 0;
+    if (choice.isDead) ret = Number.MIN_VALUE;
     return ret;
   }
 
@@ -84,7 +105,6 @@ export default class HardAI extends InputQueueable(AIPlayer) {
 
         simulation.Achievement.once((achievement) => choice.achievement = achievement);
 
-        if (!falling) continue;
         const f = falling.Clone();
         simulation.Falling = f;
         f.Position.X = j;
@@ -92,10 +112,6 @@ export default class HardAI extends InputQueueable(AIPlayer) {
         simulation.HardDropPiece();
 
         choice.pieceTop = f.Top;
-        let t = simulation.GridHeight - 1;
-        while (t >= 0 && !simulation.Grid[t].some(x => x !== TetrominoType.None))
-          t--;
-        choice.globalTop = t;
 
         const holes: [number, number][] = [];
 
@@ -119,6 +135,7 @@ export default class HardAI extends InputQueueable(AIPlayer) {
           while (col[j] === TetrominoType.None) j--;
           heightMap.push(j + 1);
         }
+        choice.heightMap = heightMap;
         choice.openHoles = simulation.Grid.reduce(
           (prev, curr, y) => prev + curr.reduce(
             (p, c, x) => p + (c === TetrominoType.None && map[y][x] && y < heightMap[x] ? (holes.push([x, y]), 1) : 0),
@@ -145,6 +162,10 @@ export default class HardAI extends InputQueueable(AIPlayer) {
           choice.iWells += Math.min(...diffs);
         }
 
+        choice.isDead = simulation.IsDead;
+
+        choice.holdPiece = simulation.Hold?.Type ?? TetrominoType.None;
+
         choices.push(choice);
       }
     }
@@ -161,23 +182,27 @@ export default class HardAI extends InputQueueable(AIPlayer) {
       this.#lastPiece = falling;
 
       const choice = this.getChoice(gameState, falling);
-      let holdChoice: PlacementInfo;
-      if (gameState.Hold && gameState.Hold.Type !== TetrominoType.None) {
-        holdChoice = this.getChoice(gameState, new Tetromino(gameState.Hold.Type));
-      }
-      else {
-        holdChoice = this.getChoice(gameState, new Tetromino(gameState.PieceQueue[0]));
-      }
+      let holdChoice: PlacementInfo = PlacementInfo.Never;
+      const simulation = new GameState(gameState);
+      simulation.HoldPiece();
+      if (simulation.Falling)
+        holdChoice = this.getChoice(simulation.GetVisibleState(), simulation.Falling);
 
-      if (holdChoice.Rating > choice.Rating) {
+      if (holdChoice.Rating(this.rateChoice) > choice.Rating(this.rateChoice)) {
         this.Enqueue(GameInput.Hold);
       }
       else {
         const column = choice.col;
         const rotation = choice.rot;
 
-        for (let i = 0; i < rotation; i++)
+        if (rotation === 1)
           this.Enqueue(GameInput.RotateCW);
+        else if (rotation === 3)
+          this.Enqueue(GameInput.RotateCCW);
+        else if (rotation === 2) {
+          this.Enqueue(GameInput.RotateCW);
+          this.Enqueue(GameInput.RotateCW);
+        }
         if (column > falling.Position.X) {
           for (let i = 0; i < column - falling.Position.X; i++)
             this.Enqueue(GameInput.ShiftRight);

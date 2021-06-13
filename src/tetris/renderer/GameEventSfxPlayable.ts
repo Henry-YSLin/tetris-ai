@@ -28,7 +28,6 @@ export default function GameEventSfxPlayable<TBase extends Drawable & GameStateU
         return;
       }
       this.State.Achievement.on((achievement) => {
-        console.log(achievement);
         const sfx = GetSFX(achievement);
         if (!sfx) return;
         sfx.forEach(s => this.#sounds.get(s)?.play());
