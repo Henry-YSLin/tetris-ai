@@ -5,6 +5,7 @@ declare global {
     maxBy(this: Array<T>, iterator: <TReturn>(item: T) => TReturn): T;
     min(this: Array<T>): T;
     minBy<TReturn>(this: Array<T>, iterator: (item: T) => TReturn): T;
+    sum(this: Array<number>): number;
   }
 }
 
@@ -82,6 +83,17 @@ if (!Array.prototype.minBy) {
         }
       }
       return minItem;
+    },
+  });
+}
+
+if (!Array.prototype.sum) {
+  Object.defineProperty(Array.prototype, 'sum', {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(this: Array<number>): number {
+      return this.reduce((prev, curr) => prev + curr, 0);
     },
   });
 }

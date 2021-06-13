@@ -5,6 +5,7 @@ import AIPlayer from './AIPlayer';
 import Tetromino from '../Tetromino';
 import Tetrominos, { TetrominoType } from '../Tetrominos';
 import GameAchievement from '../GameAchievement';
+import './../utils/Array';
 
 export class PlacementInfo {
   rot: number;
@@ -14,7 +15,7 @@ export class PlacementInfo {
   enclosedHoles: number;
   openHoles: number;
   blocksAboveHoles: number;
-  iWells: number;
+  iWells: number[];
   isDead: boolean;
   holdPiece: TetrominoType;
   achievement: GameAchievement | null;
@@ -29,7 +30,7 @@ export class PlacementInfo {
     this.enclosedHoles = 0;
     this.openHoles = 0;
     this.blocksAboveHoles = 0;
-    this.iWells = 0;
+    this.iWells = [];
     this.isDead = false;
     this.holdPiece = TetrominoType.None;
     this.#cache = null;
@@ -85,7 +86,7 @@ export default class ChoiceRatingAI extends InputQueueable(AIPlayer) {
     ret -= choice.enclosedHoles;
     ret -= choice.openHoles;
     ret -= choice.blocksAboveHoles;
-    ret -= choice.iWells;
+    ret -= choice.iWells.sum();
     ret += (choice.achievement?.Rating ?? 0) * 10;
     ret -= choice.bumpiness;
     ret += choice.holdPiece === TetrominoType.I ? 10 : 0;
@@ -152,14 +153,12 @@ export default class ChoiceRatingAI extends InputQueueable(AIPlayer) {
           return prev;
         }, 0);
 
-        choice.iWells = 0;
+        choice.iWells = [];
         for (let i = 0; i < simulation.GridWidth; i++) {
-          if (i > 0 && heightMap[i - 1] - heightMap[i] < 3) continue;
-          if (i < simulation.GridWidth - 1 && heightMap[i + 1] - heightMap[i] < 3) continue;
           const diffs: number[] = [];
           if (i > 0) diffs.push(heightMap[i - 1] - heightMap[i]);
           if (i < simulation.GridWidth - 1) diffs.push(heightMap[i + 1] - heightMap[i]);
-          choice.iWells += Math.min(...diffs);
+          choice.iWells.push(Math.max(0, Math.min(...diffs)));
         }
 
         choice.isDead = simulation.IsDead;

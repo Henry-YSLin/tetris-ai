@@ -1,5 +1,6 @@
 import { TetrominoType } from '../Tetrominos';
 import ChoiceRatingAI, { PlacementInfo }  from './ChoiceRatingAI';
+import './../utils/Array';
 
 export default class MediumRenAI extends ChoiceRatingAI {
   protected rateChoice(choice: PlacementInfo): number {
@@ -9,7 +10,7 @@ export default class MediumRenAI extends ChoiceRatingAI {
     ret -= choice.enclosedHoles * 10;
     ret -= choice.openHoles * 10;
     ret -= choice.blocksAboveHoles;
-    ret -= choice.iWells;
+    ret -= choice.iWells.filter(x => x >= 3).sum();
     ret -= choice.bumpiness;
     if (choice.achievement) {
       ret += choice.achievement.Combo * 10;

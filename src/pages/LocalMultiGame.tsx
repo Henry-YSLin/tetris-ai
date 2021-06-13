@@ -10,6 +10,7 @@ import HeightMapAI from '../tetris/player/EasyAI';
 import ChoiceRatingAI from '../tetris/player/ChoiceRatingAI';
 import MediumRenAI from '../tetris/player/MediumRenAI';
 import { useStates } from 'use-states';
+import MediumTetrisAI from '../tetris/player/MediumTetrisAI';
 
 interface Props {}
 
@@ -24,6 +25,7 @@ const LocalMultiGame: React.FC = (props: Props) => {
 		data.rounds++;
 		const _player1: Player = new HumanPlayer();
 		const _AIPlayers: Player[] = [];
+		_AIPlayers.push(new MediumTetrisAI());
 		_AIPlayers.push(new MediumRenAI());
  		const _game: LocalMutiplayerGame = new LocalMutiplayerGame([{ player:_player1 }, ..._AIPlayers.map(p => ({ player: p }))]);
 		const _renderer1: MultiplayerMainRenderer = new MultiplayerMainRenderer(_game, _game.Participants[0]);
