@@ -26,8 +26,8 @@ export default class MediumTetrisAI extends ChoiceRatingAI {
         ret += (choice.achievement?.Rating ?? 0) * 5;
       }
     }
-    if (choice.isDead) ret = Number.MIN_VALUE;
     ret += choice.holdPiece === TetrominoType.I ? 10 : 0;
+    if (choice.isDead) ret = Number.MIN_VALUE;
     return ret;
   }
 }

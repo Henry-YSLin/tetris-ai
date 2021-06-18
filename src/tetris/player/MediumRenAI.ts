@@ -15,8 +15,8 @@ export default class MediumRenAI extends ChoiceRatingAI {
     if (choice.achievement) {
       ret += choice.achievement.Combo * 10;
     }
-    if (choice.isDead) ret = Number.MIN_VALUE;
     ret += choice.holdPiece === TetrominoType.I ? 10 : 0;
+    if (choice.isDead) ret = Number.MIN_VALUE;
     return ret;
   }
 }
