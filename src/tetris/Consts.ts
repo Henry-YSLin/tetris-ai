@@ -64,7 +64,7 @@ export const ANIMATION_DURATION = 20;
 export const SOUND_VOLUME = 0.5;
 
 /**
- * Number of ticks to wait in the garbage meter before garbage liens are
+ * Number of ticks to wait in the garbage meter before garbage lines are
  * actually created
  */
 export const GARBAGE_DELAY = 4 * 60;
