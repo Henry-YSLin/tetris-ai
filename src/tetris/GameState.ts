@@ -381,7 +381,7 @@ export class GameState {
       this.Falling.Position.Y++;
     }
     this.Falling.Points.forEach(p => this.Grid[p.Y][p.X] = this.Falling?.Type ?? TetrominoType.None);
-    // this.ClearLines(this.Falling);
+    this.ClearLines(this.Falling);
     if (this.Falling.Points.map(p => p.Y).min() >= this.PlayfieldHeight) {
       this.IsDead = true;
       this.#dead.emit();
