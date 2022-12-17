@@ -6,22 +6,29 @@
 
   "parser": "@typescript-eslint/parser", // Specifies the ESLint parser
   "parserOptions": {
-    "ecmaVersion": 2020, // Allows for the parsing of modern ECMAScript features
+    "ecmaVersion": "latest",
     "sourceType": "module", // Allows for the use of imports
     "ecmaFeatures": {
       "jsx": true // Allows for the parsing of JSX
-    }
+    },
+    "project": "./tsconfig.json"
   },
   "settings": {
     "react": {
       "version": "detect" // Tells eslint-plugin-react to automatically detect the version of React to use
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "./tsconfig.json"
+      }
     }
   },
-
-  "extends": [
-    "plugin:react/recommended", // Uses the recommended rules from @eslint-plugin-react
-    "plugin:@typescript-eslint/recommended" // Uses the recommended rules from the @typescript-eslint/eslint-plugin
-  ],
+  "plugins": ["@typescript-eslint", "import", "prettier"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "airbnb", "airbnb-typescript", "prettier"],
 
   "rules": {
     // "indent": "off",
@@ -41,24 +48,18 @@
     "arrow-spacing": "warn",
     "comma-spacing": "warn",
     "no-underscore-dangle": "off",
-    "no-warning-comments": [
-      "warn",
-      { "terms": ["todo", "debug", "note"], "location": "start" }
-    ],
+    "no-warning-comments": ["warn", { "terms": ["todo", "debug", "note"], "location": "start" }],
     "class-methods-use-this": "off",
     "comma-dangle": "off",
-    "@typescript-eslint/comma-dangle": ["warn", "always-multiline"],
     "@typescript-eslint/no-var-requires": "off",
     "prefer-destructuring": ["warn", { "object": true, "array": false }],
     "no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": ["error", { "ignoreRestArgs": true }],
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      { "argsIgnorePattern": "req|res|next|val|props|^_" }
-    ],
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val|props|^_" }],
     "@typescript-eslint/no-empty-interface": "off",
     "prefer-template": "warn",
     "object-curly-spacing": ["warn", "always"],
-    "space-infix-ops": "warn"
+    "space-infix-ops": "warn",
+    "no-plusplus": "off"
   }
 }
