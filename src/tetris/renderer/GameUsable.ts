@@ -9,8 +9,8 @@ import { Drawable } from './Renderer';
  * looking for game state or player state
  */
 export type GameUsable = Constructor<{
-  Game: Game | null,
-  ConfigureGame(game: Game): void,
+  Game: Game | null;
+  ConfigureGame(game: Game): void;
 }>;
 
 export default function GameUsable<TBase extends Drawable>(Base: TBase): TBase & GameUsable {

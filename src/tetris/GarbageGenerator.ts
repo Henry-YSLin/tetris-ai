@@ -2,13 +2,12 @@ import seededRNG, { RNG } from './utils/Random';
 
 export default class GarbageGenerator {
   #RNG: RNG;
+
   #seed: number;
 
   constructor(seed?: number) {
-    if (seed === undefined)
-      this.#seed = Math.floor(Math.random() * (2 ** 32));
-    else
-      this.#seed = seed;
+    if (seed === undefined) this.#seed = Math.floor(Math.random() * 2 ** 32);
+    else this.#seed = seed;
     this.#RNG = seededRNG(this.#seed);
   }
 

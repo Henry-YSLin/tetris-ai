@@ -3,8 +3,8 @@ import { Constructor } from '../utils/Mixin';
 import { Drawable } from './Renderer';
 
 export type BlockSizeConfigurable = Constructor<{
-  BlockSize: number,
-  ConfigureBlockSize(blockSize: number): void
+  BlockSize: number;
+  ConfigureBlockSize(blockSize: number): void;
 }>;
 
 export default function BlockSizeConfigurable<TBase extends Drawable>(Base: TBase): TBase & BlockSizeConfigurable {

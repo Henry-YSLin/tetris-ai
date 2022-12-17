@@ -1,6 +1,6 @@
 import { TetrominoType } from '../Tetrominos';
-import ChoiceRatingAI, { PlacementInfo }  from './ChoiceRatingAI';
-import './../utils/Array';
+import ChoiceRatingAI, { PlacementInfo } from './ChoiceRatingAI';
+import '../utils/Array';
 
 export default class MediumRenAI extends ChoiceRatingAI {
   protected rateChoice(choice: PlacementInfo): number {

@@ -2,10 +2,15 @@ export type EasingFunction = (progress: number) => number;
 
 export default class Animation<TData> {
   From: number;
+
   To: number;
+
   Duration: number;
+
   Elapsed: number;
+
   Data: TData;
+
   EasingFunction: EasingFunction;
 
   constructor(from: number, to: number, duration: number, data: TData, elapsed = 0, func = Animation.Linear) {
@@ -22,7 +27,7 @@ export default class Animation<TData> {
   }
 
   static EaseOutQuint(progress: number): number {
-    return 1 - Math.pow(1 - progress, 5);
+    return 1 - (1 - progress) ** 5;
   }
 
   static EaseInOutSine(progress: number): number {
@@ -33,11 +38,11 @@ export default class Animation<TData> {
     return (progress: number): number => {
       if (progress <= inOutPercentage) {
         return func(progress / inOutPercentage);
-      } else if (progress >= 1 - inOutPercentage) {
-        return func((1 - progress) / inOutPercentage);
-      } else {
-        return 1;
       }
+      if (progress >= 1 - inOutPercentage) {
+        return func((1 - progress) / inOutPercentage);
+      }
+      return 1;
     };
   }
 

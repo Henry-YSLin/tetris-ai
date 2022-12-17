@@ -15,13 +15,16 @@ type GameEventAnimationData = {
 
 export type GameEventTextDrawable = Constructor<{
   GameEventAnimation: Animation<GameEventAnimationData> | null;
-  p5Draw(p5: p5Types): void,
-  ConfigureGameEventTextDrawable(offset: Vector, scale: Vector): void,
+  p5Draw(p5: p5Types): void;
+  ConfigureGameEventTextDrawable(offset: Vector, scale: Vector): void;
 }>;
 
-export default function GameEventTextDrawable<TBase extends Drawable & GameStateUsable>(Base: TBase): TBase & GameEventTextDrawable {
+export default function GameEventTextDrawable<TBase extends Drawable & GameStateUsable>(
+  Base: TBase
+): TBase & GameEventTextDrawable {
   return class GameEventTextDrawable extends Base {
     #offset: Vector;
+
     #scale: Vector;
 
     GameEventAnimation: Animation<GameEventAnimationData> | null;
@@ -37,10 +40,12 @@ export default function GameEventTextDrawable<TBase extends Drawable & GameState
       this.#offset = offset;
       this.#scale = scale;
       if (this.State === null) {
-        console.error('ConfigureGameEventTextDrawable called before this.State is assigned. Beware of the call order of Configure_ functions.');
+        console.error(
+          'ConfigureGameEventTextDrawable called before this.State is assigned. Beware of the call order of Configure_ functions.'
+        );
         return;
       }
-      this.State.Achievement.on((achievement) => {
+      this.State.Achievement.on(achievement => {
         const [subtitle, title] = achievement.toString();
         this.GameEventAnimation = new Animation(
           0,
@@ -48,7 +53,7 @@ export default function GameEventTextDrawable<TBase extends Drawable & GameState
           ANIMATION_DURATION * 5 * achievement.Rating,
           { subtitle, title, rating: achievement.Rating },
           0,
-          Animation.RevertingFunction(),
+          Animation.RevertingFunction()
         );
       });
     }
@@ -60,8 +65,7 @@ export default function GameEventTextDrawable<TBase extends Drawable & GameState
       const animation = this.GameEventAnimation;
       if (animation) {
         animation.Tick();
-        if (animation.Finished)
-          this.GameEventAnimation = null;
+        if (animation.Finished) this.GameEventAnimation = null;
 
         p5.textAlign(p5.CENTER, p5.BOTTOM);
         p5.fill(255, 255, 255, 255 * animation.CurrentValue);

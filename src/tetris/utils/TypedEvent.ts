@@ -7,8 +7,9 @@ export interface Disposable {
 }
 
 /** passes through events as they happen. You will not get events from before you start listening */
-export class TypedEvent<T> {
+export default class TypedEvent<T> {
   private listeners: Listener<T>[] = [];
+
   private listenersOncer: Listener<T>[] = [];
 
   on = (listener: Listener<T>): Disposable => {
@@ -29,18 +30,15 @@ export class TypedEvent<T> {
 
   emit = (event: T): void => {
     /** Update any general listeners */
-    this.listeners.forEach((listener) => listener(event));
+    this.listeners.forEach(listener => listener(event));
 
     /** Clear the `once` queue */
     if (this.listenersOncer.length > 0) {
       const toCall = this.listenersOncer;
       this.listenersOncer = [];
-      toCall.forEach((listener) => listener(event));
+      toCall.forEach(listener => listener(event));
     }
   };
 
-  pipe = (te: TypedEvent<T>): Disposable => {
-    return this.on((e) => te.emit(e));
-  };
+  pipe = (te: TypedEvent<T>): Disposable => this.on(e => te.emit(e));
 }
-export default TypedEvent;

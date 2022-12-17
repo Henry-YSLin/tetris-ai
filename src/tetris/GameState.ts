@@ -1,27 +1,38 @@
-import { Tetrominos, TetrominoType, RotationDirection } from './Tetrominos';
+import Tetrominos, { TetrominoType, RotationDirection } from './Tetrominos';
 import Vector from './utils/Vector';
 import './utils/Array';
 import { DROP_INTERVAL, GRID_HEIGHT, GRID_WIDTH, LOCK_DELAY, PLAYFIELD_HEIGHT, QUEUE_LENGTH } from './Consts';
 import PieceGenerator from './PieceGenerator';
-import Tetromino  from './Tetromino';
+import Tetromino from './Tetromino';
 import GameInput, { IsRotation } from './GameInput';
 import TypedEvent from './utils/TypedEvent';
 import GameAchievement, { AchievementType, BackToBackEligible } from './GameAchievement';
 
-
 export class VisibleGameState {
   Grid: TetrominoType[][];
+
   GridWidth: number;
+
   GridHeight: number;
+
   PlayfieldHeight: number;
+
   Falling: Tetromino | null;
+
   Hold: HoldInfo | null;
+
   BlockHold: boolean;
+
   TicksElapsed: number;
+
   PieceQueue: TetrominoType[];
+
   PieceIndex: number;
+
   Combo: number;
+
   LastAchievement: GameAchievement | null;
+
   IsDead: boolean;
 
   constructor(
@@ -37,11 +48,10 @@ export class VisibleGameState {
     blockHold = false,
     combo = 0,
     lastAchievement: GameAchievement | null = null,
-    isDead = false,
+    isDead = false
   ) {
     this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
-    if (grid)
-      grid.forEach((arr, i) => arr.forEach((p, j) => this.Grid[i][j] = p));
+    if (grid) grid.forEach((arr, i) => arr.forEach((p, j) => (this.Grid[i][j] = p)));
     this.GridWidth = gridWidth;
     this.GridHeight = gridHeight;
     this.PlayfieldHeight = playfieldHeight;
@@ -59,6 +69,7 @@ export class VisibleGameState {
 
 export class HoldInfo {
   Type: TetrominoType;
+
   PieceIndex: number;
 
   constructor(type: TetrominoType, pieceIndex: number) {
@@ -67,41 +78,48 @@ export class HoldInfo {
   }
 
   Clone(): HoldInfo {
-    return new HoldInfo(
-      this.Type,
-      this.PieceIndex,
-    );
+    return new HoldInfo(this.Type, this.PieceIndex);
   }
 }
 
-export class GameState {
+export default class GameState {
   Grid: TetrominoType[][];
+
   Falling: Tetromino | null;
+
   Hold: HoldInfo | null;
+
   /**
    * Whether to disallow hold, reset when a new tetromino is dequeued
    */
   BlockHold: boolean;
+
   /**
    * see Consts/TICK_RATE
    */
   TicksElapsed: number;
+
   #pieces: PieceGenerator;
+
   /**
    * Index of the next piece in queue
    */
   PieceIndex: number;
+
   /**
    * The number of consecutive line clear
    */
   Combo: number;
+
   /**
    * Used for detecting back-to-back achievements
    */
   LastAchievement: GameAchievement | null;
+
   IsDead: boolean;
 
   #achievement: TypedEvent<GameAchievement>;
+
   #dead: TypedEvent<void>;
 
   /**
@@ -129,7 +147,7 @@ export class GameState {
     blockHold?: boolean,
     combo?: number,
     lastAchievement?: GameAchievement | null,
-    isDead?: boolean,
+    isDead?: boolean
   );
 
   constructor(
@@ -141,14 +159,13 @@ export class GameState {
     blockHold = false,
     combo = 0,
     lastAchievement: GameAchievement | null = null,
-    isDead = false,
+    isDead = false
   ) {
     if (pieceSeedOrState instanceof VisibleGameState) {
       const state = pieceSeedOrState;
       this.Grid = state.Grid;
       this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
-      if (state.Grid)
-        state.Grid.forEach((arr, i) => arr.forEach((p, j) => this.Grid[i][j] = p));
+      if (state.Grid) state.Grid.forEach((arr, i) => arr.forEach((p, j) => (this.Grid[i][j] = p)));
       this.Falling = state.Falling;
       this.Hold = state.Hold;
       this.BlockHold = state.BlockHold;
@@ -158,8 +175,7 @@ export class GameState {
       this.Combo = state.Combo;
       this.LastAchievement = state.LastAchievement;
       this.IsDead = state.IsDead;
-    }
-    else {
+    } else {
       this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
       this.Falling = falling;
       this.Hold = hold ?? null;
@@ -193,7 +209,7 @@ export class GameState {
       this.BlockHold,
       this.Combo,
       this.LastAchievement?.Clone(),
-      this.IsDead,
+      this.IsDead
     );
   }
 
@@ -225,21 +241,19 @@ export class GameState {
 
   Get(p: Vector): TetrominoType | null;
 
-  Get(xOrP: number|Vector, y: number | undefined = undefined): TetrominoType | null {
-    let _x: number, _y: number;
+  Get(xOrP: number | Vector, y: number | undefined = undefined): TetrominoType | null {
+    let _x: number;
+    let _y: number;
     if (xOrP instanceof Vector) {
       _x = xOrP.X;
       _y = xOrP.Y;
-    }
-    else if (y !== undefined) {
+    } else if (y !== undefined) {
       _x = xOrP;
       _y = y;
-    }
-    else{
+    } else {
       return null;
     }
-    if (_x < 0 || _y < 0 || _x >= GRID_WIDTH || _y >= GRID_HEIGHT)
-      return null;
+    if (_x < 0 || _y < 0 || _x >= GRID_WIDTH || _y >= GRID_HEIGHT) return null;
     return this.Grid[_y][_x];
   }
 
@@ -250,18 +264,14 @@ export class GameState {
    * @returns Whether the falling piece is not out of bounds and is not overlapping with locked pieces
    */
   IsPieceValid(falling: Tetromino | undefined = undefined): boolean {
-    if (falling)
-      return !falling.Points.some(p => (this.Get(p) ?? TetrominoType.I) !== TetrominoType.None);
-    if (this.Falling)
-      return !this.Falling.Points.some(p => (this.Get(p) ?? TetrominoType.I) !== TetrominoType.None);
+    if (falling) return !falling.Points.some(p => (this.Get(p) ?? TetrominoType.I) !== TetrominoType.None);
+    if (this.Falling) return !this.Falling.Points.some(p => (this.Get(p) ?? TetrominoType.I) !== TetrominoType.None);
     return true;
   }
 
   HasHold(holdInfo: HoldInfo | null | undefined = undefined): boolean {
-    if (holdInfo === undefined)
-      return this.Hold !== null && this.Hold.Type !== TetrominoType.None;
-    else
-      return holdInfo !== null && holdInfo.Type !== TetrominoType.None;
+    if (holdInfo === undefined) return this.Hold !== null && this.Hold.Type !== TetrominoType.None;
+    return holdInfo !== null && holdInfo.Type !== TetrominoType.None;
   }
 
   /**
@@ -294,8 +304,7 @@ export class GameState {
       hold = new HoldInfo(this.#pieces.Get(this.PieceIndex), this.PieceIndex);
       this.PieceIndex++;
     }
-    if (hold)
-      this.Falling = Tetromino.Spawn(hold.Type, this.TicksElapsed, hold.PieceIndex);
+    if (hold) this.Falling = Tetromino.Spawn(hold.Type, this.TicksElapsed, hold.PieceIndex);
     this.BlockHold = true;
     this.Falling.LastAction = GameInput.Hold;
     return true;
@@ -315,11 +324,10 @@ export class GameState {
         [2, 0],
         [0, 2],
         [2, 2],
-      ].reduce((prev, [x, y]) =>
-        this.Get(lastPiece.Position.X + x, lastPiece.Position.Y + y) !== TetrominoType.None
-          ? prev + 1
-          : prev
-        , 0,
+      ].reduce(
+        (prev, [x, y]) =>
+          this.Get(lastPiece.Position.X + x, lastPiece.Position.Y + y) !== TetrominoType.None ? prev + 1 : prev,
+        0
       );
       if (corners >= 3) {
         // is a T-spin
@@ -329,14 +337,13 @@ export class GameState {
           [0, 1],
           [1, 2],
           [2, 1],
-        ].some(([x, y]) =>
-          !lastPiece.InternalPoints.find(p => p.X === x && p.Y === y)
-          && this.Get(lastPiece.Position.X + x, lastPiece.Position.Y + y) !== TetrominoType.None,
+        ].some(
+          ([x, y]) =>
+            !lastPiece.InternalPoints.find(p => p.X === x && p.Y === y) &&
+            this.Get(lastPiece.Position.X + x, lastPiece.Position.Y + y) !== TetrominoType.None
         );
-        if (isMini)
-          type = AchievementType.TSpinMini;
-        else
-          type = AchievementType.TSpin;
+        if (isMini) type = AchievementType.TSpinMini;
+        else type = AchievementType.TSpin;
       }
     }
     for (let i = this.GridHeight - 1; i >= 0; i--) {
@@ -348,20 +355,17 @@ export class GameState {
     }
     if (linesCleared.length === 0) {
       this.Combo = 0;
-      if (type === null)
-        return;
-    }
-    else if (linesCleared.length > 1 && type === AchievementType.TSpinMini) {
+      if (type === null) return;
+    } else if (linesCleared.length > 1 && type === AchievementType.TSpinMini) {
       type = AchievementType.TSpin;
     }
     const achievement = new GameAchievement(
       linesCleared,
       type ?? AchievementType.LineClear,
       this.Combo,
-      this.LastAchievement ? BackToBackEligible(this.LastAchievement) : false,
+      this.LastAchievement ? BackToBackEligible(this.LastAchievement) : false
     );
-    if (linesCleared.length > 0)
-      this.Combo++;
+    if (linesCleared.length > 0) this.Combo++;
     if (!this.Grid.some(row => row.some(c => c !== TetrominoType.None))) {
       achievement.Type = AchievementType.PerfectClear;
     }
@@ -380,7 +384,7 @@ export class GameState {
     while (!this.IsPieceValid()) {
       this.Falling.Position.Y++;
     }
-    this.Falling.Points.forEach(p => this.Grid[p.Y][p.X] = this.Falling?.Type ?? TetrominoType.None);
+    this.Falling.Points.forEach(p => (this.Grid[p.Y][p.X] = this.Falling?.Type ?? TetrominoType.None));
     this.ClearLines(this.Falling);
     if (this.Falling.Points.map(p => p.Y).min() >= this.PlayfieldHeight) {
       this.IsDead = true;
@@ -398,14 +402,13 @@ export class GameState {
    */
   RotatePiece(direction: RotationDirection = RotationDirection.CW): boolean {
     if (this.Falling === null) return false;
-    const kick = Tetrominos[this.Falling.Type].WallKick[this.Falling.Rotation][direction]
-      .find(p => {
-        const falling = this.Falling?.Clone();
-        if (!falling) return false;
-        falling.Rotate(direction);
-        falling.Position = falling.Position.Add(p);
-        return this.IsPieceValid(falling);
-      });
+    const kick = Tetrominos[this.Falling.Type].WallKick[this.Falling.Rotation][direction].find(p => {
+      const falling = this.Falling?.Clone();
+      if (!falling) return false;
+      falling.Rotate(direction);
+      falling.Position = falling.Position.Add(p);
+      return this.IsPieceValid(falling);
+    });
     if (!kick) return false;
     this.Falling.Rotate(direction);
     this.Falling.Position = this.Falling.Position.Add(kick);
@@ -431,11 +434,9 @@ export class GameState {
     let f: Tetromino;
     if (falling) {
       f = falling.Clone();
-    }
-    else if (this.Falling) {
+    } else if (this.Falling) {
       f = this.Falling.Clone();
-    }
-    else return false;
+    } else return false;
     f.Position.Y--;
     return this.IsPieceValid(f);
   }
@@ -446,51 +447,41 @@ export class GameState {
     this.Falling.Position.Y--;
     this.Falling.LastActionTick = this.TicksElapsed;
     this.Falling.ActionCount = 0;
-    if (isAuto)
-      this.Falling.DropTick = this.TicksElapsed;
-    else
-      this.Falling.LastAction = GameInput.SoftDrop;
+    if (isAuto) this.Falling.DropTick = this.TicksElapsed;
+    else this.Falling.LastAction = GameInput.SoftDrop;
     return true;
   }
 
   HardDropPiece(falling: Tetromino | undefined = undefined): boolean {
-    let f : Tetromino;
+    let f: Tetromino;
     if (falling) {
       f = falling;
-    }
-    else if (this.Falling) {
+    } else if (this.Falling) {
       f = this.Falling;
-    }
-    else return false;
+    } else return false;
     const lastPos = f.Position.Y;
     while (this.IsPieceValid(f)) {
       f.Position.Y--;
     }
     f.Position.Y++;
     // Hard drop should only be recorded if the drop distance > 0
-    if (lastPos !== f.Position.Y)
-      f.LastAction = GameInput.HardDrop;
+    if (lastPos !== f.Position.Y) f.LastAction = GameInput.HardDrop;
     if (f === this.Falling) {
       return this.LockPiece();
     }
-    else {
-      return true;
-    }
+
+    return true;
   }
 
   Tick(): void {
     if (this.IsDead) return;
     if (this.Falling === null) {
       this.DequeuePiece();
-    }
-    else {
-      if (this.TicksElapsed - this.Falling.DropTick >= DROP_INTERVAL)
-        this.SoftDropPiece(true);
-      if (this.TicksElapsed - this.Falling.LastActionTick >= LOCK_DELAY && !this.CanPieceDrop())
-        this.LockPiece();
+    } else {
+      if (this.TicksElapsed - this.Falling.DropTick >= DROP_INTERVAL) this.SoftDropPiece(true);
+      if (this.TicksElapsed - this.Falling.LastActionTick >= LOCK_DELAY && !this.CanPieceDrop()) this.LockPiece();
     }
 
     this.TicksElapsed++;
   }
 }
-export default GameState;

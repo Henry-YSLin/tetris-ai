@@ -9,15 +9,19 @@ import { DrawTetromino, TetrominoColor, WithAlpha } from './Helper';
 import { Drawable } from './Renderer';
 
 export type PlayfieldDrawable = Constructor<{
-  p5Setup(p5: p5Types, canvasParentRef: Element): void,
-  p5Draw(p5: p5Types): void,
-  ConfigurePlayfieldDrawable(offset: Vector, scale: Vector): void
+  p5Setup(p5: p5Types, canvasParentRef: Element): void;
+  p5Draw(p5: p5Types): void;
+  ConfigurePlayfieldDrawable(offset: Vector, scale: Vector): void;
 }>;
 
-export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsable & BlockSizeConfigurable>(Base: TBase): TBase & PlayfieldDrawable {
+export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsable & BlockSizeConfigurable>(
+  Base: TBase
+): TBase & PlayfieldDrawable {
   return class PlayfieldDrawable extends Base {
     #offset: Vector;
+
     #scale: Vector;
+
     #pg: p5Types.Graphics | null;
 
     constructor(...args: any[]) {
@@ -37,7 +41,7 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
       if (this.State) {
         this.#pg = p5.createGraphics(
           this.State.GridWidth * this.BlockSize,
-          (this.State.PlayfieldHeight + 0.1) * this.BlockSize,
+          (this.State.PlayfieldHeight + 0.1) * this.BlockSize
         );
       }
     }
@@ -69,7 +73,7 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
             animation.Data.left * blockSize,
             animation.Data.end * blockSize,
             (animation.Data.right - animation.Data.left + 1) * blockSize,
-            (state.PlayfieldHeight - animation.Data.end) * animation.CurrentValue * blockSize,
+            (state.PlayfieldHeight - animation.Data.end) * animation.CurrentValue * blockSize
           );
         });
       }
@@ -79,7 +83,9 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
       if (IsPlayfieldAnimatable(this)) {
         heightMap = [];
         for (let i = 0; i < state.GridHeight; i++) {
-          heightMap.push(i + this.LineClearAnimations.filter(x => x.Data.Y <= i).reduce((prev, curr) => prev + curr.CurrentValue, 0));
+          heightMap.push(
+            i + this.LineClearAnimations.filter(x => x.Data.Y <= i).reduce((prev, curr) => prev + curr.CurrentValue, 0)
+          );
         }
       }
       function getAnimatedHeight(i: number) {
@@ -108,8 +114,18 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
         pg.noStroke();
         pg.fill(255, 255, 255, 100);
         this.LineClearAnimations.forEach(animation => {
-          pg.rect(0, animation.Data.OrigY * blockSize, state.GridWidth * blockSize / 2 * animation.CurrentValue, blockSize);
-          pg.rect(state.GridWidth * blockSize, animation.Data.OrigY * blockSize, -state.GridWidth * blockSize / 2 * animation.CurrentValue, blockSize);
+          pg.rect(
+            0,
+            animation.Data.OrigY * blockSize,
+            ((state.GridWidth * blockSize) / 2) * animation.CurrentValue,
+            blockSize
+          );
+          pg.rect(
+            state.GridWidth * blockSize,
+            animation.Data.OrigY * blockSize,
+            ((-state.GridWidth * blockSize) / 2) * animation.CurrentValue,
+            blockSize
+          );
         });
       }
 

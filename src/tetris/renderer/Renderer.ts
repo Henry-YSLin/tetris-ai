@@ -1,9 +1,10 @@
-import { Constructor } from '../utils/Mixin';
 import p5Types from 'p5';
+import { Constructor } from '../utils/Mixin';
 import { BLOCK_SIZE, PLAYFIELD_HEIGHT } from '../Consts';
 
 export default class Renderer {
   protected width: number;
+
   protected height: number;
 
   /**
@@ -18,41 +19,33 @@ export default class Renderer {
   constructor(width: number, height: number);
 
   constructor(width?: number, height?: number) {
-    if (width && height)
-    {
+    if (width && height) {
       this.width = width;
       this.height = height;
-    }
-    else {
+    } else {
       this.width = BLOCK_SIZE * 22;
       this.height = BLOCK_SIZE * (PLAYFIELD_HEIGHT + 0.1) + 100;
     }
   }
 
-  SetTransform(
-    p5: p5Types,
-    scaleX: number,
-    scaleY: number,
-    translateX: number,
-    translateY: number,
-  ): void {
+  SetTransform(p5: p5Types, scaleX: number, scaleY: number, translateX: number, translateY: number): void {
     this.ResetTransform(p5);
-		p5.translate(translateX, translateY);
+    p5.translate(translateX, translateY);
     p5.scale(scaleX, scaleY);
   }
 
   ResetTransform(p5: p5Types): void {
     p5.resetMatrix();
-		p5.scale(1, -1);
-		p5.translate(0, -this.height);
+    p5.scale(1, -1);
+    p5.translate(0, -this.height);
     p5.scale(1, 1);
   }
 
   p5Setup(p5: p5Types, canvasParentRef: Element): void {
-		p5.createCanvas(this.width, this.height).parent(canvasParentRef);
+    p5.createCanvas(this.width, this.height).parent(canvasParentRef);
     p5.frameRate(60);
     this.ResetTransform(p5);
-	}
+  }
 
   p5Draw(p5: p5Types): void {
     p5.background(100);

@@ -1,9 +1,5 @@
 import React from 'react';
 
-interface Props {}
-
-const Error404: React.FC = (props: Props) => {
-	return <p>Not found</p>;
-};
-
-export default Error404;
+export default function Error404() {
+  return <p>Not found</p>;
+}

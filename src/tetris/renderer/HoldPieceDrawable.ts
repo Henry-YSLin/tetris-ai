@@ -6,16 +6,19 @@ import { BlockSizeConfigurable } from './BlockSizeConfigurable';
 import { GameStateUsable } from './GameStateUsable';
 import { DrawTetromino, p5text } from './Helper';
 import { Drawable } from './Renderer';
-import './../utils/Array';
+import '../utils/Array';
 
 export type HoldPieceDrawable = Constructor<{
-  p5Draw(p5: p5Types): void,
-  ConfigureHoldPieceDrawable(offset: Vector, scale: Vector): void
+  p5Draw(p5: p5Types): void;
+  ConfigureHoldPieceDrawable(offset: Vector, scale: Vector): void;
 }>;
 
-export default function HoldPieceDrawable<TBase extends Drawable & GameStateUsable & BlockSizeConfigurable>(Base: TBase): TBase & HoldPieceDrawable {
+export default function HoldPieceDrawable<TBase extends Drawable & GameStateUsable & BlockSizeConfigurable>(
+  Base: TBase
+): TBase & HoldPieceDrawable {
   return class HoldPieceDrawable extends Base {
     #offset: Vector;
+
     #scale: Vector;
 
     constructor(...args: any[]) {
@@ -51,7 +54,14 @@ export default function HoldPieceDrawable<TBase extends Drawable & GameStateUsab
         const Ys = points.map(p => p.Y);
         const w = Xs.max() - Xs.min() + 1;
         const h = Ys.max() - Ys.min() + 1;
-        DrawTetromino(p5, state.Hold.Type, new Vector((2.5 - w / 2) * blockSize, (2.5 - h / 2 - Ys.min()) * blockSize), points, blockSize, 255);
+        DrawTetromino(
+          p5,
+          state.Hold.Type,
+          new Vector((2.5 - w / 2) * blockSize, (2.5 - h / 2 - Ys.min()) * blockSize),
+          points,
+          blockSize,
+          255
+        );
       }
     }
   };

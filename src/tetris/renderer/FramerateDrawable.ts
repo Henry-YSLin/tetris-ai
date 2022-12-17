@@ -6,13 +6,16 @@ import { p5text } from './Helper';
 import { Drawable } from './Renderer';
 
 export type FramerateDrawable = Constructor<{
-  p5Draw(p5: p5Types): void,
-  ConfigureFramerateDrawable(offset: Vector, scale: Vector): void
+  p5Draw(p5: p5Types): void;
+  ConfigureFramerateDrawable(offset: Vector, scale: Vector): void;
 }>;
 
-export default function FramerateDrawable<TBase extends Drawable & BlockSizeConfigurable>(Base: TBase): TBase & FramerateDrawable {
+export default function FramerateDrawable<TBase extends Drawable & BlockSizeConfigurable>(
+  Base: TBase
+): TBase & FramerateDrawable {
   return class FramerateDrawable extends Base {
     #offset: Vector;
+
     #scale: Vector;
 
     constructor(...args: any[]) {

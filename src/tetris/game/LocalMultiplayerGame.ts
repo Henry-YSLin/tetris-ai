@@ -1,5 +1,6 @@
 import { TICK_RATE } from '../Consts';
-import GameInput, { GameInputResult } from '../GameInput';
+import GameInput from '../GameInput';
+import GameInputResult from '../GameInputResult';
 import Player from '../player/Player';
 import { RotationDirection } from '../Tetrominos';
 import TypedEvent from '../utils/TypedEvent';
@@ -8,33 +9,34 @@ import MultiplayerGame, { Participant } from './MultiplayerGame';
 
 export default class LocalMutiplayerGame extends MultiplayerGame {
   Participants: Participant[];
+
   #handle: number | null;
+
   #input: TypedEvent<GameInputResult>;
+
   #isGameEnded: boolean;
+
   #gameEnded: TypedEvent<void>;
 
-  constructor(
-    players: { player: Player, seed?: number | MultiGameState }[],
-  ) {
+  constructor(players: { player: Player; seed?: number | MultiGameState }[]) {
     super();
     this.#handle = null;
     this.Participants = players.map(p => ({
       Player: p.player,
       State: p.seed instanceof MultiGameState ? p.seed : new MultiGameState(p.seed),
     }));
-    this.Participants.map(p => p.State).forEach(state => state.Achievement.on((achievement) => {
-      const garbage = achievement.Garbage;
-      const states = this.Participants
-        .map(p => p.State)
-        .filter(s => s !== state);
-      states.forEach(s => s.GarbageMeter.push(new GarbageEntry(garbage.Universal, s.TicksElapsed)));
+    this.Participants.map(p => p.State).forEach(state =>
+      state.Achievement.on(achievement => {
+        const garbage = achievement.Garbage;
+        const states = this.Participants.map(p => p.State).filter(s => s !== state);
+        states.forEach(s => s.GarbageMeter.push(new GarbageEntry(garbage.Universal, s.TicksElapsed)));
 
-      // TODO: target selection
-      const availableTargets = states.filter(x => !x.IsDead);
-      const target = availableTargets[Math.floor(Math.random() * availableTargets.length)];
-      if (target)
-        target.GarbageMeter.push(new GarbageEntry(garbage.Targeted, target.TicksElapsed));
-    }));
+        // TODO: target selection
+        const availableTargets = states.filter(x => !x.IsDead);
+        const target = availableTargets[Math.floor(Math.random() * availableTargets.length)];
+        if (target) target.GarbageMeter.push(new GarbageEntry(garbage.Targeted, target.TicksElapsed));
+      })
+    );
     this.#input = new TypedEvent();
     this.#isGameEnded = false;
     this.#gameEnded = new TypedEvent();
@@ -66,8 +68,7 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
   }
 
   StopClock(): void {
-    if (this.#handle !== null)
-      window.clearInterval(this.#handle);
+    if (this.#handle !== null) window.clearInterval(this.#handle);
   }
 
   Tick(): void {
@@ -79,8 +80,6 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
       const falling = p.State.Falling;
       let success = false;
       switch (input) {
-        case GameInput.None:
-          break;
         case GameInput.HardDrop:
           success = p.State.HardDropPiece();
           break;
@@ -101,6 +100,8 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
           break;
         case GameInput.SoftDrop:
           success = p.State.SoftDropPiece(false);
+          break;
+        default:
           break;
       }
       if (input !== GameInput.None) {

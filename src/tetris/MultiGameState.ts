@@ -1,7 +1,7 @@
 import { TetrominoType } from './Tetrominos';
 import './utils/Array';
 import { GARBAGE_DELAY, GRID_HEIGHT, GRID_WIDTH, PLAYFIELD_HEIGHT } from './Consts';
-import Tetromino  from './Tetromino';
+import Tetromino from './Tetromino';
 import GameAchievement from './GameAchievement';
 import GameState, { HoldInfo, VisibleGameState } from './GameState';
 import GarbageGenerator from './GarbageGenerator';
@@ -12,6 +12,7 @@ export class GarbageEntry {
    * These lines should have holes in the same location.
    */
   Lines: number;
+
   /**
    * The game tick at which this entry is enqueued into a garbage meter
    */
@@ -23,10 +24,7 @@ export class GarbageEntry {
   }
 
   Clone(): GarbageEntry {
-    return new GarbageEntry(
-      this.Lines,
-      this.TickEnqueued,
-    );
+    return new GarbageEntry(this.Lines, this.TickEnqueued);
   }
 }
 
@@ -47,7 +45,7 @@ export class VisibleMultiGameState extends VisibleGameState {
     combo = 0,
     lastAchievement: GameAchievement | null = null,
     isDead = false,
-    garbageMeter: GarbageEntry[] = [],
+    garbageMeter: GarbageEntry[] = []
   ) {
     super(
       pieceQueue,
@@ -62,14 +60,15 @@ export class VisibleMultiGameState extends VisibleGameState {
       blockHold,
       combo,
       lastAchievement,
-      isDead,
+      isDead
     );
     this.GarbageMeter = garbageMeter.map(x => x.Clone());
   }
 }
 
-export class MultiGameState extends GameState {
+export default class MultiGameState extends GameState {
   GarbageMeter: GarbageEntry[];
+
   #garbageGenerator: GarbageGenerator | null;
 
   /**
@@ -99,7 +98,7 @@ export class MultiGameState extends GameState {
     lastAchievement?: GameAchievement | null,
     isDead?: boolean,
     garbageMeter?: GarbageEntry[],
-    garbageSeed?: number,
+    garbageSeed?: number
   );
 
   constructor(
@@ -113,10 +112,10 @@ export class MultiGameState extends GameState {
     lastAchievement: GameAchievement | null = null,
     isDead = false,
     garbageMeter: GarbageEntry[] = [],
-    garbageSeed: number| undefined = undefined,
+    garbageSeed: number | undefined = undefined
   ) {
     super(
-      pieceSeedOrState as any, /* eslint-disable-line @typescript-eslint/no-explicit-any */
+      pieceSeedOrState as any /* eslint-disable-line @typescript-eslint/no-explicit-any */,
       pieceIndex,
       falling ?? undefined,
       hold,
@@ -124,14 +123,13 @@ export class MultiGameState extends GameState {
       blockHold,
       combo,
       lastAchievement,
-      isDead,
+      isDead
     );
     if (pieceSeedOrState instanceof VisibleMultiGameState) {
       const state = pieceSeedOrState;
       this.GarbageMeter = state.GarbageMeter;
       this.#garbageGenerator = null;
-    }
-    else {
+    } else {
       this.GarbageMeter = garbageMeter;
       this.#garbageGenerator = new GarbageGenerator(garbageSeed);
     }
@@ -156,7 +154,7 @@ export class MultiGameState extends GameState {
       this.Combo,
       this.LastAchievement?.Clone(),
       this.IsDead,
-      this.GarbageMeter,
+      this.GarbageMeter
     );
   }
 
@@ -168,8 +166,7 @@ export class MultiGameState extends GameState {
       this.Grid.unshift(garbageLine.slice());
       this.Grid.pop();
     }
-    if (this.Falling)
-      while (!this.IsPieceValid()) this.Falling.Position.Y++;
+    if (this.Falling) while (!this.IsPieceValid()) this.Falling.Position.Y++;
   }
 
   /**
@@ -184,8 +181,7 @@ export class MultiGameState extends GameState {
       if (entry.Lines >= lines) {
         entry.Lines -= lines;
         lines = 0;
-      }
-      else {
+      } else {
         lines -= entry.Lines;
         this.GarbageMeter.splice(this.GarbageMeter.indexOf(entry), 1);
       }
@@ -201,8 +197,9 @@ export class MultiGameState extends GameState {
         this.SpawnGarbageLines(entry.Lines);
       }
     });
-    this.GarbageMeter = this.GarbageMeter.filter(x => this.TicksElapsed - x.TickEnqueued < GARBAGE_DELAY && x.Lines > 0);
+    this.GarbageMeter = this.GarbageMeter.filter(
+      x => this.TicksElapsed - x.TickEnqueued < GARBAGE_DELAY && x.Lines > 0
+    );
     super.Tick();
   }
 }
-export default MultiGameState;

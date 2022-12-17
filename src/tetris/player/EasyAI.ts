@@ -20,13 +20,12 @@ class HeightMap {
     }
   }
 
-  FindPattern(...pattern: number[]): number[]  {
+  FindPattern(...pattern: number[]): number[] {
     const ret: number[] = [];
     for (let i = 0; i < this.Map.length - pattern.length + 1; i++) {
       let match = true;
       for (let j = 0; j < pattern.length - 1; j++) {
-        if (this.Map[i + j + 1] - this.Map[i + j] !== pattern[j + 1] - pattern[j])
-          match = false;
+        if (this.Map[i + j + 1] - this.Map[i + j] !== pattern[j + 1] - pattern[j]) match = false;
       }
       if (match) ret.push(i);
     }
@@ -45,8 +44,10 @@ export default class HeightMapAI extends InputQueueable(AIPlayer) {
   Update(gameState: VisibleGameState, acceptInput: boolean): GameInput {
     const falling = gameState.Falling;
     if (falling === null) this.#lastPiece = null;
-    if (this.#lastPiece === null && falling !== null
-      || this.#lastPiece !== null && falling !== null && this.#lastPiece.PieceIndex !== falling.PieceIndex) {
+    if (
+      (this.#lastPiece === null && falling !== null) ||
+      (this.#lastPiece !== null && falling !== null && this.#lastPiece.PieceIndex !== falling.PieceIndex)
+    ) {
       this.#lastPiece = falling;
       const map = new HeightMap(gameState);
       const getHeightMap = (points: Vector[]): number[] => {
@@ -54,7 +55,12 @@ export default class HeightMapAI extends InputQueueable(AIPlayer) {
         const maxX = points.map(p => p.X).max();
         const ret: number[] = [];
         for (let i = minX; i <= maxX; i++) {
-          ret.push(points.filter(p => p.X === i).map(p => p.Y).min());
+          ret.push(
+            points
+              .filter(p => p.X === i)
+              .map(p => p.Y)
+              .min()
+          );
         }
         return ret;
       };
@@ -83,37 +89,32 @@ export default class HeightMapAI extends InputQueueable(AIPlayer) {
         }
       }
 
-      Tetrominos[falling.Type].Rotations
-        .flatMap((points, rot) => map.FindPattern(...getHeightMap(points.slice()))
-          .forEach(col => {
-            const index = choices.find(x => x.rot === rot && x.col === col - Tetrominos[falling.Type].Rotations[rot].map(p => p.X).min());
-            if (index) index.isMatch = true;
-          }),
-        );
+      Tetrominos[falling.Type].Rotations.flatMap((points, rot) =>
+        map.FindPattern(...getHeightMap(points.slice())).forEach(col => {
+          const index = choices.find(
+            x => x.rot === rot && x.col === col - Tetrominos[falling.Type].Rotations[rot].map(p => p.X).min()
+          );
+          if (index) index.isMatch = true;
+        })
+      );
 
       const goodChoices = choices.filter(x => x.isMatch === true);
       if (goodChoices.length === 0 && !gameState.BlockHold) {
         this.Enqueue(GameInput.Hold);
-      }
-      else {
+      } else {
         let choice: PlacementInfo;
         if (goodChoices.length > 0) {
           choice = goodChoices.minBy(c => c.top);
-        }
-        else {
+        } else {
           choice = choices.minBy(c => c.top);
         }
         rotation = choice.rot;
         column = choice.col;
-        for (let i = 0; i < rotation; i++)
-          this.Enqueue(GameInput.RotateCW);
+        for (let i = 0; i < rotation; i++) this.Enqueue(GameInput.RotateCW);
         if (column > falling.Position.X) {
-          for (let i = 0; i < column - falling.Position.X; i++)
-            this.Enqueue(GameInput.ShiftRight);
-        }
-        else if (column < falling.Position.X) {
-          for (let i = 0; i < falling.Position.X - column; i++)
-            this.Enqueue(GameInput.ShiftLeft);
+          for (let i = 0; i < column - falling.Position.X; i++) this.Enqueue(GameInput.ShiftRight);
+        } else if (column < falling.Position.X) {
+          for (let i = 0; i < falling.Position.X - column; i++) this.Enqueue(GameInput.ShiftLeft);
         }
         this.Enqueue(GameInput.HardDrop);
       }

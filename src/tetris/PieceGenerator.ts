@@ -3,7 +3,9 @@ import seededRNG, { RNG } from './utils/Random';
 
 export default class PieceGenerator {
   #RNG: RNG | null;
+
   #seed: number | null;
+
   #cache: TetrominoType[];
 
   /**
@@ -22,17 +24,15 @@ export default class PieceGenerator {
   constructor(seed: number | undefined);
 
   constructor(seed: TetrominoType[] | number | undefined = undefined, start = NaN) {
-    if (seed instanceof Array){
+    if (seed instanceof Array) {
       this.#seed = null;
       this.#cache = new Array(start + seed.length).fill(TetrominoType.None);
       this.#cache.splice(start, seed.length, ...seed);
       this.#RNG = null;
       return;
     }
-    if (seed === undefined)
-      this.#seed = Math.floor(Math.random() * (2 ** 32));
-    else
-      this.#seed = seed;
+    if (seed === undefined) this.#seed = Math.floor(Math.random() * 2 ** 32);
+    else this.#seed = seed;
     this.#RNG = seededRNG(this.#seed);
     this.#cache = [];
   }
@@ -62,14 +62,12 @@ export default class PieceGenerator {
   }
 
   Get(index: number): TetrominoType {
-    while (this.#cache.length <= index)
-      this.generate();
+    while (this.#cache.length <= index) this.generate();
     return this.#cache[index];
   }
 
-  GetRange(start: number, length: number) : TetrominoType[] {
-    while (this.#cache.length <= start + length)
-      this.generate();
+  GetRange(start: number, length: number): TetrominoType[] {
+    while (this.#cache.length <= start + length) this.generate();
     return this.#cache.slice(start, start + length);
   }
 }

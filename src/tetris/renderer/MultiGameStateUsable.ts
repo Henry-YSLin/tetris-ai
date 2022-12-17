@@ -3,8 +3,8 @@ import { Constructor } from '../utils/Mixin';
 import { Drawable } from './Renderer';
 
 export type MultiGameStateUsable = Constructor<{
-  State: MultiGameState | null,
-  ConfigureGameState(state: MultiGameState): void,
+  State: MultiGameState | null;
+  ConfigureGameState(state: MultiGameState): void;
 }>;
 
 export default function MultiGameStateUsable<TBase extends Drawable>(Base: TBase): TBase & MultiGameStateUsable {

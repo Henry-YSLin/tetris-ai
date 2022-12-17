@@ -8,13 +8,16 @@ import { TetrominoColor } from './Helper';
 import { Drawable } from './Renderer';
 
 export type GarbageMeterDrawable = Constructor<{
-  p5Draw(p5: p5Types): void,
-  ConfigureGarbageMeterDrawable(offset: Vector, scale: Vector): void
+  p5Draw(p5: p5Types): void;
+  ConfigureGarbageMeterDrawable(offset: Vector, scale: Vector): void;
 }>;
 
-export default function GarbageMeterDrawable<TBase extends Drawable & MultiGameStateUsable & BlockSizeConfigurable>(Base: TBase): TBase & GarbageMeterDrawable {
+export default function GarbageMeterDrawable<TBase extends Drawable & MultiGameStateUsable & BlockSizeConfigurable>(
+  Base: TBase
+): TBase & GarbageMeterDrawable {
   return class GarbageMeterDrawable extends Base {
     #offset: Vector;
+
     #scale: Vector;
 
     constructor(...args: any[]) {

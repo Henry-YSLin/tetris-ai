@@ -1,4 +1,4 @@
-import { Tetrominos, TetrominoType, Rotation, RotationDirection } from './Tetrominos';
+import Tetrominos, { TetrominoType, Rotation, RotationDirection } from './Tetrominos';
 import Vector from './utils/Vector';
 import './utils/Array';
 import { GRID_WIDTH } from './Consts';
@@ -6,24 +6,31 @@ import GameInput from './GameInput';
 
 export default class Tetromino {
   Type: TetrominoType;
+
   Rotation: Rotation;
+
   Position: Vector;
+
   /**
    * Lock the piece if it hasn't moved for LOCK_DELAY ticks
    */
   LastActionTick: number;
+
   /**
    * Drop by 1 if TickElapsed - DropTick >= Consts/DROP_INTERVAL
    */
   DropTick: number;
+
   /**
    * The number of actions performed without dropping
    */
   ActionCount: number;
+
   /**
    * Used for detecting T-spin
    */
   LastAction: GameInput;
+
   /**
    * Position of this tetromino in the piece queue
    */
@@ -37,16 +44,15 @@ export default class Tetromino {
     actionCount = 0,
     dropTick = NaN,
     lastAction = GameInput.None,
-    pieceIndex = 0,
+    pieceIndex = 0
   ) {
     this.Type = type;
     this.Rotation = rotation;
-    if (position)
-      this.Position = position;
+    if (position) this.Position = position;
     else {
       this.Position = new Vector(4, 21);
-      this.Bottom = 21;                                         // spawns just above playfield
-      this.Left = Math.floor(GRID_WIDTH / 2 - this.Width / 2);  // spawns centered, rounds to the left
+      this.Bottom = 21; // spawns just above playfield
+      this.Left = Math.floor(GRID_WIDTH / 2 - this.Width / 2); // spawns centered, rounds to the left
     }
     this.LastActionTick = lastActionTick;
     this.ActionCount = actionCount;
@@ -64,7 +70,7 @@ export default class Tetromino {
       this.ActionCount,
       this.DropTick,
       this.LastAction,
-      this.PieceIndex,
+      this.PieceIndex
     );
   }
 
@@ -72,8 +78,7 @@ export default class Tetromino {
     return new Tetromino(type, undefined, undefined, ticksElapsed, 0, ticksElapsed, undefined, pieceIndex);
   }
 
-
-  //#region Helper Getters
+  // #region Helper Getters
   get InternalPoints(): readonly Vector[] {
     return Tetrominos[this.Type].Rotations[this.Rotation];
   }
@@ -137,7 +142,7 @@ export default class Tetromino {
   get Height(): number {
     return this.InternalTop - this.InternalBottom + 1;
   }
-  //#endregion
+  // #endregion
 
   Rotate(direction: RotationDirection = RotationDirection.CW): void {
     this.Rotation += direction;

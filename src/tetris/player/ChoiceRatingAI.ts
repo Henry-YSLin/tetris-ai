@@ -1,23 +1,33 @@
 import GameInput from '../GameInput';
 import GameState, { VisibleGameState } from '../GameState';
-import InputQueueable from './InputQueueable';
+import WithInputQueue from './InputQueueable';
 import AIPlayer from './AIPlayer';
 import Tetromino from '../Tetromino';
 import Tetrominos, { TetrominoType } from '../Tetrominos';
 import GameAchievement from '../GameAchievement';
-import './../utils/Array';
+import '../utils/Array';
 
 export class PlacementInfo {
   rot: number;
+
   col: number;
+
   pieceTop: number;
+
   heightMap: number[];
+
   enclosedHoles: number;
+
   openHoles: number;
+
   blocksAboveHoles: number;
+
   iWells: number[];
+
   isDead: boolean;
+
   holdPiece: TetrominoType;
+
   achievement: GameAchievement | null;
 
   #cache: number | null;
@@ -42,7 +52,10 @@ export class PlacementInfo {
   }
 
   get bumpiness(): number {
-    return this.heightMap.reduce((prev, curr, idx) => prev + (idx === 0 ? 0 : Math.abs(curr - this.heightMap[idx - 1])), 0);
+    return this.heightMap.reduce(
+      (prev, curr, idx) => prev + (idx === 0 ? 0 : Math.abs(curr - this.heightMap[idx - 1])),
+      0
+    );
   }
 
   Rating(ratingFunction: (choice: PlacementInfo) => number): number {
@@ -71,7 +84,7 @@ function floodfill(x: number, y: number, grid: TetrominoType[][], map: boolean[]
   }
 }
 
-export default class ChoiceRatingAI extends InputQueueable(AIPlayer) {
+export default class ChoiceRatingAI extends WithInputQueue(AIPlayer) {
   #lastPiece: Tetromino | null;
 
   constructor() {
@@ -96,7 +109,7 @@ export default class ChoiceRatingAI extends InputQueueable(AIPlayer) {
 
   protected getChoice(gameState: VisibleGameState, falling: Tetromino): PlacementInfo {
     const choices: PlacementInfo[] = [];
-
+    // todo: i j k l ....
     for (let i = 0; i < Tetrominos[falling.Type].Rotations.length; i++) {
       const minX = Tetrominos[falling.Type].Rotations[i].map(p => p.X).min();
       const maxX = Tetrominos[falling.Type].Rotations[i].map(p => p.X).max();
@@ -104,7 +117,9 @@ export default class ChoiceRatingAI extends InputQueueable(AIPlayer) {
         const choice = new PlacementInfo(i, j);
         const simulation = new GameState(gameState);
 
-        simulation.Achievement.once((achievement) => choice.achievement = achievement);
+        simulation.Achievement.once(achievement => {
+          choice.achievement = achievement;
+        });
 
         const f = falling.Clone();
         simulation.Falling = f;
@@ -116,48 +131,51 @@ export default class ChoiceRatingAI extends InputQueueable(AIPlayer) {
 
         const holes: [number, number][] = [];
 
-        const map: boolean[][] = new Array(simulation.GridHeight).fill(null).map(_ => new Array(simulation.GridWidth).fill(false));
-        for (let i = 0; i < simulation.GridWidth; i++) {
-          floodfill(i, simulation.GridHeight - 1, simulation.Grid, map);
+        const map: boolean[][] = new Array(simulation.GridHeight)
+          .fill(null)
+          .map(_ => new Array(simulation.GridWidth).fill(false));
+        for (let k = 0; k < simulation.GridWidth; k++) {
+          floodfill(k, simulation.GridHeight - 1, simulation.Grid, map);
         }
         choice.enclosedHoles = simulation.Grid.reduce(
-          (prev, curr, y) => prev + curr.reduce(
-            (p, c, x) => p + (c === TetrominoType.None && !map[y][x] ? (holes.push([x, y]), 1) : 0),
-            0,
-          ),
-          0,
+          (prev, curr, y) =>
+            prev +
+            curr.reduce((p, c, x) => p + (c === TetrominoType.None && !map[y][x] ? (holes.push([x, y]), 1) : 0), 0),
+          0
         );
 
         const heightMap: number[] = [];
-        for (let i = 0; i < simulation.GridWidth; i++) {
-          const col = simulation.Grid.map(r => r[i]);
+        for (let k = 0; k < simulation.GridWidth; k++) {
+          const col = simulation.Grid.map(r => r[k]);
           col[-1] = TetrominoType.I;
-          let j = col.length - 1;
-          while (col[j] === TetrominoType.None) j--;
-          heightMap.push(j + 1);
+          let l = col.length - 1;
+          while (col[l] === TetrominoType.None) l--;
+          heightMap.push(l + 1);
         }
         choice.heightMap = heightMap;
         choice.openHoles = simulation.Grid.reduce(
-          (prev, curr, y) => prev + curr.reduce(
-            (p, c, x) => p + (c === TetrominoType.None && map[y][x] && y < heightMap[x] ? (holes.push([x, y]), 1) : 0),
-            0,
-          ),
-          0,
+          (prev, curr, y) =>
+            prev +
+            curr.reduce(
+              (p, c, x) =>
+                p + (c === TetrominoType.None && map[y][x] && y < heightMap[x] ? (holes.push([x, y]), 1) : 0),
+              0
+            ),
+          0
         );
 
         choice.blocksAboveHoles = holes.reduce((prev, [x, y]) => {
-          for (let i = y; i < heightMap[x]; i++) {
-            if (simulation.Grid[x][i] !== TetrominoType.None)
-            prev++;
+          for (let k = y; k < heightMap[x]; k++) {
+            if (simulation.Grid[x][k] !== TetrominoType.None) prev++;
           }
           return prev;
         }, 0);
 
         choice.iWells = [];
-        for (let i = 0; i < simulation.GridWidth; i++) {
+        for (let k = 0; k < simulation.GridWidth; k++) {
           const diffs: number[] = [];
-          if (i > 0) diffs.push(heightMap[i - 1] - heightMap[i]);
-          if (i < simulation.GridWidth - 1) diffs.push(heightMap[i + 1] - heightMap[i]);
+          if (k > 0) diffs.push(heightMap[k - 1] - heightMap[k]);
+          if (k < simulation.GridWidth - 1) diffs.push(heightMap[k + 1] - heightMap[k]);
           choice.iWells.push(Math.max(0, Math.min(...diffs)));
         }
 
@@ -176,39 +194,34 @@ export default class ChoiceRatingAI extends InputQueueable(AIPlayer) {
   Update(gameState: VisibleGameState, acceptInput: boolean): GameInput {
     const falling = gameState.Falling;
     if (falling === null) this.#lastPiece = null;
-    if (this.#lastPiece === null && falling !== null
-      || this.#lastPiece !== null && falling !== null && this.#lastPiece.PieceIndex !== falling.PieceIndex) {
+    if (
+      (this.#lastPiece === null && falling !== null) ||
+      (this.#lastPiece !== null && falling !== null && this.#lastPiece.PieceIndex !== falling.PieceIndex)
+    ) {
       this.#lastPiece = falling;
 
       const choice = this.getChoice(gameState, falling);
       let holdChoice: PlacementInfo = PlacementInfo.Never;
       const simulation = new GameState(gameState);
       simulation.HoldPiece();
-      if (simulation.Falling)
-        holdChoice = this.getChoice(simulation.GetVisibleState(), simulation.Falling);
+      if (simulation.Falling) holdChoice = this.getChoice(simulation.GetVisibleState(), simulation.Falling);
 
       if (holdChoice.Rating(this.rateChoice) > choice.Rating(this.rateChoice)) {
         this.Enqueue(GameInput.Hold);
-      }
-      else {
+      } else {
         const column = choice.col;
         const rotation = choice.rot;
 
-        if (rotation === 1)
-          this.Enqueue(GameInput.RotateCW);
-        else if (rotation === 3)
-          this.Enqueue(GameInput.RotateCCW);
+        if (rotation === 1) this.Enqueue(GameInput.RotateCW);
+        else if (rotation === 3) this.Enqueue(GameInput.RotateCCW);
         else if (rotation === 2) {
           this.Enqueue(GameInput.RotateCW);
           this.Enqueue(GameInput.RotateCW);
         }
         if (column > falling.Position.X) {
-          for (let i = 0; i < column - falling.Position.X; i++)
-            this.Enqueue(GameInput.ShiftRight);
-        }
-        else if (column < falling.Position.X) {
-          for (let i = 0; i < falling.Position.X - column; i++)
-            this.Enqueue(GameInput.ShiftLeft);
+          for (let i = 0; i < column - falling.Position.X; i++) this.Enqueue(GameInput.ShiftRight);
+        } else if (column < falling.Position.X) {
+          for (let i = 0; i < falling.Position.X - column; i++) this.Enqueue(GameInput.ShiftLeft);
         }
         this.Enqueue(GameInput.HardDrop);
       }

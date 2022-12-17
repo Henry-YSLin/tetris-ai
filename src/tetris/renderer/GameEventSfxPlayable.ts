@@ -1,18 +1,21 @@
 import p5Types from 'p5';
+import { Howl } from 'howler';
 import { Constructor } from '../utils/Mixin';
 import { GetSFX, GameEventSFX } from './Helper';
 import { Drawable } from './Renderer';
-import { Howl } from 'howler';
 import { GameStateUsable } from './GameStateUsable';
 
 export type GameEventSfxPlayable = Constructor<{
-  p5Setup(p5: p5Types, canvasParentRef: Element): void,
-  ConfigureGameEventSfxPlayable(volume: number): void,
+  p5Setup(p5: p5Types, canvasParentRef: Element): void;
+  ConfigureGameEventSfxPlayable(volume: number): void;
 }>;
 
-export default function GameEventSfxPlayable<TBase extends Drawable & GameStateUsable>(Base: TBase): TBase & GameEventSfxPlayable {
+export default function GameEventSfxPlayable<TBase extends Drawable & GameStateUsable>(
+  Base: TBase
+): TBase & GameEventSfxPlayable {
   return class GameEventSfxPlayable extends Base {
     #sounds: Map<GameEventSFX, Howl>;
+
     #volume: number;
 
     constructor(...args: any[]) {
@@ -24,10 +27,12 @@ export default function GameEventSfxPlayable<TBase extends Drawable & GameStateU
     ConfigureGameEventSfxPlayable(volume: number): void {
       this.#volume = volume;
       if (this.State === null) {
-        console.error('ConfigureGameEventSfxPlayable called before this.State is assigned. Beware of the call order of Configure_ functions.');
+        console.error(
+          'ConfigureGameEventSfxPlayable called before this.State is assigned. Beware of the call order of Configure_ functions.'
+        );
         return;
       }
-      this.State.Achievement.on((achievement) => {
+      this.State.Achievement.on(achievement => {
         const sfx = GetSFX(achievement);
         if (!sfx) return;
         sfx.forEach(s => this.#sounds.get(s)?.play());
@@ -39,13 +44,15 @@ export default function GameEventSfxPlayable<TBase extends Drawable & GameStateU
 
     p5Setup(p5: p5Types, canvasParentRef: Element): void {
       super.p5Setup(p5, canvasParentRef);
-      Object.entries(GameEventSFX).forEach(([, value]) => this.#sounds.set(
-        value,
-        new Howl({
-          src: [value],
-          volume: this.#volume,
-        }),
-      ));
+      Object.entries(GameEventSFX).forEach(([, value]) =>
+        this.#sounds.set(
+          value,
+          new Howl({
+            src: [value],
+            volume: this.#volume,
+          })
+        )
+      );
     }
   };
 }

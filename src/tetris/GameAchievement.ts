@@ -5,18 +5,16 @@ export enum AchievementType {
   PerfectClear,
 }
 
-export class GameAchievement {
+export default class GameAchievement {
   LinesCleared: number[];
+
   Type: AchievementType;
+
   Combo: number;
+
   BackToBack: boolean;
 
-  constructor(
-    linesCleared: number[],
-    type: AchievementType,
-    combo: number,
-    backToBack: boolean,
-  ) {
+  constructor(linesCleared: number[], type: AchievementType, combo: number, backToBack: boolean) {
     this.LinesCleared = linesCleared;
     this.Type = type;
     this.Combo = combo;
@@ -24,12 +22,7 @@ export class GameAchievement {
   }
 
   Clone(): GameAchievement {
-    return new GameAchievement(
-      this.LinesCleared,
-      this.Type,
-      this.Combo,
-      this.BackToBack,
-    );
+    return new GameAchievement(this.LinesCleared, this.Type, this.Combo, this.BackToBack);
   }
 
   /**
@@ -37,7 +30,7 @@ export class GameAchievement {
    * Used for sizing related UI.
    */
   get Rating(): number {
-    let ret = Math.pow(1.1, this.LinesCleared.length);
+    let ret = 1.1 ** this.LinesCleared.length;
     switch (this.Type) {
       case AchievementType.PerfectClear:
         ret *= 1.5;
@@ -47,14 +40,14 @@ export class GameAchievement {
         ret *= 1.1;
     }
     if (this.BackToBack) ret *= 1.1;
-    if (this.Combo) ret *= Math.pow(1.05, this.Combo);
+    if (this.Combo) ret *= 1.05 ** this.Combo;
     return ret;
   }
 
   /**
    * Lines of garbage sent by this achievement
    */
-  get Garbage(): { Targeted: number, Universal: number } {
+  get Garbage(): { Targeted: number; Universal: number } {
     let targeted = 0;
     let universal = 0;
     if (this.BackToBack) targeted++;
@@ -85,8 +78,7 @@ export class GameAchievement {
     }
     if (this.Type === AchievementType.PerfectClear) {
       universal += 6;
-    }
-    else if (this.Type === AchievementType.LineClear) {
+    } else if (this.Type === AchievementType.LineClear) {
       switch (this.LinesCleared.length) {
         case 0:
         case 1:
@@ -101,11 +93,9 @@ export class GameAchievement {
           targeted += 4;
           break;
       }
-    }
-    else if (this.Type === AchievementType.TSpinMini) {
+    } else if (this.Type === AchievementType.TSpinMini) {
       targeted += this.LinesCleared.length;
-    }
-    else if (this.Type === AchievementType.TSpin) {
+    } else if (this.Type === AchievementType.TSpin) {
       targeted += this.LinesCleared.length * 2;
 
       // special bonus for B2b T-spin triple
@@ -153,10 +143,11 @@ export class GameAchievement {
     return [subtitle.trim(), title.trim()];
   }
 }
-export default GameAchievement;
 
 export function BackToBackEligible(achievement: GameAchievement): boolean {
-  return achievement.Type === AchievementType.LineClear && achievement.LinesCleared.length >= 4
-    || (achievement.Type === AchievementType.TSpin
-    || achievement.Type === AchievementType.TSpinMini) && achievement.LinesCleared.length > 0;
+  return (
+    (achievement.Type === AchievementType.LineClear && achievement.LinesCleared.length >= 4) ||
+    ((achievement.Type === AchievementType.TSpin || achievement.Type === AchievementType.TSpinMini) &&
+      achievement.LinesCleared.length > 0)
+  );
 }

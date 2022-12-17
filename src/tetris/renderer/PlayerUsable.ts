@@ -3,8 +3,8 @@ import { Constructor } from '../utils/Mixin';
 import { Drawable } from './Renderer';
 
 export type PlayerUsable = Constructor<{
-  Player: Player | null,
-  ConfigurePlayer(player: Player): void,
+  Player: Player | null;
+  ConfigurePlayer(player: Player): void;
 }>;
 
 export default function PlayerUsable<TBase extends Drawable>(Base: TBase): TBase & PlayerUsable {

@@ -1,5 +1,6 @@
 import { TICK_RATE } from '../Consts';
-import GameInput, { GameInputResult } from '../GameInput';
+import GameInput from '../GameInput';
+import GameInputResult from '../GameInputResult';
 import GameState from '../GameState';
 import Game from './Game';
 import Player from '../player/Player';
@@ -8,21 +9,20 @@ import TypedEvent from '../utils/TypedEvent';
 
 export default class SingleplayerGame extends Game {
   State: GameState;
+
   Player: Player;
+
   #handle: number | null;
+
   #input: TypedEvent<GameInputResult>;
 
-  constructor(
-    player: Player,
-    seed: number | GameState | undefined = undefined,
-  ) {
+  constructor(player: Player, seed: number | GameState | undefined = undefined) {
     super();
     this.#handle = null;
     this.Player = player;
     if (seed instanceof GameState) {
       this.State = seed;
-    }
-    else {
+    } else {
       this.State = new GameState(seed);
     }
     this.#input = new TypedEvent();
@@ -41,8 +41,7 @@ export default class SingleplayerGame extends Game {
   }
 
   StopClock(): void {
-    if (this.#handle !== null)
-      window.clearInterval(this.#handle);
+    if (this.#handle !== null) window.clearInterval(this.#handle);
   }
 
   Tick(): void {
@@ -52,8 +51,6 @@ export default class SingleplayerGame extends Game {
     const falling = this.State.Falling;
     let success = false;
     switch (input) {
-      case GameInput.None:
-        break;
       case GameInput.HardDrop:
         success = this.State.HardDropPiece();
         break;
@@ -74,6 +71,8 @@ export default class SingleplayerGame extends Game {
         break;
       case GameInput.SoftDrop:
         success = this.State.SoftDropPiece(false);
+        break;
+      default:
         break;
     }
     if (input !== GameInput.None) {

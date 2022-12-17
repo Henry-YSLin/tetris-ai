@@ -24,64 +24,66 @@ export enum RotationDirection {
   CCW = -1,
 }
 
-type WallKickInfo = Readonly<[
-  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
-  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
-  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
-  {[RotationDirection.CCW]:Readonly<Vector[]>, [RotationDirection.CW]: Readonly<Vector[]>},
-]>;
+type WallKickInfo = Readonly<
+  [
+    { [RotationDirection.CCW]: Readonly<Vector[]>; [RotationDirection.CW]: Readonly<Vector[]> },
+    { [RotationDirection.CCW]: Readonly<Vector[]>; [RotationDirection.CW]: Readonly<Vector[]> },
+    { [RotationDirection.CCW]: Readonly<Vector[]>; [RotationDirection.CW]: Readonly<Vector[]> },
+    { [RotationDirection.CCW]: Readonly<Vector[]>; [RotationDirection.CW]: Readonly<Vector[]> }
+  ]
+>;
 const WallKick3x3: WallKickInfo = Object.freeze([
   {
     [-1]: [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
-    [1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
+    1: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
   },
   {
     [-1]: [new Vector(0, 0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
-    [1]: [new Vector(0, 0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
+    1: [new Vector(0, 0), new Vector(1, 0), new Vector(1, -1), new Vector(0, 2), new Vector(1, 2)],
   },
   {
     [-1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, 1), new Vector(0, -2), new Vector(-1, -2)],
-    [1]: [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
+    1: [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(0, -2), new Vector(1, -2)],
   },
   {
     [-1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
-    [1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
+    1: [new Vector(0, 0), new Vector(-1, 0), new Vector(-1, -1), new Vector(0, 2), new Vector(-1, 2)],
   },
 ] as const);
 const WallKick4x4: WallKickInfo = Object.freeze([
   {
     [-1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
-    [1]: [new Vector(0, 0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
+    1: [new Vector(0, 0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
   },
   {
     [-1]: [new Vector(0, 0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
-    [1]: [new Vector(0, 0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
+    1: [new Vector(0, 0), new Vector(-1, 0), new Vector(2, 0), new Vector(-1, 2), new Vector(2, -1)],
   },
   {
     [-1]: [new Vector(0, 0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
-    [1]: [new Vector(0, 0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
+    1: [new Vector(0, 0), new Vector(2, 0), new Vector(-1, 0), new Vector(2, 1), new Vector(-1, -2)],
   },
   {
     [-1]: [new Vector(0, 0), new Vector(-2, 0), new Vector(1, 0), new Vector(-2, -1), new Vector(1, 2)],
-    [1]: [new Vector(0, 0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
+    1: [new Vector(0, 0), new Vector(1, 0), new Vector(-2, 0), new Vector(1, -2), new Vector(-2, 1)],
   },
 ] as const);
 const WallKickDisable: WallKickInfo = Object.freeze([
   {
     [-1]: [new Vector(0, 0)],
-    [1]: [new Vector(0, 0)],
+    1: [new Vector(0, 0)],
   },
   {
     [-1]: [new Vector(0, 0)],
-    [1]: [new Vector(0, 0)],
+    1: [new Vector(0, 0)],
   },
   {
     [-1]: [new Vector(0, 0)],
-    [1]: [new Vector(0, 0)],
+    1: [new Vector(0, 0)],
   },
   {
     [-1]: [new Vector(0, 0)],
-    [1]: [new Vector(0, 0)],
+    1: [new Vector(0, 0)],
   },
 ] as const);
 
@@ -90,7 +92,7 @@ interface tetrominoInfo {
   readonly WallKick: WallKickInfo;
 }
 type TetrominoInfo = Readonly<tetrominoInfo>;
-export const Tetrominos : Record<TetrominoType, TetrominoInfo> = Object.freeze({
+const Tetrominos: Record<TetrominoType, TetrominoInfo> = Object.freeze({
   [TetrominoType.None]: {
     Rotations: [[]],
     WallKick: WallKickDisable,
@@ -123,9 +125,7 @@ export const Tetrominos : Record<TetrominoType, TetrominoInfo> = Object.freeze({
     WallKick: WallKick3x3,
   },
   [TetrominoType.O]: {
-    Rotations: [
-      [new Vector(0, 0), new Vector(0, 1), new Vector(1, 0), new Vector(1, 1)],
-    ],
+    Rotations: [[new Vector(0, 0), new Vector(0, 1), new Vector(1, 0), new Vector(1, 1)]],
     WallKick: WallKickDisable,
   },
   [TetrominoType.S]: {
@@ -156,9 +156,7 @@ export const Tetrominos : Record<TetrominoType, TetrominoInfo> = Object.freeze({
     WallKick: WallKick3x3,
   },
   [TetrominoType.Garbage]: {
-    Rotations: [
-      [new Vector(0, 0)],
-    ],
+    Rotations: [[new Vector(0, 0)]],
     WallKick: WallKickDisable,
   },
 } as const);
