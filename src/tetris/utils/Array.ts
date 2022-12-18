@@ -1,8 +1,9 @@
+/* eslint-disable no-extend-native */
 export {};
 declare global {
   interface Array<T> {
     max(this: Array<T>): T;
-    maxBy(this: Array<T>, iterator: <TReturn>(item: T) => TReturn): T;
+    maxBy<TReturn>(this: Array<T>, iterator: (item: T) => TReturn): T;
     min(this: Array<T>): T;
     minBy<TReturn>(this: Array<T>, iterator: (item: T) => TReturn): T;
     sum(this: Array<number>): number;
@@ -32,7 +33,7 @@ if (!Array.prototype.maxBy) {
     enumerable: false,
     writable: false,
     configurable: false,
-    value<T, TKey>(this: Array<T>, iterator: <TKey>(item: T) => TKey): T {
+    value<T, TKey>(this: Array<T>, iterator: (item: T) => TKey): T {
       let len = this.length;
       let max: TKey = iterator(this[this.length - 1]);
       let maxItem: T = this[this.length - 1];
@@ -72,7 +73,7 @@ if (!Array.prototype.minBy) {
     enumerable: false,
     writable: false,
     configurable: false,
-    value<T, TKey>(this: Array<T>, iterator: <TKey>(item: T) => TKey): T {
+    value<T, TKey>(this: Array<T>, iterator: (item: T) => TKey): T {
       let len = this.length;
       let min: TKey = iterator(this[this.length - 1]);
       let minItem: T = this[this.length - 1];
