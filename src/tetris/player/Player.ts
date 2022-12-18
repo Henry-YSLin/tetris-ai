@@ -1,11 +1,22 @@
 import GameInput from '../GameInput';
 import { VisibleGameState } from '../GameState';
-import { Constructor } from '../utils/Mixin';
+import InputManager, { InputControl } from './input/InputManager';
 
-export default class Player {
-  Tick(_gameState: VisibleGameState): GameInput {
-    return GameInput.None;
+export default abstract class Player {
+  #inputManager: InputManager;
+
+  public get InputControl(): InputControl {
+    return this.#inputManager;
   }
-}
 
-export type Playable = Constructor<Player>;
+  protected constructor(inputManager: InputManager) {
+    this.#inputManager = inputManager;
+  }
+
+  public Tick(gameState: VisibleGameState): GameInput {
+    this.ProcessTick(gameState, this.InputControl);
+    return this.#inputManager.Tick(gameState);
+  }
+
+  protected abstract ProcessTick(gameState: VisibleGameState, inputControl: InputControl): void;
+}

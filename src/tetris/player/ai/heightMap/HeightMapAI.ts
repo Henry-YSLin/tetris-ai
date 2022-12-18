@@ -1,47 +1,21 @@
-import GameInput from '../GameInput';
-import GameState, { VisibleGameState } from '../GameState';
-import InputQueueable from './InputQueueable';
-import AIPlayer from './AIPlayer';
-import Tetromino from '../Tetromino';
-import Tetrominos, { TetrominoType } from '../Tetrominos';
-import Vector from '../utils/Vector';
+import GameInput from '../../../GameInput';
+import GameState, { VisibleGameState } from '../../../GameState';
+import AIPlayer from '../AIPlayer';
+import Tetromino from '../../../Tetromino';
+import Tetrominos from '../../../Tetrominos';
+import Vector from '../../../utils/Vector';
+import { DelayedInputControl } from '../../input/DelayedInputManager';
+import HeightMap from './HeightMap';
 
-class HeightMap {
-  Map: number[];
-
-  constructor(state: VisibleGameState) {
-    this.Map = [];
-    for (let i = 0; i < state.GridWidth; i++) {
-      const col = state.Grid.map(r => r[i]);
-      col[-1] = TetrominoType.I;
-      let j = col.length - 1;
-      while (col[j] === TetrominoType.None) j--;
-      this.Map.push(j + 1);
-    }
-  }
-
-  FindPattern(...pattern: number[]): number[] {
-    const ret: number[] = [];
-    for (let i = 0; i < this.Map.length - pattern.length + 1; i++) {
-      let match = true;
-      for (let j = 0; j < pattern.length - 1; j++) {
-        if (this.Map[i + j + 1] - this.Map[i + j] !== pattern[j + 1] - pattern[j]) match = false;
-      }
-      if (match) ret.push(i);
-    }
-    return ret;
-  }
-}
-
-export default class HeightMapAI extends InputQueueable(AIPlayer) {
+export default class HeightMapAI extends AIPlayer {
   #lastPiece: Tetromino | null;
 
-  constructor() {
+  public constructor() {
     super();
     this.#lastPiece = null;
   }
 
-  Update(gameState: VisibleGameState, acceptInput: boolean): GameInput {
+  protected override ProcessTick(gameState: VisibleGameState, inputControl: DelayedInputControl): void {
     const falling = gameState.Falling;
     if (falling === null) this.#lastPiece = null;
     if (
@@ -100,7 +74,7 @@ export default class HeightMapAI extends InputQueueable(AIPlayer) {
 
       const goodChoices = choices.filter(x => x.isMatch === true);
       if (goodChoices.length === 0 && !gameState.BlockHold) {
-        this.Enqueue(GameInput.Hold);
+        inputControl.addInput(GameInput.Hold);
       } else {
         let choice: PlacementInfo;
         if (goodChoices.length > 0) {
@@ -110,15 +84,14 @@ export default class HeightMapAI extends InputQueueable(AIPlayer) {
         }
         rotation = choice.rot;
         column = choice.col;
-        for (let i = 0; i < rotation; i++) this.Enqueue(GameInput.RotateCW);
+        for (let i = 0; i < rotation; i++) inputControl.addInput(GameInput.RotateCW);
         if (column > falling.Position.X) {
-          for (let i = 0; i < column - falling.Position.X; i++) this.Enqueue(GameInput.ShiftRight);
+          for (let i = 0; i < column - falling.Position.X; i++) inputControl.addInput(GameInput.ShiftRight);
         } else if (column < falling.Position.X) {
-          for (let i = 0; i < falling.Position.X - column; i++) this.Enqueue(GameInput.ShiftLeft);
+          for (let i = 0; i < falling.Position.X - column; i++) inputControl.addInput(GameInput.ShiftLeft);
         }
-        this.Enqueue(GameInput.HardDrop);
+        inputControl.addInput(GameInput.HardDrop);
       }
     }
-    return super.Update(gameState, acceptInput);
   }
 }

@@ -1,4 +1,12 @@
+import { VisibleGameState } from '../GameState';
+import InputManager, { InputControl } from './input/InputManager';
 import Player from './Player';
-import InputQueueable from './InputQueueable';
 
-export default class HumanPlayer extends InputQueueable(Player) {}
+export default class HumanPlayer extends Player {
+  public constructor() {
+    super(new InputManager());
+  }
+
+  // human player input is added externally
+  protected ProcessTick(_gameState: VisibleGameState, _inputControl: InputControl): void {}
+}

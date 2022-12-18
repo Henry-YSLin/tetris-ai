@@ -7,10 +7,14 @@ import LocalMutiplayerGame from '../tetris/game/LocalMultiplayerGame';
 import MultiplayerMainRenderer from '../tetris/renderer/MultiplayerMainRenderer';
 import MultiplayerSpectatingRenderer from '../tetris/renderer/MultiplayerSpectatingRenderer';
 import Renderer from '../tetris/renderer/Renderer';
-import HeightMapAI from '../tetris/player/EasyAI';
-import ChoiceRatingAI from '../tetris/player/ChoiceRatingAI';
-import MediumRenAI from '../tetris/player/MediumRenAI';
-import MediumTetrisAI from '../tetris/player/MediumTetrisAI';
+import HeightMapAI from '../tetris/player/ai/heightMap/HeightMapAI';
+import ChoiceRatingAI from '../tetris/player/ai/choiceRating/ChoiceRatingAI';
+import MediumRenAI from '../tetris/player/ai/choiceRating/MediumRenAI';
+import MediumTetrisAI from '../tetris/player/ai/choiceRating/MediumTetrisAI';
+import BasicChoiceRatingAI from '../tetris/player/ai/choiceRating/BasicChoiceRatingAI';
+import TopOutAI from '../tetris/player/ai/TopOutAI';
+import RandomAI from '../tetris/player/ai/RandomAI';
+import IdleAI from '../tetris/player/ai/IdleAI';
 
 export default function LocalMultiGame() {
   const [renderers, setRenderers] = useState<Renderer[]>();
@@ -22,8 +26,10 @@ export default function LocalMultiGame() {
     data.rounds++;
     const player1: Player = new HumanPlayer();
     const aiPlayers: Player[] = [];
-    aiPlayers.push(new MediumTetrisAI());
     aiPlayers.push(new MediumRenAI());
+    aiPlayers.push(new MediumTetrisAI());
+    aiPlayers.push(new BasicChoiceRatingAI());
+    aiPlayers.push(new HeightMapAI());
     const game: LocalMutiplayerGame = new LocalMutiplayerGame([
       { player: player1 },
       ...aiPlayers.map(p => ({ player: p })),

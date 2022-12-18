@@ -60,6 +60,7 @@
     "prefer-template": "warn",
     "object-curly-spacing": ["warn", "always"],
     "space-infix-ops": "warn",
-    "no-plusplus": "off"
+    "no-plusplus": "off",
+    "@typescript-eslint/explicit-member-accessibility": "error"
   }
 }
