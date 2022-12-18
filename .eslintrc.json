@@ -61,6 +61,7 @@
     "object-curly-spacing": ["warn", "always"],
     "space-infix-ops": "warn",
     "no-plusplus": "off",
-    "@typescript-eslint/explicit-member-accessibility": "error"
+    "@typescript-eslint/explicit-member-accessibility": "error",
+    "react/destructuring-assignment": "off"
   }
 }

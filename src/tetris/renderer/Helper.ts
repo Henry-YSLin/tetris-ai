@@ -30,6 +30,8 @@ export function TetrominoColor(p5: p5Types, tetromino: TetrominoType): p5Types.C
       return p5.color(229, 115, 115);
     case TetrominoType.Garbage:
       return p5.color(150);
+    default:
+      return p5.color(255, 0, 0); // red error color for invalid enum value
   }
 }
 
@@ -49,12 +51,7 @@ export function DrawTetromino(
 
 export function p5text(
   p5: p5Types,
-  str:
-    | string
-    | number
-    | boolean
-    | object
-    | any[] /* eslint-disable-line @typescript-eslint/ban-types */ /* eslint-disable-line @typescript-eslint/no-explicit-any */,
+  str: string | number | boolean | object | any[] /* eslint-disable-line @typescript-eslint/no-explicit-any */,
   x: number,
   y: number,
   x2?: number | undefined,
@@ -154,8 +151,6 @@ export function GetSFX(result: GameAchievement): GameEventSFX[] | null;
 export function GetSFX(result: GameInputResult | GameAchievement): InputSFX | GameEventSFX[] | null {
   if (result instanceof GameInputResult) {
     switch (result.Input) {
-      case GameInput.None:
-        return null;
       case GameInput.HardDrop:
         return InputSFX.Lock;
       case GameInput.RotateCCW:
@@ -168,6 +163,8 @@ export function GetSFX(result: GameInputResult | GameAchievement): InputSFX | Ga
         return InputSFX.SoftDrop;
       case GameInput.Hold:
         return result.Success ? InputSFX.Hold : null;
+      default:
+        return null;
     }
   }
   if (result instanceof GameAchievement) {
