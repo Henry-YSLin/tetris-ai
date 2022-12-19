@@ -8,13 +8,9 @@ import MultiplayerMainRenderer from '../tetris/renderer/MultiplayerMainRenderer'
 import MultiplayerSpectatingRenderer from '../tetris/renderer/MultiplayerSpectatingRenderer';
 import Renderer from '../tetris/renderer/Renderer';
 import HeightMapAI from '../tetris/player/ai/heightMap/HeightMapAI';
-import ChoiceRatingAI from '../tetris/player/ai/choiceRating/ChoiceRatingAI';
 import MediumRenAI from '../tetris/player/ai/choiceRating/MediumRenAI';
 import MediumTetrisAI from '../tetris/player/ai/choiceRating/MediumTetrisAI';
 import BasicChoiceRatingAI from '../tetris/player/ai/choiceRating/BasicChoiceRatingAI';
-import TopOutAI from '../tetris/player/ai/TopOutAI';
-import RandomAI from '../tetris/player/ai/RandomAI';
-import IdleAI from '../tetris/player/ai/IdleAI';
 
 export default function LocalMultiGame() {
   const [renderers, setRenderers] = useState<Renderer[]>();
@@ -49,6 +45,7 @@ export default function LocalMultiGame() {
       }, 1000);
     });
     return () => {
+      game.StopClock();
       setRenderers(undefined);
     };
   }, [data.wins]);
