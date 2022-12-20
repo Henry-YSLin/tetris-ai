@@ -1,5 +1,5 @@
-import { BLOCK_SIZE } from '../Consts';
-import { Constructor } from '../utils/Mixin';
+import { BLOCK_SIZE } from '../../Consts';
+import { Constructor } from '../../utils/Mixin';
 import { Drawable } from './Renderer';
 
 export type BlockSizeConfigurable = Constructor<{

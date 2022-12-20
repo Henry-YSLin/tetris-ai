@@ -24,11 +24,15 @@ export default class Component {
     DependencyStore.inject(this, dependencyContainer);
   }
 
-  public Load(parent: Container, dependencies: DependencyContainer): void {
+  public Load(parent: Container | null, dependencies: DependencyContainer): void {
     this.loadInternal(parent, dependencies, () => {});
   }
 
-  protected loadInternal(parent: Container, dependencies: DependencyContainer, intermediateAction: () => void): void {
+  protected loadInternal(
+    parent: Container | null,
+    dependencies: DependencyContainer,
+    intermediateAction: () => void
+  ): void {
     if (this.LoadState !== LoadState.NotLoaded) {
       throw new Error('Component already loaded');
     }
@@ -36,10 +40,10 @@ export default class Component {
     this.injectDependencies(dependencies);
     intermediateAction();
     this.loadState = LoadState.Ready;
-    this.LoadComplate();
+    this.LoadComplete();
   }
 
-  protected LoadComplate(): void {}
+  protected LoadComplete(): void {}
 
   public Unload(): void {
     if (this.parent !== null) {
@@ -49,10 +53,10 @@ export default class Component {
     this.loadState = LoadState.NotLoaded;
   }
 
-  protected Setup(): void {}
+  protected PreSetup(): void {}
 
   public SetupSubTree(): void {
-    this.Setup();
+    this.PreSetup();
     this.loadState = LoadState.Loaded;
   }
 
@@ -61,4 +65,6 @@ export default class Component {
   public UpdateSubTree(): void {
     this.Update();
   }
+
+  public DrawSubTree(): void {}
 }

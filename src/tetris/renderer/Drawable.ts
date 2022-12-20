@@ -1,30 +1,45 @@
+import Vector from '../utils/Vector';
 import Component from './Component';
 import Inject from './dependencyInjection/InjectDecorator';
 import Graphics from './Graphics';
 
 export default class Drawable extends Component {
-  private graphics: Graphics | null = null;
+  protected graphics: Graphics = null!;
+
+  public Offset: Vector = new Vector(0, 0);
+
+  public Scale: Vector = new Vector(1, 1);
+
+  public Size: Vector = new Vector(0, 0);
 
   @Inject(Graphics)
   private loadDrawable(graphics: Graphics): void {
     this.graphics = graphics;
   }
 
+  protected applyTransform(graphics: Graphics): void {
+    const { p5 } = graphics;
+    p5.translate(this.Offset.X, this.Offset.Y);
+    p5.scale(this.Scale.X, this.Scale.Y);
+  }
+
   public override SetupSubTree(): void {
     super.SetupSubTree();
 
-    if (!this.graphics) throw new Error('Graphics not ready at setup');
-    this.GraphicsSetup(this.graphics);
+    this.graphics.p5.push();
+    this.applyTransform(this.graphics);
+    this.Setup(this.graphics);
+    this.graphics.p5.pop();
   }
 
-  public override UpdateSubTree(): void {
-    super.UpdateSubTree();
-
-    if (!this.graphics) throw new Error('Graphics not ready at update');
+  public override DrawSubTree(): void {
+    this.graphics.p5.push();
+    this.applyTransform(this.graphics);
     this.Draw(this.graphics);
+    this.graphics.p5.pop();
   }
 
-  protected GraphicsSetup(graphics: Graphics): void {}
+  protected Setup(graphics: Graphics): void {}
 
   protected Draw(graphics: Graphics): void {}
 }
