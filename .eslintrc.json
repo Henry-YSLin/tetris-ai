@@ -54,14 +54,18 @@
     "@typescript-eslint/no-var-requires": "off",
     "prefer-destructuring": ["warn", { "object": true, "array": false }],
     "no-unused-vars": "off",
-    "@typescript-eslint/no-explicit-any": ["error", { "ignoreRestArgs": true }],
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val|props|^_" }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { "varsIgnorePattern": "^_", "args": "none", "caughtErrors": "all", "caughtErrorsIgnorePattern": "^_" }
+    ],
     "@typescript-eslint/no-empty-interface": "off",
     "prefer-template": "warn",
     "object-curly-spacing": ["warn", "always"],
     "space-infix-ops": "warn",
     "no-plusplus": "off",
     "@typescript-eslint/explicit-member-accessibility": "error",
-    "react/destructuring-assignment": "off"
+    "react/destructuring-assignment": "off",
+    "react/no-unused-class-component-methods": "off"
   }
 }

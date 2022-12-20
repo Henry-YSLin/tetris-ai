@@ -17,7 +17,7 @@ export default class InputManager implements InputControl {
     this.#inputQueue.push(...inputs);
   }
 
-  public Tick(_gameState: VisibleGameState): GameInput {
+  public Tick(gameState: VisibleGameState): GameInput {
     return this.#inputQueue.shift() ?? GameInput.None;
   }
 }
