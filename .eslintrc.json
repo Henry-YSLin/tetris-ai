@@ -27,15 +27,8 @@
       }
     }
   },
-  "plugins": ["@typescript-eslint", "import", "react-prefer-function-component", "prettier"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "airbnb",
-    "airbnb-typescript",
-    "plugin:react-prefer-function-component/recommended",
-    "prettier"
-  ],
+  "plugins": ["@typescript-eslint", "import", "prettier"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "airbnb", "airbnb-typescript", "prettier"],
 
   "rules": {
     // "indent": "off",
