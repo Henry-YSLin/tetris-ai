@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Sketch from 'react-p5';
 import Player from '../tetris/player/Player';
-import SingleplayerGame from '../tetris/game/SingleplayerGame';
 import HumanPlayer from '../tetris/player/HumanPlayer';
+import SingleplayerGame from '../tetris/game/SingleplayerGame';
 import SingleplayerRenderer from '../tetris/renderer/SingleplayerRenderer';
 
 export default function TestGame() {

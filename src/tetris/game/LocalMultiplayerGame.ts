@@ -22,11 +22,11 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
     super();
     this.#handle = null;
     this.Participants = players.map(p => ({
-      Player: p.player,
-      State: p.seed instanceof MultiGameState ? p.seed : new MultiGameState(p.seed),
+      player: p.player,
+      state: p.seed instanceof MultiGameState ? p.seed : new MultiGameState(p.seed),
     }));
     this.Participants.map(p => p.State).forEach(state =>
-      state.Achievement.on(achievement => {
+      state.Achievement.On(achievement => {
         const garbage = achievement.Garbage;
         const states = this.Participants.map(p => p.State).filter(s => s !== state);
         states.forEach(s => s.GarbageMeter.push(new GarbageEntry(garbage.Universal, s.TicksElapsed)));
@@ -105,11 +105,11 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
           break;
       }
       if (input !== GameInput.None) {
-        this.#input.emit(new GameInputResult(p.State.TicksElapsed, input, success, falling, p.Player));
+        this.#input.Emit(new GameInputResult(p.State.TicksElapsed, input, success, falling, p.Player));
       }
     });
     if (!this.#isGameEnded && this.IsGameEnded) {
-      this.#gameEnded.emit();
+      this.#gameEnded.Emit();
     }
   }
 }

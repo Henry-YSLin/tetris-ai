@@ -13,9 +13,9 @@ export type GarbageMeterDrawable = Constructor<{
 }>;
 
 export default function GarbageMeterDrawable<TBase extends Drawable & MultiGameStateUsable & BlockSizeConfigurable>(
-  Base: TBase
+  base: TBase
 ): TBase & GarbageMeterDrawable {
-  return class GarbageMeterDrawable extends Base {
+  return class GarbageMeterDrawable extends base {
     #offset: Vector;
 
     #scale: Vector;

@@ -14,9 +14,9 @@ export default abstract class Player {
   }
 
   public Tick(gameState: VisibleGameState): GameInput {
-    this.ProcessTick(gameState, this.InputControl);
+    this.processTick(gameState, this.InputControl);
     return this.#inputManager.Tick(gameState);
   }
 
-  protected abstract ProcessTick(gameState: VisibleGameState, inputControl: InputControl): void;
+  protected abstract processTick(gameState: VisibleGameState, inputControl: InputControl): void;
 }

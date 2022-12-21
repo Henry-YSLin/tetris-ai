@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import LocalMultiGame from './pages/LocalMultiGame';
 import TestGame from './pages/TestGame';
 
-const router = createBrowserRouter([
+const ROUTER = createBrowserRouter([
   {
     path: '/',
     element: <Home />,
@@ -22,5 +22,5 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return <RouterProvider router={ROUTER} />;
 }

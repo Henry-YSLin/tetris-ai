@@ -20,7 +20,7 @@ export default class Container extends Drawable {
 
   public override Load(parent: Container | null, dependencies: DependencyContainer): void {
     this.loadInternal(parent, dependencies, () => {
-      this.dependencies = dependencies.createChildContainer();
+      this.dependencies = dependencies.CreateChildContainer();
       this.registerDependencies(this.dependencies);
       this.children.forEach(child => child.Load(this, this.dependencies));
     });
@@ -57,7 +57,7 @@ export default class Container extends Drawable {
 
     this.graphics.p5.push();
     this.applyTransform(this.graphics);
-    this.Setup(this.graphics);
+    this.setup(this.graphics);
     this.children.forEach(child => child.SetupSubTree());
     this.graphics.p5.pop();
   }
@@ -70,7 +70,7 @@ export default class Container extends Drawable {
   public override DrawSubTree(): void {
     this.graphics.p5.push();
     this.applyTransform(this.graphics);
-    this.Draw(this.graphics);
+    this.draw(this.graphics);
     this.children.forEach(child => child.DrawSubTree());
     this.graphics.p5.pop();
   }

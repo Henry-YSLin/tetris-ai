@@ -8,5 +8,5 @@ export default class HumanPlayer extends Player {
   }
 
   // human player input is added externally
-  protected ProcessTick(gameState: VisibleGameState, inputControl: InputControl): void {}
+  protected processTick(gameState: VisibleGameState, inputControl: InputControl): void {}
 }

@@ -4,7 +4,7 @@ import { Constructor, MapToInstance } from './TypeUtils';
 export default function Inject<TDeps extends Constructor[], TConcreteDeps extends any[] = MapToInstance<TDeps>>(
   ...classTypes: TDeps
 ) {
-  return function InjectDecorator(
+  return function injectDecorator(
     targetPrototype: any,
     propertyKey: string,
     descriptor: TypedPropertyDescriptor<(...args: TConcreteDeps) => void>
@@ -15,7 +15,7 @@ export default function Inject<TDeps extends Constructor[], TConcreteDeps extend
       throw new Error(`@Inject can only be used on methods, not on ${typeof originalFunc}`);
     }
 
-    DependencyStore.register(targetPrototype.constructor, classTypes, originalFunc);
+    DependencyStore.Register(targetPrototype.constructor, classTypes, originalFunc);
 
     return descriptor;
   };

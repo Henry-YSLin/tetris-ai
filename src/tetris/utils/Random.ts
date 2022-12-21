@@ -1,5 +1,7 @@
+/* eslint-disable no-multi-assign */
+/* eslint-disable no-bitwise */
 export type RNG = () => number;
-export function seededRNG(seed: number): RNG {
+export function SeededRNG(seed: number): RNG {
   return function (): number {
     let t = (seed += 0x6d2b79f5);
     t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -7,4 +9,4 @@ export function seededRNG(seed: number): RNG {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-export default seededRNG;
+export default SeededRNG;

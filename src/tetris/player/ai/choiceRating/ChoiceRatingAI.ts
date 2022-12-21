@@ -7,13 +7,13 @@ import '../../../utils/Array';
 import RatedPlacement from './RatedPlacement';
 import { DelayedInputControl } from '../../input/DelayedInputManager';
 
-function floodfill(x: number, y: number, grid: TetrominoType[][], map: boolean[][]) {
+function Floodfill(x: number, y: number, grid: TetrominoType[][], map: boolean[][]) {
   if (grid[y][x] === TetrominoType.None && !map[y][x]) {
     map[y][x] = true;
-    if (x > 0) floodfill(x - 1, y, grid, map);
-    if (x < grid[0].length - 1) floodfill(x + 1, y, grid, map);
-    if (y > 0) floodfill(x, y - 1, grid, map);
-    if (y < grid.length - 1) floodfill(x, y + 1, grid, map);
+    if (x > 0) Floodfill(x - 1, y, grid, map);
+    if (x < grid[0].length - 1) Floodfill(x + 1, y, grid, map);
+    if (y > 0) Floodfill(x, y - 1, grid, map);
+    if (y < grid.length - 1) Floodfill(x, y + 1, grid, map);
   }
 }
 
@@ -25,14 +25,14 @@ export default abstract class ChoiceRatingAI extends AIPlayer {
   private getChoice(gameState: VisibleGameState, falling: Tetromino): RatedPlacement {
     const choices: RatedPlacement[] = [];
     // todo: i j k l ....
-    for (let i = 0; i < Tetrominos[falling.Type].Rotations.length; i++) {
-      const minX = Tetrominos[falling.Type].Rotations[i].map(p => p.X).min();
-      const maxX = Tetrominos[falling.Type].Rotations[i].map(p => p.X).max();
+    for (let i = 0; i < Tetrominos[falling.Type].rotations.length; i++) {
+      const minX = Tetrominos[falling.Type].rotations[i].map(p => p.X).min();
+      const maxX = Tetrominos[falling.Type].rotations[i].map(p => p.X).max();
       for (let j = -minX; j < gameState.GridWidth - maxX; j++) {
         const choice = new RatedPlacement(i, j, this.rateChoice);
         const simulation = new GameState(gameState);
 
-        simulation.Achievement.once(achievement => {
+        simulation.Achievement.Once(achievement => {
           choice.Achievement = achievement;
         });
 
@@ -50,7 +50,7 @@ export default abstract class ChoiceRatingAI extends AIPlayer {
           .fill(null)
           .map(_ => new Array(simulation.GridWidth).fill(false));
         for (let k = 0; k < simulation.GridWidth; k++) {
-          floodfill(k, simulation.GridHeight - 1, simulation.Grid, map);
+          Floodfill(k, simulation.GridHeight - 1, simulation.Grid, map);
         }
         choice.EnclosedHoles = simulation.Grid.reduce(
           (prev, curr, y) =>
@@ -106,7 +106,7 @@ export default abstract class ChoiceRatingAI extends AIPlayer {
     return choices[0];
   }
 
-  protected override ProcessTick(gameState: VisibleGameState, inputControl: DelayedInputControl): void {
+  protected override processTick(gameState: VisibleGameState, inputControl: DelayedInputControl): void {
     const falling = gameState.Falling;
     if (falling === null) this.#lastPiece = null;
     if (
@@ -122,23 +122,23 @@ export default abstract class ChoiceRatingAI extends AIPlayer {
       if (simulation.Falling) holdChoice = this.getChoice(simulation.GetVisibleState(), simulation.Falling);
 
       if (holdChoice.Rating > choice.Rating) {
-        inputControl.addInput(GameInput.Hold);
+        inputControl.AddInput(GameInput.Hold);
       } else {
         const column = choice.Column;
         const rotation = choice.Rotation;
 
-        if (rotation === 1) inputControl.addInput(GameInput.RotateCW);
-        else if (rotation === 3) inputControl.addInput(GameInput.RotateCCW);
+        if (rotation === 1) inputControl.AddInput(GameInput.RotateCW);
+        else if (rotation === 3) inputControl.AddInput(GameInput.RotateCCW);
         else if (rotation === 2) {
-          inputControl.addInput(GameInput.RotateCW);
-          inputControl.addInput(GameInput.RotateCW);
+          inputControl.AddInput(GameInput.RotateCW);
+          inputControl.AddInput(GameInput.RotateCW);
         }
         if (column > falling.Position.X) {
-          for (let i = 0; i < column - falling.Position.X; i++) inputControl.addInput(GameInput.ShiftRight);
+          for (let i = 0; i < column - falling.Position.X; i++) inputControl.AddInput(GameInput.ShiftRight);
         } else if (column < falling.Position.X) {
-          for (let i = 0; i < falling.Position.X - column; i++) inputControl.addInput(GameInput.ShiftLeft);
+          for (let i = 0; i < falling.Position.X - column; i++) inputControl.AddInput(GameInput.ShiftLeft);
         }
-        inputControl.addInput(GameInput.HardDrop);
+        inputControl.AddInput(GameInput.HardDrop);
       }
     }
   }

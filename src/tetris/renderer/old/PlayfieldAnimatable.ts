@@ -17,8 +17,8 @@ type HardDropAnimationData = {
 };
 
 type LineClearAnimationData = {
-  Y: number;
-  OrigY: number;
+  y: number;
+  origY: number;
 };
 
 export type PlayfieldAnimatableContent = {
@@ -35,9 +35,9 @@ export function IsPlayfieldAnimatable(maybe: Renderer): maybe is Renderer & Play
 export type PlayfieldAnimatable = Constructor<PlayfieldAnimatableContent>;
 
 export default function PlayfieldAnimatable<TBase extends Drawable & GameStateUsable & GameUsable & PlayerUsable>(
-  Base: TBase
+  base: TBase
 ): TBase & PlayfieldAnimatable {
-  return class PlayfieldAnimatable extends Base {
+  return class PlayfieldAnimatable extends base {
     HardDropAnimations: Animation<HardDropAnimationData>[];
 
     LineClearAnimations: Animation<LineClearAnimationData>[];
@@ -67,7 +67,7 @@ export default function PlayfieldAnimatable<TBase extends Drawable & GameStateUs
         );
         return;
       }
-      this.Game.Input.on(result => {
+      this.Game.Input.On(result => {
         if (result.Player !== this.Player) return;
         if (result.Input !== GameInput.HardDrop || !result.Success) return;
         if (!result.Falling) return;
@@ -87,12 +87,12 @@ export default function PlayfieldAnimatable<TBase extends Drawable & GameStateUs
           )
         );
       });
-      this.State.Achievement.on(achievement => {
+      this.State.Achievement.On(achievement => {
         let offset = 0;
         achievement.LinesCleared.forEach(line => {
-          this.LineClearAnimations.filter(x => x.Data.Y > line).forEach(x => x.Data.Y--);
+          this.LineClearAnimations.filter(x => x.Data.y > line).forEach(x => x.Data.y--);
           this.LineClearAnimations.push(
-            new Animation(1, 0, ANIMATION_DURATION + offset, { Y: line, OrigY: line }, 0, Animation.EaseOutQuint)
+            new Animation(1, 0, ANIMATION_DURATION + offset, { y: line, origY: line }, 0, Animation.EaseOutQuint)
           );
           offset += ANIMATION_DURATION / 5;
         });

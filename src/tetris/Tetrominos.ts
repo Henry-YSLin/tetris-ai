@@ -87,77 +87,77 @@ const WallKickDisable: WallKickInfo = Object.freeze([
   },
 ] as const);
 
-interface tetrominoInfo {
-  readonly Rotations: Readonly<Readonly<Vector[]>[]>;
-  readonly WallKick: WallKickInfo;
+interface BaseTetrominoInfo {
+  readonly rotations: Readonly<Readonly<Vector[]>[]>;
+  readonly wallKick: WallKickInfo;
 }
-type TetrominoInfo = Readonly<tetrominoInfo>;
+type TetrominoInfo = Readonly<BaseTetrominoInfo>;
 const Tetrominos: Record<TetrominoType, TetrominoInfo> = Object.freeze({
   [TetrominoType.None]: {
-    Rotations: [[]],
-    WallKick: WallKickDisable,
+    rotations: [[]],
+    wallKick: WallKickDisable,
   },
   [TetrominoType.I]: {
-    Rotations: [
+    rotations: [
       [new Vector(0, 2), new Vector(1, 2), new Vector(2, 2), new Vector(3, 2)],
       [new Vector(2, 0), new Vector(2, 1), new Vector(2, 2), new Vector(2, 3)],
       [new Vector(0, 1), new Vector(1, 1), new Vector(2, 1), new Vector(3, 1)],
       [new Vector(1, 0), new Vector(1, 1), new Vector(1, 2), new Vector(1, 3)],
     ],
-    WallKick: WallKick4x4,
+    wallKick: WallKick4x4,
   },
   [TetrominoType.J]: {
-    Rotations: [
+    rotations: [
       [new Vector(0, 2), new Vector(0, 1), new Vector(1, 1), new Vector(2, 1)],
       [new Vector(2, 2), new Vector(1, 2), new Vector(1, 1), new Vector(1, 0)],
       [new Vector(0, 1), new Vector(1, 1), new Vector(2, 1), new Vector(2, 0)],
       [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(1, 2)],
     ],
-    WallKick: WallKick3x3,
+    wallKick: WallKick3x3,
   },
   [TetrominoType.L]: {
-    Rotations: [
+    rotations: [
       [new Vector(0, 1), new Vector(1, 1), new Vector(2, 1), new Vector(2, 2)],
       [new Vector(1, 2), new Vector(1, 1), new Vector(1, 0), new Vector(2, 0)],
       [new Vector(0, 0), new Vector(0, 1), new Vector(1, 1), new Vector(2, 1)],
       [new Vector(0, 2), new Vector(1, 2), new Vector(1, 1), new Vector(1, 0)],
     ],
-    WallKick: WallKick3x3,
+    wallKick: WallKick3x3,
   },
   [TetrominoType.O]: {
-    Rotations: [[new Vector(0, 0), new Vector(0, 1), new Vector(1, 0), new Vector(1, 1)]],
-    WallKick: WallKickDisable,
+    rotations: [[new Vector(0, 0), new Vector(0, 1), new Vector(1, 0), new Vector(1, 1)]],
+    wallKick: WallKickDisable,
   },
   [TetrominoType.S]: {
-    Rotations: [
+    rotations: [
       [new Vector(0, 1), new Vector(1, 1), new Vector(1, 2), new Vector(2, 2)],
       [new Vector(1, 2), new Vector(1, 1), new Vector(2, 1), new Vector(2, 0)],
       [new Vector(0, 0), new Vector(1, 0), new Vector(1, 1), new Vector(2, 1)],
       [new Vector(0, 2), new Vector(0, 1), new Vector(1, 1), new Vector(1, 0)],
     ],
-    WallKick: WallKick3x3,
+    wallKick: WallKick3x3,
   },
   [TetrominoType.T]: {
-    Rotations: [
+    rotations: [
       [new Vector(0, 1), new Vector(1, 1), new Vector(1, 2), new Vector(2, 1)],
       [new Vector(1, 2), new Vector(1, 1), new Vector(2, 1), new Vector(1, 0)],
       [new Vector(0, 1), new Vector(1, 0), new Vector(1, 1), new Vector(2, 1)],
       [new Vector(1, 2), new Vector(0, 1), new Vector(1, 1), new Vector(1, 0)],
     ],
-    WallKick: WallKick3x3,
+    wallKick: WallKick3x3,
   },
   [TetrominoType.Z]: {
-    Rotations: [
+    rotations: [
       [new Vector(0, 2), new Vector(1, 1), new Vector(1, 2), new Vector(2, 1)],
       [new Vector(2, 2), new Vector(1, 1), new Vector(2, 1), new Vector(1, 0)],
       [new Vector(0, 1), new Vector(1, 0), new Vector(1, 1), new Vector(2, 0)],
       [new Vector(1, 2), new Vector(0, 1), new Vector(1, 1), new Vector(0, 0)],
     ],
-    WallKick: WallKick3x3,
+    wallKick: WallKick3x3,
   },
   [TetrominoType.Garbage]: {
-    Rotations: [[new Vector(0, 0)]],
-    WallKick: WallKickDisable,
+    rotations: [[new Vector(0, 0)]],
+    wallKick: WallKickDisable,
   },
 } as const);
 export default Tetrominos;

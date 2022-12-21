@@ -12,27 +12,27 @@ export default class TypedEvent<T> {
 
   private listenersOncer: Listener<T>[] = [];
 
-  on = (listener: Listener<T>): Disposable => {
+  On = (listener: Listener<T>): Disposable => {
     this.listeners.push(listener);
     return {
-      dispose: () => this.off(listener),
+      dispose: () => this.Off(listener),
     };
   };
 
-  once = (listener: Listener<T>): void => {
+  Once = (listener: Listener<T>): void => {
     this.listenersOncer.push(listener);
   };
 
-  off = (listener: Listener<T>): void => {
+  Off = (listener: Listener<T>): void => {
     const callbackIndex = this.listeners.indexOf(listener);
     if (callbackIndex > -1) this.listeners.splice(callbackIndex, 1);
   };
 
-  emit = (event: T): void => {
+  Emit = (event: T): void => {
     /** Update any general listeners */
     this.listeners.forEach(listener => listener(event));
 
-    /** Clear the `once` queue */
+    /** Clear the `Once` queue */
     if (this.listenersOncer.length > 0) {
       const toCall = this.listenersOncer;
       this.listenersOncer = [];
@@ -40,5 +40,5 @@ export default class TypedEvent<T> {
     }
   };
 
-  pipe = (te: TypedEvent<T>): Disposable => this.on(e => te.emit(e));
+  Pipe = (te: TypedEvent<T>): Disposable => this.On(e => te.Emit(e));
 }

@@ -9,14 +9,14 @@ interface DependencyInfo {
 class DependencyStore {
   private dependencyMap: Map<Constructor, DependencyInfo> = new Map();
 
-  public register(classType: Constructor, dependencies: Constructor[], loader: (...args: any) => void): void {
+  public Register(classType: Constructor, dependencies: Constructor[], loader: (...args: any) => void): void {
     this.dependencyMap.set(classType, {
       dependencies,
       loader,
     });
   }
 
-  public inject(instance: any, dependencyContainer: DependencyContainer): void {
+  public Inject(instance: any, dependencyContainer: DependencyContainer): void {
     // get all constructors in the prototype chain of instance
     const constructors: Constructor[] = [];
     let prototype = Object.getPrototypeOf(instance);
@@ -32,7 +32,7 @@ class DependencyStore {
     constructors.forEach(ctor => {
       const dependencyInfo = this.dependencyMap.get(ctor);
       if (dependencyInfo) {
-        const dependencies = dependencyInfo.dependencies.map(dependency => dependencyContainer.resolve(dependency));
+        const dependencies = dependencyInfo.dependencies.map(dependency => dependencyContainer.Resolve(dependency));
         dependencyInfo.loader.apply(instance, dependencies);
       }
     });

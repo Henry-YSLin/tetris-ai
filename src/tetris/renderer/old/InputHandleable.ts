@@ -14,8 +14,8 @@ export type InputHandleable = Constructor<{
   p5KeyReleased(p5: p5Types): void;
 }>;
 
-export default function InputHandleable<TBase extends Drawable & PlayerUsable>(Base: TBase): TBase & InputHandleable {
-  return class InputHandleable extends Base {
+export default function InputHandleable<TBase extends Drawable & PlayerUsable>(base: TBase): TBase & InputHandleable {
+  return class InputHandleable extends base {
     protected keyHold: GameInput;
 
     protected keyDelay: number;
@@ -31,7 +31,7 @@ export default function InputHandleable<TBase extends Drawable & PlayerUsable>(B
       if (this.keyHold !== GameInput.None) {
         if (this.Player instanceof HumanPlayer) {
           if (this.keyDelay <= 0) {
-            this.Player.InputControl.addInput(this.keyHold);
+            this.Player.InputControl.AddInput(this.keyHold);
             this.keyDelay = DAS_INTERVAL;
           }
           this.keyDelay--;
@@ -48,7 +48,7 @@ export default function InputHandleable<TBase extends Drawable & PlayerUsable>(B
       if (p5.keyCode === p5.DOWN_ARROW) this.keyHold = GameInput.SoftDrop;
       if (p5.keyCode === p5.SHIFT) this.keyHold = GameInput.Hold;
       if (p5.key === ' ') this.keyHold = GameInput.HardDrop;
-      this.Player.InputControl.addInput(this.keyHold);
+      this.Player.InputControl.AddInput(this.keyHold);
       this.keyDelay = DAS_DELAY;
     }
 

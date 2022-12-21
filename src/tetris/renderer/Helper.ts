@@ -49,7 +49,7 @@ export function DrawTetromino(
   });
 }
 
-export function p5text(
+export function p5Text(
   p5: p5Types,
   str: string | number | boolean | object | any[] /* eslint-disable-line @typescript-eslint/no-explicit-any */,
   x: number,
@@ -136,11 +136,11 @@ export enum GameEventVoice {
   Combo5 = '/assets/voice/voice_combo05.wav',
 }
 
-export function isGameEventSFX(maybe: string): maybe is keyof typeof GameEventSFX {
+export function IsGameEventSFX(maybe: string): maybe is keyof typeof GameEventSFX {
   return Object.keys(GameEventSFX).find(x => x === maybe) !== undefined;
 }
 
-export function isGameEventVoice(maybe: string): maybe is keyof typeof GameEventVoice {
+export function IsGameEventVoice(maybe: string): maybe is keyof typeof GameEventVoice {
   return Object.keys(GameEventVoice).find(x => x === maybe) !== undefined;
 }
 
@@ -171,7 +171,7 @@ export function GetSFX(result: GameInputResult | GameAchievement): InputSFX | Ga
     const ret: GameEventSFX[] = [];
     if (result.Combo > 0) {
       const comboSfx = `Combo${Math.min(20, result.Combo)}`;
-      if (isGameEventSFX(comboSfx)) ret.push(GameEventSFX[comboSfx]);
+      if (IsGameEventSFX(comboSfx)) ret.push(GameEventSFX[comboSfx]);
     }
     if (result.Type === AchievementType.PerfectClear) {
       ret.push(GameEventSFX.PerfectClear);
@@ -188,11 +188,11 @@ export function GetSFX(result: GameInputResult | GameAchievement): InputSFX | Ga
       else if (result.LinesCleared.length === 3) gameEventSfx += 'Triple';
       else if (result.LinesCleared.length === 4) gameEventSfx += 'Tetris';
     }
-    if (isGameEventSFX(gameEventSfx)) ret.push(GameEventSFX[gameEventSfx]);
+    if (IsGameEventSFX(gameEventSfx)) ret.push(GameEventSFX[gameEventSfx]);
     else if (gameEventSfx.startsWith('B2b')) {
       // Attempt to get the normal version if there is no back-to-back version
       gameEventSfx = gameEventSfx.substr(3);
-      if (isGameEventSFX(gameEventSfx)) {
+      if (IsGameEventSFX(gameEventSfx)) {
         ret.push(GameEventSFX[gameEventSfx]);
       }
     }
@@ -216,17 +216,17 @@ export function GetVoice(result: GameAchievement): GameEventVoice | null {
     else if (result.LinesCleared.length === 3) gameEventVoice += 'Triple';
     else if (result.LinesCleared.length === 4) gameEventVoice += 'Tetris';
   }
-  if (isGameEventVoice(gameEventVoice) && gameEventVoice !== 'Single') return GameEventVoice[gameEventVoice];
+  if (IsGameEventVoice(gameEventVoice) && gameEventVoice !== 'Single') return GameEventVoice[gameEventVoice];
   if (gameEventVoice.startsWith('B2b')) {
     // Attempt to get the normal version if there is no back-to-back version
     gameEventVoice = gameEventVoice.substr(3);
-    if (isGameEventVoice(gameEventVoice)) {
+    if (IsGameEventVoice(gameEventVoice)) {
       return GameEventVoice[gameEventVoice];
     }
   }
   if (result.Combo > 0) {
     const comboVoice = `Combo${Math.min(5, result.Combo)}`;
-    if (isGameEventVoice(comboVoice)) return GameEventVoice[comboVoice];
+    if (IsGameEventVoice(comboVoice)) return GameEventVoice[comboVoice];
   }
   return null;
 }

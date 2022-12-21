@@ -242,19 +242,19 @@ export default class GameState {
   Get(p: Vector): TetrominoType | null;
 
   Get(xOrP: number | Vector, y: number | undefined = undefined): TetrominoType | null {
-    let _x: number;
-    let _y: number;
+    let px: number;
+    let py: number;
     if (xOrP instanceof Vector) {
-      _x = xOrP.X;
-      _y = xOrP.Y;
+      px = xOrP.X;
+      py = xOrP.Y;
     } else if (y !== undefined) {
-      _x = xOrP;
-      _y = y;
+      px = xOrP;
+      py = y;
     } else {
       return null;
     }
-    if (_x < 0 || _y < 0 || _x >= GRID_WIDTH || _y >= GRID_HEIGHT) return null;
-    return this.Grid[_y][_x];
+    if (px < 0 || py < 0 || px >= GRID_WIDTH || py >= GRID_HEIGHT) return null;
+    return this.Grid[py][px];
   }
 
   /**
@@ -285,7 +285,7 @@ export default class GameState {
     this.BlockHold = false;
     if (!this.IsPieceValid()) {
       this.IsDead = true;
-      this.#dead.emit();
+      this.#dead.Emit();
       return false;
     }
     return true;
@@ -371,7 +371,7 @@ export default class GameState {
     }
     achievement.BackToBack = BackToBackEligible(achievement) && achievement.BackToBack;
     const last = achievement.Clone();
-    this.#achievement.emit(achievement);
+    this.#achievement.Emit(achievement);
     this.LastAchievement = last;
   }
 
@@ -388,7 +388,7 @@ export default class GameState {
     this.ClearLines(this.Falling);
     if (this.Falling.Points.map(p => p.Y).min() >= this.PlayfieldHeight) {
       this.IsDead = true;
-      this.#dead.emit();
+      this.#dead.Emit();
     }
     this.Falling = null;
     return true;
@@ -402,7 +402,7 @@ export default class GameState {
    */
   RotatePiece(direction: RotationDirection = RotationDirection.CW): boolean {
     if (this.Falling === null) return false;
-    const kick = Tetrominos[this.Falling.Type].WallKick[this.Falling.Rotation][direction].find(p => {
+    const kick = Tetrominos[this.Falling.Type].wallKick[this.Falling.Rotation][direction].find(p => {
       const falling = this.Falling?.Clone();
       if (!falling) return false;
       falling.Rotate(direction);

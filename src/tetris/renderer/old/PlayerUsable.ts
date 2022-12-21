@@ -7,8 +7,8 @@ export type PlayerUsable = Constructor<{
   ConfigurePlayer(player: Player): void;
 }>;
 
-export default function PlayerUsable<TBase extends Drawable>(Base: TBase): TBase & PlayerUsable {
-  return class PlayerUsable extends Base {
+export default function PlayerUsable<TBase extends Drawable>(base: TBase): TBase & PlayerUsable {
+  return class PlayerUsable extends base {
     Player: Player | null;
 
     constructor(...args: any[]) {

@@ -14,9 +14,9 @@ export type PlayerSfxPlayable = Constructor<{
 }>;
 
 export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable & PlayerUsable>(
-  Base: TBase
+  base: TBase
 ): TBase & PlayerSfxPlayable {
-  return class PlayerSfxPlayable extends Base {
+  return class PlayerSfxPlayable extends base {
     #lastInput: GameInputResult | null;
 
     #sounds: Map<InputSFX, Howl>;
@@ -44,7 +44,7 @@ export default function PlayerSfxPlayable<TBase extends Drawable & GameUsable & 
         );
         return;
       }
-      this.Game.Input.on(result => {
+      this.Game.Input.On(result => {
         if (result.Player !== this.Player) return;
         const last = this.#lastInput;
         this.#lastInput = result ?? null;

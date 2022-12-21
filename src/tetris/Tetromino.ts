@@ -80,11 +80,11 @@ export default class Tetromino {
 
   // #region Helper Getters
   get InternalPoints(): readonly Vector[] {
-    return Tetrominos[this.Type].Rotations[this.Rotation];
+    return Tetrominos[this.Type].rotations[this.Rotation];
   }
 
   get Points(): Vector[] {
-    return Tetrominos[this.Type].Rotations[this.Rotation].map(p => p.Add(this.Position));
+    return Tetrominos[this.Type].rotations[this.Rotation].map(p => p.Add(this.Position));
   }
 
   get InternalLeft(): number {
@@ -146,7 +146,7 @@ export default class Tetromino {
 
   Rotate(direction: RotationDirection = RotationDirection.CW): void {
     this.Rotation += direction;
-    const { length } = Tetrominos[this.Type].Rotations;
+    const { length } = Tetrominos[this.Type].rotations;
     if (this.Rotation >= length) this.Rotation = 0;
     if (this.Rotation < 0) this.Rotation = length - 1;
   }

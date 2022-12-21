@@ -11,9 +11,9 @@ export type GameEventVoicePlayable = Constructor<{
 }>;
 
 export default function GameEventVoicePlayable<TBase extends Drawable & GameStateUsable>(
-  Base: TBase
+  base: TBase
 ): TBase & GameEventVoicePlayable {
-  return class GameEventVoicePlayable extends Base {
+  return class GameEventVoicePlayable extends base {
     #sounds: Map<GameEventVoice, Howl>;
 
     #volume: number;
@@ -32,7 +32,7 @@ export default function GameEventVoicePlayable<TBase extends Drawable & GameStat
         );
         return;
       }
-      this.State.Achievement.on(achievement => {
+      this.State.Achievement.On(achievement => {
         const voice = GetVoice(achievement);
         if (!voice) return;
         this.#sounds.get(voice)?.play();

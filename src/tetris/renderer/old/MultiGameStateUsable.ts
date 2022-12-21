@@ -7,8 +7,8 @@ export type MultiGameStateUsable = Constructor<{
   ConfigureGameState(state: MultiGameState): void;
 }>;
 
-export default function MultiGameStateUsable<TBase extends Drawable>(Base: TBase): TBase & MultiGameStateUsable {
-  return class MultiGameStateUsable extends Base {
+export default function MultiGameStateUsable<TBase extends Drawable>(base: TBase): TBase & MultiGameStateUsable {
+  return class MultiGameStateUsable extends base {
     State: MultiGameState | null;
 
     constructor(...args: any[]) {

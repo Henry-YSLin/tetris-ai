@@ -1,4 +1,4 @@
-import seededRNG, { RNG } from './utils/Random';
+import SeededRNG, { RNG } from './utils/Random';
 
 export default class GarbageGenerator {
   #RNG: RNG;
@@ -8,7 +8,7 @@ export default class GarbageGenerator {
   constructor(seed?: number) {
     if (seed === undefined) this.#seed = Math.floor(Math.random() * 2 ** 32);
     else this.#seed = seed;
-    this.#RNG = seededRNG(this.#seed);
+    this.#RNG = SeededRNG(this.#seed);
   }
 
   get Seed(): number {

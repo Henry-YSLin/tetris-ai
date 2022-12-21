@@ -10,28 +10,28 @@ export default class DependencyContainer {
     this.#dependencyMap = new Map();
   }
 
-  public register(instance: any): void {
+  public Register(instance: any): void {
     this.#dependencyMap.set(instance.constructor, instance);
   }
 
-  public unregister(classType: Constructor): void {
+  public Unregister(classType: Constructor): void {
     this.#dependencyMap.delete(classType);
   }
 
-  public resolve<T>(classType: Constructor<T>): T {
+  public Resolve<T>(classType: Constructor<T>): T {
     const instance = this.#dependencyMap.get(classType);
     if (instance) {
       return instance;
     }
 
     if (this.Parent) {
-      return this.Parent.resolve(classType);
+      return this.Parent.Resolve(classType);
     }
 
     throw new Error(`Cannot resolve ${classType.name}`);
   }
 
-  public createChildContainer(): DependencyContainer {
+  public CreateChildContainer(): DependencyContainer {
     return new DependencyContainer(this);
   }
 }

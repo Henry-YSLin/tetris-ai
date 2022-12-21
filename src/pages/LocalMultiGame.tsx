@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Sketch from 'react-p5';
 import { useStates } from 'use-states';
+import Sketch from 'react-p5';
 import Player from '../tetris/player/Player';
 import HumanPlayer from '../tetris/player/HumanPlayer';
 import LocalMutiplayerGame from '../tetris/game/LocalMultiplayerGame';
@@ -35,7 +35,7 @@ export default function LocalMultiGame() {
     game.Participants.slice(1).forEach(p => aiRenderers.push(new MultiplayerSpectatingRenderer(game, p)));
     setRenderers([renderer1, ...aiRenderers]);
     setTimeout(() => game.StartClock(), 1000);
-    game.GameEnded.once(() => {
+    game.GameEnded.Once(() => {
       game.StopClock();
       setTimeout(() => {
         let w: number[] | null = data.wins?.slice();

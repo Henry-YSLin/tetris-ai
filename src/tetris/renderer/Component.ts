@@ -21,7 +21,7 @@ export default class Component {
   }
 
   protected injectDependencies(dependencyContainer: DependencyContainer): void {
-    DependencyStore.inject(this, dependencyContainer);
+    DependencyStore.Inject(this, dependencyContainer);
   }
 
   public Load(parent: Container | null, dependencies: DependencyContainer): void {
@@ -40,10 +40,10 @@ export default class Component {
     this.injectDependencies(dependencies);
     intermediateAction();
     this.loadState = LoadState.Ready;
-    this.LoadComplete();
+    this.loadComplete();
   }
 
-  protected LoadComplete(): void {}
+  protected loadComplete(): void {}
 
   public Unload(): void {
     if (this.parent !== null) {
@@ -53,17 +53,17 @@ export default class Component {
     this.loadState = LoadState.NotLoaded;
   }
 
-  protected PreSetup(): void {}
+  protected preSetup(): void {}
 
   public SetupSubTree(): void {
-    this.PreSetup();
+    this.preSetup();
     this.loadState = LoadState.Loaded;
   }
 
-  protected Update(): void {}
+  protected update(): void {}
 
   public UpdateSubTree(): void {
-    this.Update();
+    this.update();
   }
 
   public DrawSubTree(): void {}

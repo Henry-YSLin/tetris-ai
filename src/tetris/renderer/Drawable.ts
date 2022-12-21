@@ -12,6 +12,54 @@ export default class Drawable extends Component {
 
   public Size: Vector = new Vector(0, 0);
 
+  public get OffsetX(): number {
+    return this.Offset.X;
+  }
+
+  public set OffsetX(value: number) {
+    this.Offset.X = value;
+  }
+
+  public get OffsetY(): number {
+    return this.Offset.Y;
+  }
+
+  public set OffsetY(value: number) {
+    this.Offset.Y = value;
+  }
+
+  public get ScaleX(): number {
+    return this.Scale.X;
+  }
+
+  public set ScaleX(value: number) {
+    this.Scale.X = value;
+  }
+
+  public get ScaleY(): number {
+    return this.Scale.Y;
+  }
+
+  public set ScaleY(value: number) {
+    this.Scale.Y = value;
+  }
+
+  public get Width(): number {
+    return this.Size.X;
+  }
+
+  public set Width(value: number) {
+    this.Size.X = value;
+  }
+
+  public get Height(): number {
+    return this.Size.Y;
+  }
+
+  public set Height(value: number) {
+    this.Size.Y = value;
+  }
+
   @Inject(Graphics)
   private loadDrawable(graphics: Graphics): void {
     this.graphics = graphics;
@@ -28,18 +76,18 @@ export default class Drawable extends Component {
 
     this.graphics.p5.push();
     this.applyTransform(this.graphics);
-    this.Setup(this.graphics);
+    this.setup(this.graphics);
     this.graphics.p5.pop();
   }
 
   public override DrawSubTree(): void {
     this.graphics.p5.push();
     this.applyTransform(this.graphics);
-    this.Draw(this.graphics);
+    this.draw(this.graphics);
     this.graphics.p5.pop();
   }
 
-  protected Setup(graphics: Graphics): void {}
+  protected setup(graphics: Graphics): void {}
 
-  protected Draw(graphics: Graphics): void {}
+  protected draw(graphics: Graphics): void {}
 }

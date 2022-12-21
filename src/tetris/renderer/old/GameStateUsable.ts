@@ -7,8 +7,8 @@ export type GameStateUsable = Constructor<{
   ConfigureGameState(state: GameState): void;
 }>;
 
-export default function GameStateUsable<TBase extends Drawable>(Base: TBase): TBase & GameStateUsable {
-  return class GameStateUsable extends Base {
+export default function GameStateUsable<TBase extends Drawable>(base: TBase): TBase & GameStateUsable {
+  return class GameStateUsable extends base {
     State: GameState | null;
 
     constructor(...args: any[]) {

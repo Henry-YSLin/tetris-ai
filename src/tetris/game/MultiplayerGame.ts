@@ -3,8 +3,8 @@ import Player from '../player/Player';
 import MultiGameState from '../MultiGameState';
 
 export interface Participant {
-  Player: Player;
-  State: MultiGameState;
+  player: Player;
+  state: MultiGameState;
 }
 
 export default abstract class MultiplayerGame extends Game {

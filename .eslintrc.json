@@ -27,8 +27,15 @@
       }
     }
   },
-  "plugins": ["@typescript-eslint", "import", "prettier"],
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "airbnb", "airbnb-typescript", "prettier"],
+  "plugins": ["@typescript-eslint", "import", "react-prefer-function-component", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "airbnb",
+    "airbnb-typescript",
+    "plugin:react-prefer-function-component/recommended",
+    "prettier"
+  ],
 
   "rules": {
     // "indent": "off",
@@ -67,6 +74,59 @@
     "@typescript-eslint/explicit-member-accessibility": "error",
     "react/destructuring-assignment": "off",
     "react/no-unused-class-component-methods": "off",
-    "@typescript-eslint/no-non-null-assertion": "off"
+    "react/sort-comp": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      { "format": ["UPPER_CASE", "PascalCase"], "selector": "variable", "modifiers": ["global", "const"] },
+      { "format": ["camelCase"], "selector": ["variable", "parameter"], "leadingUnderscore": "allow" },
+      {
+        "format": ["camelCase"],
+        "selector": ["function", "classMethod", "accessor", "parameterProperty", "classProperty"]
+      },
+      {
+        "format": ["camelCase"],
+        "selector": ["objectLiteralMethod", "objectLiteralProperty"],
+        "filter": {
+          "regex": "^\\d+$",
+          "match": false
+        }
+      },
+      {
+        "format": ["PascalCase"],
+        "selector": ["classMethod", "accessor", "parameterProperty", "classProperty"],
+        "modifiers": ["public"]
+      },
+      {
+        "format": ["PascalCase"],
+        "selector": ["enumMember", "class", "interface", "typeAlias", "enum", "typeParameter"]
+      },
+      { "format": ["PascalCase"], "selector": "function", "modifiers": ["global"] },
+      { "format": ["PascalCase"], "selector": "function", "modifiers": ["exported"] },
+      { "format": ["camelCase", "PascalCase"], "selector": ["typeMethod", "typeProperty"] },
+      {
+        "format": ["PascalCase"],
+        "selector": [
+          "classMethod",
+          "accessor",
+          "parameterProperty",
+          "classProperty",
+          "enumMember",
+          "class",
+          "interface",
+          "typeAlias",
+          "enum",
+          "typeParameter",
+          "function",
+          "typeMethod",
+          "typeProperty"
+        ],
+        "filter": {
+          "regex": "^(p|P)5",
+          "match": true
+        },
+        "prefix": ["p5"]
+      }
+    ]
   }
 }

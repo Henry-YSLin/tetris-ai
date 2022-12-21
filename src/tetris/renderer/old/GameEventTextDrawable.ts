@@ -5,7 +5,7 @@ import { GameStateUsable } from './GameStateUsable';
 import Animation from '../utils/Animation';
 import { ANIMATION_DURATION } from '../Consts';
 import Vector from '../utils/Vector';
-import { p5text } from './Helper';
+import { p5Text } from './Helper';
 
 type GameEventAnimationData = {
   subtitle: string;
@@ -20,9 +20,9 @@ export type GameEventTextDrawable = Constructor<{
 }>;
 
 export default function GameEventTextDrawable<TBase extends Drawable & GameStateUsable>(
-  Base: TBase
+  base: TBase
 ): TBase & GameEventTextDrawable {
-  return class GameEventTextDrawable extends Base {
+  return class GameEventTextDrawable extends base {
     #offset: Vector;
 
     #scale: Vector;
@@ -45,8 +45,8 @@ export default function GameEventTextDrawable<TBase extends Drawable & GameState
         );
         return;
       }
-      this.State.Achievement.on(achievement => {
-        const [subtitle, title] = achievement.toString();
+      this.State.Achievement.On(achievement => {
+        const [subtitle, title] = achievement.ToString();
         this.GameEventAnimation = new Animation(
           0,
           1,
@@ -71,9 +71,9 @@ export default function GameEventTextDrawable<TBase extends Drawable & GameState
         p5.fill(255, 255, 255, 255 * animation.CurrentValue);
         p5.noStroke();
         p5.textSize(15 * animation.Data.rating * 0.8);
-        p5text(p5, animation.Data.subtitle, 0, 15 * animation.Data.rating);
+        p5Text(p5, animation.Data.subtitle, 0, 15 * animation.Data.rating);
         p5.textSize(15 * animation.Data.rating);
-        p5text(p5, animation.Data.title, 0, 0);
+        p5Text(p5, animation.Data.title, 0, 0);
       }
     }
   };

@@ -11,9 +11,9 @@ export type GameEventSfxPlayable = Constructor<{
 }>;
 
 export default function GameEventSfxPlayable<TBase extends Drawable & GameStateUsable>(
-  Base: TBase
+  base: TBase
 ): TBase & GameEventSfxPlayable {
-  return class GameEventSfxPlayable extends Base {
+  return class GameEventSfxPlayable extends base {
     #sounds: Map<GameEventSFX, Howl>;
 
     #volume: number;
@@ -32,12 +32,12 @@ export default function GameEventSfxPlayable<TBase extends Drawable & GameStateU
         );
         return;
       }
-      this.State.Achievement.on(achievement => {
+      this.State.Achievement.On(achievement => {
         const sfx = GetSFX(achievement);
         if (!sfx) return;
         sfx.forEach(s => this.#sounds.get(s)?.play());
       });
-      this.State.Dead.on(() => {
+      this.State.Dead.On(() => {
         this.#sounds.get(GameEventSFX.GameOver)?.play();
       });
     }

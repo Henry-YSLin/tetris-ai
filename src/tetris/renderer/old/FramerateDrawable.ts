@@ -2,7 +2,7 @@ import p5Types from 'p5';
 import { Constructor } from '../utils/Mixin';
 import Vector from '../utils/Vector';
 import { BlockSizeConfigurable } from './BlockSizeConfigurable';
-import { p5text } from './Helper';
+import { p5Text } from './Helper';
 import { Drawable } from './Renderer';
 
 export type FramerateDrawable = Constructor<{
@@ -11,9 +11,9 @@ export type FramerateDrawable = Constructor<{
 }>;
 
 export default function FramerateDrawable<TBase extends Drawable & BlockSizeConfigurable>(
-  Base: TBase
+  base: TBase
 ): TBase & FramerateDrawable {
-  return class FramerateDrawable extends Base {
+  return class FramerateDrawable extends base {
     #offset: Vector;
 
     #scale: Vector;
@@ -34,7 +34,7 @@ export default function FramerateDrawable<TBase extends Drawable & BlockSizeConf
       this.SetTransform(p5, this.#scale.X, this.#scale.Y, this.#offset.X, this.#offset.Y);
       p5.noStroke();
       p5.fill(0);
-      p5text(p5, `FPS: ${p5.frameRate().toFixed(2)}`, 0, 0);
+      p5Text(p5, `FPS: ${p5.frameRate().toFixed(2)}`, 0, 0);
     }
   };
 }

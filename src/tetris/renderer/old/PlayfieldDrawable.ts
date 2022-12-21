@@ -15,9 +15,9 @@ export type PlayfieldDrawable = Constructor<{
 }>;
 
 export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsable & BlockSizeConfigurable>(
-  Base: TBase
+  base: TBase
 ): TBase & PlayfieldDrawable {
-  return class PlayfieldDrawable extends Base {
+  return class PlayfieldDrawable extends base {
     #offset: Vector;
 
     #scale: Vector;
@@ -116,13 +116,13 @@ export default function PlayfieldDrawable<TBase extends Drawable & GameStateUsab
         this.LineClearAnimations.forEach(animation => {
           pg.rect(
             0,
-            animation.Data.OrigY * blockSize,
+            animation.Data.origY * blockSize,
             ((state.GridWidth * blockSize) / 2) * animation.CurrentValue,
             blockSize
           );
           pg.rect(
             state.GridWidth * blockSize,
-            animation.Data.OrigY * blockSize,
+            animation.Data.origY * blockSize,
             ((-state.GridWidth * blockSize) / 2) * animation.CurrentValue,
             blockSize
           );

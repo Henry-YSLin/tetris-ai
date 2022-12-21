@@ -15,7 +15,7 @@ export default class HeightMapAI extends AIPlayer {
     this.#lastPiece = null;
   }
 
-  protected override ProcessTick(gameState: VisibleGameState, inputControl: DelayedInputControl): void {
+  protected override processTick(gameState: VisibleGameState, inputControl: DelayedInputControl): void {
     const falling = gameState.Falling;
     if (falling === null) this.#lastPiece = null;
     if (
@@ -52,8 +52,8 @@ export default class HeightMapAI extends AIPlayer {
       const choices: PlacementInfo[] = [];
       const simulation = new GameState(gameState);
 
-      for (let i = 0; i < Tetrominos[falling.Type].Rotations.length; i++) {
-        const minX = Tetrominos[falling.Type].Rotations[i].map(p => p.X).min();
+      for (let i = 0; i < Tetrominos[falling.Type].rotations.length; i++) {
+        const minX = Tetrominos[falling.Type].rotations[i].map(p => p.X).min();
         for (let j = -minX; j < gameState.GridWidth - minX; j++) {
           const f = falling.Clone();
           f.Position.X = j;
@@ -63,10 +63,10 @@ export default class HeightMapAI extends AIPlayer {
         }
       }
 
-      Tetrominos[falling.Type].Rotations.flatMap((points, rot) =>
+      Tetrominos[falling.Type].rotations.flatMap((points, rot) =>
         map.FindPattern(...getHeightMap(points.slice())).forEach(col => {
           const index = choices.find(
-            x => x.rot === rot && x.col === col - Tetrominos[falling.Type].Rotations[rot].map(p => p.X).min()
+            x => x.rot === rot && x.col === col - Tetrominos[falling.Type].rotations[rot].map(p => p.X).min()
           );
           if (index) index.isMatch = true;
         })
@@ -74,7 +74,7 @@ export default class HeightMapAI extends AIPlayer {
 
       const goodChoices = choices.filter(x => x.isMatch === true);
       if (goodChoices.length === 0 && !gameState.BlockHold) {
-        inputControl.addInput(GameInput.Hold);
+        inputControl.AddInput(GameInput.Hold);
       } else {
         let choice: PlacementInfo;
         if (goodChoices.length > 0) {
@@ -84,13 +84,13 @@ export default class HeightMapAI extends AIPlayer {
         }
         rotation = choice.rot;
         column = choice.col;
-        for (let i = 0; i < rotation; i++) inputControl.addInput(GameInput.RotateCW);
+        for (let i = 0; i < rotation; i++) inputControl.AddInput(GameInput.RotateCW);
         if (column > falling.Position.X) {
-          for (let i = 0; i < column - falling.Position.X; i++) inputControl.addInput(GameInput.ShiftRight);
+          for (let i = 0; i < column - falling.Position.X; i++) inputControl.AddInput(GameInput.ShiftRight);
         } else if (column < falling.Position.X) {
-          for (let i = 0; i < falling.Position.X - column; i++) inputControl.addInput(GameInput.ShiftLeft);
+          for (let i = 0; i < falling.Position.X - column; i++) inputControl.AddInput(GameInput.ShiftLeft);
         }
-        inputControl.addInput(GameInput.HardDrop);
+        inputControl.AddInput(GameInput.HardDrop);
       }
     }
   }

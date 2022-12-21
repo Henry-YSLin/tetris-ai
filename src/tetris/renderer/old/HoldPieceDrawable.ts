@@ -4,7 +4,7 @@ import { Constructor } from '../utils/Mixin';
 import Vector from '../utils/Vector';
 import { BlockSizeConfigurable } from './BlockSizeConfigurable';
 import { GameStateUsable } from './GameStateUsable';
-import { DrawTetromino, p5text } from './Helper';
+import { DrawTetromino, p5Text } from './Helper';
 import { Drawable } from './Renderer';
 import '../utils/Array';
 
@@ -14,9 +14,9 @@ export type HoldPieceDrawable = Constructor<{
 }>;
 
 export default function HoldPieceDrawable<TBase extends Drawable & GameStateUsable & BlockSizeConfigurable>(
-  Base: TBase
+  base: TBase
 ): TBase & HoldPieceDrawable {
-  return class HoldPieceDrawable extends Base {
+  return class HoldPieceDrawable extends base {
     #offset: Vector;
 
     #scale: Vector;
@@ -45,19 +45,19 @@ export default function HoldPieceDrawable<TBase extends Drawable & GameStateUsab
       p5.fill(255);
       p5.textAlign(p5.CENTER);
       p5.textSize(15);
-      p5text(p5, 'HOLD', blockSize * 2.5, blockSize * 5);
+      p5Text(p5, 'HOLD', blockSize * 2.5, blockSize * 5);
       p5.textAlign(p5.LEFT);
       p5.stroke(0);
       if (state.Hold) {
-        const points = Tetrominos[state.Hold.Type].Rotations[0].slice();
-        const Xs = points.map(p => p.X);
-        const Ys = points.map(p => p.Y);
-        const w = Xs.max() - Xs.min() + 1;
-        const h = Ys.max() - Ys.min() + 1;
+        const points = Tetrominos[state.Hold.Type].rotations[0].slice();
+        const allX = points.map(p => p.X);
+        const allY = points.map(p => p.Y);
+        const w = allX.max() - allX.min() + 1;
+        const h = allY.max() - allY.min() + 1;
         DrawTetromino(
           p5,
           state.Hold.Type,
-          new Vector((2.5 - w / 2) * blockSize, (2.5 - h / 2 - Ys.min()) * blockSize),
+          new Vector((2.5 - w / 2) * blockSize, (2.5 - h / 2 - allY.min()) * blockSize),
           points,
           blockSize,
           255

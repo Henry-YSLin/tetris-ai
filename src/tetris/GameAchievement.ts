@@ -47,7 +47,7 @@ export default class GameAchievement {
   /**
    * Lines of garbage sent by this achievement
    */
-  get Garbage(): { Targeted: number; Universal: number } {
+  get Garbage(): { targeted: number; universal: number } {
     let targeted = 0;
     let universal = 0;
     if (this.BackToBack) targeted++;
@@ -101,10 +101,10 @@ export default class GameAchievement {
       // special bonus for B2b T-spin triple
       if (this.BackToBack && this.LinesCleared.length === 3) targeted++;
     }
-    return { Targeted: targeted, Universal: universal };
+    return { targeted, universal };
   }
 
-  toString(): [string, string] {
+  ToString(): [string, string] {
     let subtitle = '';
     let title = '';
     if (this.Combo > 0) subtitle += `${this.Combo} REN `;

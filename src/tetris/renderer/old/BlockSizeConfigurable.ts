@@ -7,8 +7,8 @@ export type BlockSizeConfigurable = Constructor<{
   ConfigureBlockSize(blockSize: number): void;
 }>;
 
-export default function BlockSizeConfigurable<TBase extends Drawable>(Base: TBase): TBase & BlockSizeConfigurable {
-  return class BlockSizeConfigurable extends Base {
+export default function BlockSizeConfigurable<TBase extends Drawable>(base: TBase): TBase & BlockSizeConfigurable {
+  return class BlockSizeConfigurable extends base {
     protected blockSize: number;
 
     constructor(...args: any[]) {

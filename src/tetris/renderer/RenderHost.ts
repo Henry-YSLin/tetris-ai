@@ -15,11 +15,11 @@ export default class RenderHost {
   }
 
   private p5Setup(p5: p5Types, canvasParentRef: Element): void {
-    p5.createCanvas(this.renderer.Size.X, this.renderer.Size.Y).parent(canvasParentRef);
+    p5.createCanvas(this.renderer.Width, this.renderer.Height).parent(canvasParentRef);
     p5.frameRate(60);
     p5.background(100);
     this.graphics = new Graphics(p5);
-    this.dependencies.register(this.graphics);
+    this.dependencies.Register(this.graphics);
     this.renderer.Load(null, this.dependencies);
     this.renderer.SetupSubTree();
   }

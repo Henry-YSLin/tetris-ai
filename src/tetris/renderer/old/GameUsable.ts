@@ -13,8 +13,8 @@ export type GameUsable = Constructor<{
   ConfigureGame(game: Game): void;
 }>;
 
-export default function GameUsable<TBase extends Drawable>(Base: TBase): TBase & GameUsable {
-  return class GameUsable extends Base {
+export default function GameUsable<TBase extends Drawable>(base: TBase): TBase & GameUsable {
+  return class GameUsable extends base {
     Game: Game | null;
 
     constructor(...args: any[]) {
