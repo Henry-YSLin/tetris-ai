@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   root: 'src',
-  base: '/',
+  base: '/ttetris/',
   publicDir: '../public',
   plugins: [react()],
   build: {
