@@ -1,5 +1,4 @@
 import Graphics from '../../Graphics';
-import { p5Text } from '../../Helper';
 import Drawable from './Drawable';
 
 export default class FramerateDrawable extends Drawable {
@@ -7,6 +6,8 @@ export default class FramerateDrawable extends Drawable {
     const { p5 } = graphics;
     p5.noStroke();
     p5.fill(0);
-    p5Text(p5, `FPS: ${p5.frameRate().toFixed(2)}`, 0, 0);
+    p5.resetMatrix();
+    p5.scale(1.5, 1.5);
+    p5.text(`FPS: ${p5.frameRate().toFixed(2)}`, 0, 10);
   }
 }

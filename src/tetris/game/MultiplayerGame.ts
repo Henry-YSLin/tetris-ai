@@ -8,9 +8,9 @@ export interface Participant {
 }
 
 export default abstract class MultiplayerGame extends Game {
-  Participants: Participant[];
+  public Participants: Participant[];
 
-  constructor() {
+  public constructor() {
     super();
     this.Participants = [];
   }

@@ -7,7 +7,7 @@ import SingleplayerRenderer from '../tetris/renderer/SingleplayerRenderer';
 import RenderHost from '../tetris/renderer/RenderHost';
 import RenderConfiguration from '../tetris/renderer/RenderConfiguration';
 
-export default function TestGame() {
+export default function SoloGame() {
   const [, setPlayer] = useState<Player>();
   const [, setGame] = useState<SingleplayerGame>();
   const [renderer, setRenderer] = useState<RenderHost>();

@@ -8,15 +8,15 @@ import { RotationDirection } from '../Tetrominos';
 import TypedEvent from '../utils/TypedEvent';
 
 export default class SingleplayerGame extends Game {
-  State: GameState;
+  public State: GameState;
 
-  Player: Player;
+  public Player: Player;
 
   #handle: number | null;
 
   #input: TypedEvent<GameInputResult>;
 
-  constructor(player: Player, seed: number | GameState | undefined = undefined) {
+  public constructor(player: Player, seed: number | GameState | undefined = undefined) {
     super();
     this.#handle = null;
     this.Player = player;
@@ -28,23 +28,23 @@ export default class SingleplayerGame extends Game {
     this.#input = new TypedEvent();
   }
 
-  get Input(): TypedEvent<GameInputResult> {
+  public get Input(): TypedEvent<GameInputResult> {
     return this.#input;
   }
 
-  get ClockRunning(): boolean {
+  public get ClockRunning(): boolean {
     return this.#handle !== null;
   }
 
-  StartClock(): void {
+  public StartClock(): void {
     this.#handle = window.setInterval(this.Tick.bind(this), 1000 / TICK_RATE);
   }
 
-  StopClock(): void {
+  public StopClock(): void {
     if (this.#handle !== null) window.clearInterval(this.#handle);
   }
 
-  Tick(): void {
+  public Tick(): void {
     if (this.State.IsDead) return;
     this.State.Tick();
     const input = this.Player.Tick(this.State.GetVisibleState());

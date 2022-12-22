@@ -48,7 +48,7 @@ export default class MultiplayerMainRenderer extends MultiplayerRenderer {
         c.Scale = new Vector(1, 1);
       }),
       new FramerateDrawable().With(c => {
-        c.Offset = new Vector(0, this.Height - 10);
+        c.Offset = new Vector(0, this.Height - 20);
         c.Scale = new Vector(1, 1);
       })
     );

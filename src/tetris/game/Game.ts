@@ -1,9 +1,9 @@
-import { GameInputResult } from '../GameInput';
+import GameInputResult from '../GameInputResult';
 import TypedEvent from '../utils/TypedEvent';
 
 export default abstract class Game {
-  abstract get Input(): TypedEvent<GameInputResult>;
-  abstract get ClockRunning(): boolean;
-  abstract StartClock(): void;
-  abstract StopClock(): void;
+  public abstract get Input(): TypedEvent<GameInputResult>;
+  public abstract get ClockRunning(): boolean;
+  public abstract StartClock(): void;
+  public abstract StopClock(): void;
 }

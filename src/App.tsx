@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Error404 from './pages/Error404';
 import Home from './pages/Home';
 import LocalMultiGame from './pages/LocalMultiGame';
-import TestGame from './pages/TestGame';
+import SoloGame from './pages/SoloGame';
 
 const ROUTER = createBrowserRouter([
   {
@@ -12,8 +12,8 @@ const ROUTER = createBrowserRouter([
     errorElement: <Error404 />,
   },
   {
-    path: '/test',
-    element: <TestGame />,
+    path: '/solo',
+    element: <SoloGame />,
   },
   {
     path: '/multi/local',

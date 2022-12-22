@@ -43,7 +43,7 @@ export default class SingleplayerRenderer extends Renderer {
         c.Scale = new Vector(0.7, 0.7);
       }),
       new FramerateDrawable().With(c => {
-        c.Offset = new Vector(0, this.Height - 10);
+        c.Offset = new Vector(0, this.Height - 20);
         c.Scale = new Vector(1, 1);
       })
     );

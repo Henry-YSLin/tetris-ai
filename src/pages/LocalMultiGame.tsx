@@ -43,7 +43,7 @@ export default function LocalMultiGame() {
           new MultiplayerSpectatingRenderer(game, p).With(c => {
             c.Scale = new Vector(0.5, 0.5);
           }),
-          new RenderConfiguration({ soundVolume: 0.025, width: 220, height: 251 })
+          new RenderConfiguration({ soundVolume: 0.1, width: 220, height: 251 })
         )
       )
     );

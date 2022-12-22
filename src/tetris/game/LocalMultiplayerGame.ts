@@ -8,7 +8,7 @@ import MultiGameState, { GarbageEntry } from '../MultiGameState';
 import MultiplayerGame, { Participant } from './MultiplayerGame';
 
 export default class LocalMutiplayerGame extends MultiplayerGame {
-  Participants: Participant[];
+  public Participants: Participant[];
 
   #handle: number | null;
 
@@ -18,7 +18,7 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
 
   #gameEnded: TypedEvent<void>;
 
-  constructor(players: { player: Player; seed?: number | MultiGameState }[]) {
+  public constructor(players: { player: Player; seed?: number | MultiGameState }[]) {
     super();
     this.#handle = null;
     this.Participants = players.map(p => ({
@@ -29,12 +29,12 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
       state.Achievement.On(achievement => {
         const garbage = achievement.Garbage;
         const states = this.Participants.map(p => p.state).filter(s => s !== state);
-        states.forEach(s => s.GarbageMeter.push(new GarbageEntry(garbage.Universal, s.TicksElapsed)));
+        states.forEach(s => s.GarbageMeter.push(new GarbageEntry(garbage.universal, s.TicksElapsed)));
 
         // TODO: target selection
         const availableTargets = states.filter(x => !x.IsDead);
         const target = availableTargets[Math.floor(Math.random() * availableTargets.length)];
-        if (target) target.GarbageMeter.push(new GarbageEntry(garbage.Targeted, target.TicksElapsed));
+        if (target) target.GarbageMeter.push(new GarbageEntry(garbage.targeted, target.TicksElapsed));
       })
     );
     this.#input = new TypedEvent();
@@ -42,7 +42,7 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
     this.#gameEnded = new TypedEvent();
   }
 
-  get IsGameEnded(): boolean {
+  public get IsGameEnded(): boolean {
     if (this.#isGameEnded) return true;
     if (this.Participants.filter(p => !p.state.IsDead).length <= 1) {
       this.#isGameEnded = true;
@@ -51,27 +51,27 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
     return false;
   }
 
-  get Input(): TypedEvent<GameInputResult> {
+  public get Input(): TypedEvent<GameInputResult> {
     return this.#input;
   }
 
-  get GameEnded(): TypedEvent<void> {
+  public get GameEnded(): TypedEvent<void> {
     return this.#gameEnded;
   }
 
-  get ClockRunning(): boolean {
+  public get ClockRunning(): boolean {
     return this.#handle !== null;
   }
 
-  StartClock(): void {
+  public StartClock(): void {
     this.#handle = window.setInterval(this.Tick.bind(this), 1000 / TICK_RATE);
   }
 
-  StopClock(): void {
+  public StopClock(): void {
     if (this.#handle !== null) window.clearInterval(this.#handle);
   }
 
-  Tick(): void {
+  public Tick(): void {
     this.Participants.forEach(p => {
       if (p.state.IsDead) return;
       p.state.Tick();
