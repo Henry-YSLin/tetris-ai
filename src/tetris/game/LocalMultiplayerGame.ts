@@ -25,10 +25,10 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
       player: p.player,
       state: p.seed instanceof MultiGameState ? p.seed : new MultiGameState(p.seed),
     }));
-    this.Participants.map(p => p.State).forEach(state =>
+    this.Participants.map(p => p.state).forEach(state =>
       state.Achievement.On(achievement => {
         const garbage = achievement.Garbage;
-        const states = this.Participants.map(p => p.State).filter(s => s !== state);
+        const states = this.Participants.map(p => p.state).filter(s => s !== state);
         states.forEach(s => s.GarbageMeter.push(new GarbageEntry(garbage.Universal, s.TicksElapsed)));
 
         // TODO: target selection
@@ -44,7 +44,7 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
 
   get IsGameEnded(): boolean {
     if (this.#isGameEnded) return true;
-    if (this.Participants.filter(p => !p.State.IsDead).length <= 1) {
+    if (this.Participants.filter(p => !p.state.IsDead).length <= 1) {
       this.#isGameEnded = true;
       return true;
     }
@@ -73,39 +73,39 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
 
   Tick(): void {
     this.Participants.forEach(p => {
-      if (p.State.IsDead) return;
-      p.State.Tick();
-      if (p.State.IsDead) return;
-      const input = p.Player.Tick(p.State.GetVisibleState());
-      const falling = p.State.Falling;
+      if (p.state.IsDead) return;
+      p.state.Tick();
+      if (p.state.IsDead) return;
+      const input = p.player.Tick(p.state.GetVisibleState());
+      const falling = p.state.Falling;
       let success = false;
       switch (input) {
         case GameInput.HardDrop:
-          success = p.State.HardDropPiece();
+          success = p.state.HardDropPiece();
           break;
         case GameInput.Hold:
-          success = p.State.HoldPiece();
+          success = p.state.HoldPiece();
           break;
         case GameInput.RotateCW:
-          success = p.State.RotatePiece(RotationDirection.CW);
+          success = p.state.RotatePiece(RotationDirection.CW);
           break;
         case GameInput.RotateCCW:
-          success = p.State.RotatePiece(RotationDirection.CCW);
+          success = p.state.RotatePiece(RotationDirection.CCW);
           break;
         case GameInput.ShiftLeft:
-          success = p.State.ShiftPiece(-1);
+          success = p.state.ShiftPiece(-1);
           break;
         case GameInput.ShiftRight:
-          success = p.State.ShiftPiece(1);
+          success = p.state.ShiftPiece(1);
           break;
         case GameInput.SoftDrop:
-          success = p.State.SoftDropPiece(false);
+          success = p.state.SoftDropPiece(false);
           break;
         default:
           break;
       }
       if (input !== GameInput.None) {
-        this.#input.Emit(new GameInputResult(p.State.TicksElapsed, input, success, falling, p.Player));
+        this.#input.Emit(new GameInputResult(p.state.TicksElapsed, input, success, falling, p.player));
       }
     });
     if (!this.#isGameEnded && this.IsGameEnded) {

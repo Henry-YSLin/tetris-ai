@@ -28,23 +28,23 @@ export default class SingleplayerRenderer extends Renderer {
       new GameEventSfxPlayer(),
       new GameEventTextDrawable().With(c => {
         c.Offset = new Vector(blockSize * 11, blockSize * ((this.GameState?.PlayfieldHeight ?? PLAYFIELD_HEIGHT) + 1));
-        c.Size = new Vector(1, 1);
+        c.Scale = new Vector(1, 1);
       }),
       new PlayfieldDrawable().With(c => {
         c.Offset = new Vector(blockSize * 6, 0);
-        c.Size = new Vector(1, 1);
+        c.Scale = new Vector(1, 1);
       }),
       new HoldPieceDrawable().With(c => {
         c.Offset = new Vector(10, 200);
-        c.Size = new Vector(1, 1);
+        c.Scale = new Vector(1, 1);
       }),
       new PieceQueueDrawable().With(c => {
         c.Offset = new Vector(blockSize * 17, 100);
-        c.Size = new Vector(0.7, 0.7);
+        c.Scale = new Vector(0.7, 0.7);
       }),
       new FramerateDrawable().With(c => {
         c.Offset = new Vector(0, this.Height - 10);
-        c.Size = new Vector(1, 1);
+        c.Scale = new Vector(1, 1);
       })
     );
   }

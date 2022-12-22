@@ -12,11 +12,11 @@ export default class RenderConfiguration {
   public SoundVolume = 0.5;
 
   public UpdateConfig(options: OptionalFieldsOf<RenderConfiguration>): void {
-    this.Width = options.Width ?? this.Width;
-    this.Height = options.Height ?? this.Height;
-    this.BlockSize = options.BlockSize ?? this.BlockSize;
-    this.Framerate = options.Framerate ?? this.Framerate;
-    this.SoundVolume = options.SoundVolume ?? this.SoundVolume;
+    this.Width = options.width ?? this.Width;
+    this.Height = options.height ?? this.Height;
+    this.BlockSize = options.blockSize ?? this.BlockSize;
+    this.Framerate = options.framerate ?? this.Framerate;
+    this.SoundVolume = options.soundVolume ?? this.SoundVolume;
   }
 
   public constructor(options: OptionalFieldsOf<RenderConfiguration> = {}) {

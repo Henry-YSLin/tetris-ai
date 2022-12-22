@@ -4,16 +4,18 @@ import Sketch from 'react-p5';
 import Player from '../tetris/player/Player';
 import HumanPlayer from '../tetris/player/HumanPlayer';
 import LocalMutiplayerGame from '../tetris/game/LocalMultiplayerGame';
-import MultiplayerMainRenderer from '../tetris/renderer/MultiplayerRenderer';
+import MultiplayerMainRenderer from '../tetris/renderer/MultiplayerMainRenderer';
 import MultiplayerSpectatingRenderer from '../tetris/renderer/MultiplayerSpectatingRenderer';
-import Renderer from '../tetris/renderer/Renderer';
 import HeightMapAI from '../tetris/player/ai/heightMap/HeightMapAI';
 import MediumRenAI from '../tetris/player/ai/choiceRating/MediumRenAI';
 import MediumTetrisAI from '../tetris/player/ai/choiceRating/MediumTetrisAI';
 import BasicChoiceRatingAI from '../tetris/player/ai/choiceRating/BasicChoiceRatingAI';
+import RenderHost from '../tetris/renderer/RenderHost';
+import RenderConfiguration from '../tetris/renderer/RenderConfiguration';
+import Vector from '../tetris/utils/Vector';
 
 export default function LocalMultiGame() {
-  const [renderers, setRenderers] = useState<Renderer[]>();
+  const [renderers, setRenderers] = useState<RenderHost[]>();
   const data = useStates({
     rounds: 0,
     wins: null,
@@ -30,9 +32,21 @@ export default function LocalMultiGame() {
       { player: player1 },
       ...aiPlayers.map(p => ({ player: p })),
     ]);
-    const renderer1: MultiplayerMainRenderer = new MultiplayerMainRenderer(game, game.Participants[0]);
-    const aiRenderers: MultiplayerSpectatingRenderer[] = [];
-    game.Participants.slice(1).forEach(p => aiRenderers.push(new MultiplayerSpectatingRenderer(game, p)));
+    const renderer1: RenderHost = new RenderHost(
+      new MultiplayerMainRenderer(game, game.Participants[0]),
+      new RenderConfiguration()
+    );
+    const aiRenderers: RenderHost[] = [];
+    game.Participants.slice(1).forEach(p =>
+      aiRenderers.push(
+        new RenderHost(
+          new MultiplayerSpectatingRenderer(game, p).With(c => {
+            c.Scale = new Vector(0.5, 0.5);
+          }),
+          new RenderConfiguration({ soundVolume: 0.025, width: 220, height: 251 })
+        )
+      )
+    );
     setRenderers([renderer1, ...aiRenderers]);
     setTimeout(() => game.StartClock(), 1000);
     game.GameEnded.Once(() => {
@@ -40,7 +54,7 @@ export default function LocalMultiGame() {
       setTimeout(() => {
         let w: number[] | null = data.wins?.slice();
         if (!w) w = new Array(game.Participants.length).fill(0);
-        w[game.Participants.findIndex(p => !p.State.IsDead)]++;
+        w[game.Participants.findIndex(p => !p.state.IsDead)]++;
         data.wins = w;
       }, 1000);
     });
@@ -58,8 +72,8 @@ export default function LocalMultiGame() {
             <Sketch
               setup={r.SetupHandler}
               draw={r.DrawHandler}
-              keyPressed={r instanceof MultiplayerMainRenderer ? r.KeyPressedHandler : undefined}
-              keyReleased={r instanceof MultiplayerMainRenderer ? r.KeyReleasedHandler : undefined}
+              keyPressed={r.KeyPressedHandler}
+              keyReleased={r.KeyReleasedHandler}
             />
             <p>{data.wins ? `${data.wins[idx]} wins` : null}</p>
           </div>
