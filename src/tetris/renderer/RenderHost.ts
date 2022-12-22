@@ -3,6 +3,7 @@ import DependencyContainer from './dependencyInjection/DependencyContainer';
 import Graphics from './Graphics';
 import InputHandler from './components/inputHandler/InputHandler';
 import Renderer from './Renderer';
+import RenderConfiguration from './RenderConfiguration';
 
 export default class RenderHost {
   private renderer: Renderer;
@@ -11,16 +12,20 @@ export default class RenderHost {
 
   private graphics: Graphics | null = null;
 
-  public constructor(renderer: Renderer) {
+  private renderConfig: RenderConfiguration;
+
+  public constructor(renderer: Renderer, renderConfig: RenderConfiguration) {
     this.renderer = renderer;
+    this.renderConfig = renderConfig;
   }
 
   private p5Setup(p5: p5Types, canvasParentRef: Element): void {
-    p5.createCanvas(this.renderer.Width, this.renderer.Height).parent(canvasParentRef);
-    p5.frameRate(60);
+    p5.createCanvas(this.renderConfig.Width, this.renderConfig.Height).parent(canvasParentRef);
+    p5.frameRate(this.renderConfig.Framerate);
     p5.background(100);
     this.graphics = new Graphics(p5);
     this.dependencies.Register(this.graphics);
+    this.dependencies.Register(this.renderConfig);
     this.renderer.Load(null, this.dependencies);
     this.renderer.SetupSubTree();
   }

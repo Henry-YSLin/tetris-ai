@@ -1,4 +1,4 @@
-import type Container from './Container';
+import type Container from './drawables/Container';
 import DependencyContainer from '../dependencyInjection/DependencyContainer';
 import DependencyStore from '../dependencyInjection/DependencyStore';
 import LoadState from './LoadState';
@@ -18,6 +18,11 @@ export default class Component {
 
   public get IsLoaded(): boolean {
     return this.loadState >= LoadState.Ready;
+  }
+
+  public With(mutation: (c: this) => void): this {
+    mutation(this);
+    return this;
   }
 
   protected injectDependencies(dependencyContainer: DependencyContainer): void {

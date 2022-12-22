@@ -3,7 +3,7 @@ import RepeatableInputHandler from './components/inputHandler/RepeatableInputHan
 import MultiplayerRenderer from './MultiplayerRenderer';
 
 export default class MultiplayerMainRenderer extends MultiplayerRenderer {
-  public constructor(game: MultiplayerGame, participant: Participant, width: number, height: number) {
-    super(game, participant, new RepeatableInputHandler(), width, height);
+  public constructor(game: MultiplayerGame, participant: Participant) {
+    super(game, participant, new RepeatableInputHandler());
   }
 }

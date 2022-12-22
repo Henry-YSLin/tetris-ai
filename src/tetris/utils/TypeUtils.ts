@@ -17,3 +17,8 @@ export type MapToInstance<
 > = ConstructorTuple extends [infer First extends Constructor, ...infer Rest extends Constructor[]]
   ? MapToInstance<Rest, [...Result, InstanceType<First>]>
   : Result;
+
+/**
+ * Create an object type with all properties of T set to optional.
+ */
+export type OptionalFieldsOf<T> = { [Key in keyof T]?: T[Key] extends (...args: any) => any ? never : T[Key] };

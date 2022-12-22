@@ -1,4 +1,4 @@
-import { Constructor, ConcreteConstructor } from './TypeUtils';
+import { Constructor, ConcreteConstructor } from '../../utils/TypeUtils';
 
 export default class DependencyContainer {
   public readonly Parent: DependencyContainer | null;

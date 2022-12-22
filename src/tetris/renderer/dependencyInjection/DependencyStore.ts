@@ -1,5 +1,5 @@
 import DependencyContainer from './DependencyContainer';
-import { Constructor } from './TypeUtils';
+import { Constructor } from '../../utils/TypeUtils';
 
 interface DependencyInfo {
   dependencies: Constructor[];

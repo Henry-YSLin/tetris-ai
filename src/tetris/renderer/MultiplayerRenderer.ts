@@ -2,25 +2,20 @@ import MultiplayerGame, { Participant } from '../game/MultiplayerGame';
 import DependencyContainer from './dependencyInjection/DependencyContainer';
 import InputHandler from './components/inputHandler/InputHandler';
 import Renderer from './Renderer';
+import MultiGameState from '../MultiGameState';
 
 export default class MultiplayerRenderer extends Renderer {
-  public readonly MultiplayerGame: MultiplayerGame;
+  public declare readonly Game: MultiplayerGame;
 
-  public constructor(
-    game: MultiplayerGame,
-    participant: Participant,
-    inputHandler: InputHandler,
-    width: number,
-    height: number
-  ) {
+  public declare readonly GameState: MultiGameState;
+
+  public constructor(game: MultiplayerGame, participant: Participant, inputHandler: InputHandler) {
     super(game, participant.player, participant.state, inputHandler);
-    this.MultiplayerGame = game;
-    this.Width = width;
-    this.Height = height;
   }
 
   protected override registerDependencies(dependencyContainer: DependencyContainer): void {
     super.registerDependencies(dependencyContainer);
-    dependencyContainer.Register(this.MultiplayerGame, MultiplayerGame);
+    dependencyContainer.Register(this.Game, MultiplayerGame);
+    dependencyContainer.Register(this.GameState, MultiGameState);
   }
 }

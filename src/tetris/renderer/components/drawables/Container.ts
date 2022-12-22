@@ -1,5 +1,5 @@
-import type Component from './Component';
-import DependencyContainer from '../dependencyInjection/DependencyContainer';
+import type Component from '../Component';
+import DependencyContainer from '../../dependencyInjection/DependencyContainer';
 import Drawable from './Drawable';
 
 export default class Container extends Drawable {
@@ -26,10 +26,10 @@ export default class Container extends Drawable {
     });
   }
 
-  public Add(child: Component): void {
-    this.children.push(child);
+  public Add(...children: Component[]): void {
+    this.children.push(...children);
     if (this.IsLoaded) {
-      child.Load(this, this.dependencies);
+      children.forEach(child => child.Load(this, this.dependencies));
     }
   }
 

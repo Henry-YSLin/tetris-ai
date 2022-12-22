@@ -1,5 +1,5 @@
 import DependencyStore from './DependencyStore';
-import { Constructor, MapToInstance } from './TypeUtils';
+import { Constructor, MapToInstance } from '../../utils/TypeUtils';
 
 export default function Inject<TDeps extends Constructor[], TConcreteDeps extends any[] = MapToInstance<TDeps>>(
   ...classTypes: TDeps
