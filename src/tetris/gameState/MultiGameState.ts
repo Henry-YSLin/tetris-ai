@@ -1,73 +1,16 @@
-import { TetrominoType } from './Tetrominos';
-import './utils/Array';
-import { GARBAGE_DELAY, GRID_HEIGHT, GRID_WIDTH, PLAYFIELD_HEIGHT } from './Consts';
-import Tetromino from './Tetromino';
-import GameAchievement from './GameAchievement';
-import GameState, { HoldInfo, VisibleGameState } from './GameState';
-import GarbageGenerator from './GarbageGenerator';
-
-export class GarbageEntry {
-  /**
-   * The number of garbage lines this entry contains.
-   * These lines should have holes in the same location.
-   */
-  Lines: number;
-
-  /**
-   * The game tick at which this entry is enqueued into a garbage meter
-   */
-  TickEnqueued: number;
-
-  constructor(lines: number, tickEnqueued: number) {
-    this.Lines = lines;
-    this.TickEnqueued = tickEnqueued;
-  }
-
-  Clone(): GarbageEntry {
-    return new GarbageEntry(this.Lines, this.TickEnqueued);
-  }
-}
-
-export class VisibleMultiGameState extends VisibleGameState {
-  GarbageMeter: GarbageEntry[];
-
-  constructor(
-    pieceQueue: TetrominoType[] = [],
-    pieceIndex = 0,
-    grid: TetrominoType[][] | undefined = undefined,
-    gridWidth: number = GRID_WIDTH,
-    gridHeight: number = GRID_HEIGHT,
-    playfieldHeight: number = PLAYFIELD_HEIGHT,
-    falling: Tetromino | null = null,
-    hold: HoldInfo | null = null,
-    elapsed = 0,
-    blockHold = false,
-    combo = 0,
-    lastAchievement: GameAchievement | null = null,
-    isDead = false,
-    garbageMeter: GarbageEntry[] = []
-  ) {
-    super(
-      pieceQueue,
-      pieceIndex,
-      grid,
-      gridWidth,
-      gridHeight,
-      playfieldHeight,
-      falling,
-      hold,
-      elapsed,
-      blockHold,
-      combo,
-      lastAchievement,
-      isDead
-    );
-    this.GarbageMeter = garbageMeter.map(x => x.Clone());
-  }
-}
+import { TetrominoType } from '../Tetrominos';
+import '../utils/Array';
+import { GARBAGE_DELAY } from '../Consts';
+import Tetromino from '../Tetromino';
+import GameAchievement from '../GameAchievement';
+import GameState from './GameState';
+import GarbageGenerator from '../GarbageGenerator';
+import VisibleMultiGameState from './VisibleMultiGameState';
+import GarbageEntry from './GarbageEntry';
+import HoldInfo from './HoldInfo';
 
 export default class MultiGameState extends GameState {
-  GarbageMeter: GarbageEntry[];
+  public GarbageMeter: GarbageEntry[];
 
   #garbageGenerator: GarbageGenerator | null;
 
@@ -75,7 +18,7 @@ export default class MultiGameState extends GameState {
    * Create a MultiGameState from visible information, allowing gameplay simulations
    * @param visible A VisibleMultiGameState
    */
-  constructor(visible: VisibleMultiGameState);
+  public constructor(visible: VisibleMultiGameState);
 
   /**
    * Create a normal game state
@@ -87,7 +30,7 @@ export default class MultiGameState extends GameState {
    * @param blockHold Whether the hold action is disallowed
    * @param combo The number of consecutive line clear
    */
-  constructor(
+  public constructor(
     pieceSeed?: number,
     pieceIndex?: number,
     falling?: Tetromino,
@@ -101,7 +44,7 @@ export default class MultiGameState extends GameState {
     garbageSeed?: number
   );
 
-  constructor(
+  public constructor(
     pieceSeedOrState: VisibleMultiGameState | number | undefined = undefined,
     pieceIndex = 0,
     falling: Tetromino | null = null,
@@ -139,7 +82,7 @@ export default class MultiGameState extends GameState {
    * Get an object containing only information that is currently visible to the player
    * @returns An object representing game states that are currently visible to the player
    */
-  GetVisibleState(): VisibleMultiGameState {
+  public GetVisibleState(): VisibleMultiGameState {
     return new VisibleMultiGameState(
       this.PieceQueue,
       this.PieceIndex,
@@ -158,7 +101,7 @@ export default class MultiGameState extends GameState {
     );
   }
 
-  SpawnGarbageLines(lines = 1): void {
+  public SpawnGarbageLines(lines = 1): void {
     if (!this.#garbageGenerator) return;
     const garbageLine = new Array(this.GridWidth).fill(TetrominoType.Garbage);
     garbageLine[this.#garbageGenerator.Get(this.GridWidth)] = TetrominoType.None;
@@ -171,11 +114,11 @@ export default class MultiGameState extends GameState {
 
   /**
    * Cancel a specified number of lines from the garbage meter, then return the
-   * number of lines that are not yet cancelled.
+   * remaining number of lines that are not yet cancelled.
    * @param lines Lines to cancel from the garbage meter
-   * @returns The remaining lines that are not cancelled
+   * @returns The remaining number of lines that are not cancelled
    */
-  CancelGarbage(lines: number): number {
+  public CancelGarbage(lines: number): number {
     while (lines > 0 || this.GarbageMeter.length > 0) {
       const entry = this.GarbageMeter.minBy(x => x.TickEnqueued);
       if (entry.Lines >= lines) {
@@ -189,7 +132,7 @@ export default class MultiGameState extends GameState {
     return lines;
   }
 
-  Tick(): void {
+  public Tick(): void {
     if (this.IsDead) return;
     this.GarbageMeter.forEach(entry => {
       if (entry.Lines <= 0) return;

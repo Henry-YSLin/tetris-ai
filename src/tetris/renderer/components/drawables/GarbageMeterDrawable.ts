@@ -1,4 +1,4 @@
-import MultiGameState from '../../../MultiGameState';
+import MultiGameState from '../../../gameState/MultiGameState';
 import { TetrominoType } from '../../../Tetrominos';
 import Inject from '../../dependencyInjection/InjectDecorator';
 import Graphics from '../../Graphics';

@@ -98,7 +98,12 @@
       },
       {
         "format": ["PascalCase"],
-        "selector": ["classMethod", "accessor", "parameterProperty", "classProperty"],
+        "selector": ["classMethod", "accessor", "parameterProperty"],
+        "modifiers": ["public"]
+      },
+      {
+        "format": ["PascalCase", "camelCase"], // workaround for https://github.com/typescript-eslint/typescript-eslint/issues/6258
+        "selector": ["classProperty"],
         "modifiers": ["public"]
       },
       {

@@ -1,5 +1,5 @@
 import p5Types from 'p5';
-import GameState from '../../../GameState';
+import GameState from '../../../gameState/GameState';
 import Inject from '../../dependencyInjection/InjectDecorator';
 import RenderConfiguration from '../../RenderConfiguration';
 import Drawable from './Drawable';

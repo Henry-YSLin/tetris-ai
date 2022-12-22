@@ -1,6 +1,6 @@
 import Game from './Game';
 import Player from '../player/Player';
-import MultiGameState from '../MultiGameState';
+import MultiGameState from '../gameState/MultiGameState';
 
 export interface Participant {
   player: Player;

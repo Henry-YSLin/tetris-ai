@@ -15,15 +15,15 @@ export default class PieceGenerator {
    * @param cache The visible queue of pieces
    * @param start The index of the first piece in queue
    */
-  constructor(cache: TetrominoType[], start: number);
+  public constructor(cache: TetrominoType[], start: number);
 
   /**
    * Creates a seeded PieceGenerator.
    * @param seed The seed for RNG, omit for a random seed
    */
-  constructor(seed: number | undefined);
+  public constructor(seed: number | undefined);
 
-  constructor(seed: TetrominoType[] | number | undefined = undefined, start = NaN) {
+  public constructor(seed: TetrominoType[] | number | undefined = undefined, start = NaN) {
     if (seed instanceof Array) {
       this.#seed = null;
       this.#cache = new Array(start + seed.length).fill(TetrominoType.None);
@@ -37,11 +37,11 @@ export default class PieceGenerator {
     this.#cache = [];
   }
 
-  get Seed(): number | null {
+  public get Seed(): number | null {
     return this.#seed;
   }
 
-  Generate(): void {
+  public Generate(): void {
     if (this.#seed === null || this.#RNG === null) {
       this.#cache.push(TetrominoType.None);
       return;
@@ -61,12 +61,12 @@ export default class PieceGenerator {
     }
   }
 
-  Get(index: number): TetrominoType {
+  public Get(index: number): TetrominoType {
     while (this.#cache.length <= index) this.Generate();
     return this.#cache[index];
   }
 
-  GetRange(start: number, length: number): TetrominoType[] {
+  public GetRange(start: number, length: number): TetrominoType[] {
     while (this.#cache.length <= start + length) this.Generate();
     return this.#cache.slice(start, start + length);
   }

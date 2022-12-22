@@ -1,4 +1,4 @@
-import { VisibleGameState } from '../../../GameState';
+import VisibleGameState from '../../../gameState/VisibleGameState';
 import { TetrominoType } from '../../../Tetrominos';
 
 export default class HeightMap {

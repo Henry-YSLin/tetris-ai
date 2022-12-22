@@ -1,4 +1,4 @@
-import { VisibleGameState } from '../GameState';
+import VisibleGameState from '../gameState/VisibleGameState';
 import InputManager, { InputControl } from './input/InputManager';
 import Player from './Player';
 

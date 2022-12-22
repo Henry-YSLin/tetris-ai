@@ -1,122 +1,50 @@
-import Tetrominos, { TetrominoType, RotationDirection } from './Tetrominos';
-import Vector from './utils/Vector';
-import './utils/Array';
-import { DROP_INTERVAL, GRID_HEIGHT, GRID_WIDTH, LOCK_DELAY, PLAYFIELD_HEIGHT, QUEUE_LENGTH } from './Consts';
-import PieceGenerator from './PieceGenerator';
-import Tetromino from './Tetromino';
-import GameInput, { IsRotation } from './GameInput';
-import TypedEvent from './utils/TypedEvent';
-import GameAchievement, { AchievementType, BackToBackEligible } from './GameAchievement';
-
-export class VisibleGameState {
-  Grid: TetrominoType[][];
-
-  GridWidth: number;
-
-  GridHeight: number;
-
-  PlayfieldHeight: number;
-
-  Falling: Tetromino | null;
-
-  Hold: HoldInfo | null;
-
-  BlockHold: boolean;
-
-  TicksElapsed: number;
-
-  PieceQueue: TetrominoType[];
-
-  PieceIndex: number;
-
-  Combo: number;
-
-  LastAchievement: GameAchievement | null;
-
-  IsDead: boolean;
-
-  constructor(
-    pieceQueue: TetrominoType[] = [],
-    pieceIndex = 0,
-    grid: TetrominoType[][] | undefined = undefined,
-    gridWidth: number = GRID_WIDTH,
-    gridHeight: number = GRID_HEIGHT,
-    playfieldHeight: number = PLAYFIELD_HEIGHT,
-    falling: Tetromino | null = null,
-    hold: HoldInfo | null,
-    elapsed = 0,
-    blockHold = false,
-    combo = 0,
-    lastAchievement: GameAchievement | null = null,
-    isDead = false
-  ) {
-    this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
-    if (grid) grid.forEach((arr, i) => arr.forEach((p, j) => (this.Grid[i][j] = p)));
-    this.GridWidth = gridWidth;
-    this.GridHeight = gridHeight;
-    this.PlayfieldHeight = playfieldHeight;
-    this.Falling = falling ? falling.Clone() : null;
-    this.Hold = hold ? hold.Clone() : null;
-    this.BlockHold = blockHold;
-    this.TicksElapsed = elapsed;
-    this.PieceQueue = pieceQueue;
-    this.PieceIndex = pieceIndex;
-    this.Combo = combo;
-    this.LastAchievement = lastAchievement;
-    this.IsDead = isDead;
-  }
-}
-
-export class HoldInfo {
-  Type: TetrominoType;
-
-  PieceIndex: number;
-
-  constructor(type: TetrominoType, pieceIndex: number) {
-    this.Type = type;
-    this.PieceIndex = pieceIndex;
-  }
-
-  Clone(): HoldInfo {
-    return new HoldInfo(this.Type, this.PieceIndex);
-  }
-}
+import Tetrominos, { TetrominoType, RotationDirection } from '../Tetrominos';
+import Vector from '../utils/Vector';
+import '../utils/Array';
+import { DROP_INTERVAL, GRID_HEIGHT, GRID_WIDTH, LOCK_DELAY, PLAYFIELD_HEIGHT, QUEUE_LENGTH } from '../Consts';
+import PieceGenerator from '../PieceGenerator';
+import Tetromino from '../Tetromino';
+import GameInput, { IsRotation } from '../GameInput';
+import TypedEvent from '../utils/TypedEvent';
+import GameAchievement, { AchievementType, BackToBackEligible } from '../GameAchievement';
+import HoldInfo from './HoldInfo';
+import VisibleGameState from './VisibleGameState';
 
 export default class GameState {
-  Grid: TetrominoType[][];
+  public Grid: TetrominoType[][];
 
-  Falling: Tetromino | null;
+  public Falling: Tetromino | null;
 
-  Hold: HoldInfo | null;
+  public Hold: HoldInfo | null;
 
   /**
    * Whether to disallow hold, reset when a new tetromino is dequeued
    */
-  BlockHold: boolean;
+  public BlockHold: boolean;
 
   /**
    * see Consts/TICK_RATE
    */
-  TicksElapsed: number;
-
-  #pieces: PieceGenerator;
+  public TicksElapsed: number;
 
   /**
    * Index of the next piece in queue
    */
-  PieceIndex: number;
+  public PieceIndex: number;
 
   /**
    * The number of consecutive line clear
    */
-  Combo: number;
+  public Combo: number;
 
   /**
    * Used for detecting back-to-back achievements
    */
-  LastAchievement: GameAchievement | null;
+  public LastAchievement: GameAchievement | null;
 
-  IsDead: boolean;
+  public IsDead: boolean;
+
+  #pieces: PieceGenerator;
 
   #achievement: TypedEvent<GameAchievement>;
 
@@ -126,7 +54,7 @@ export default class GameState {
    * Create a GameState from visible information, allowing gameplay simulations
    * @param visible A VisibleGameState
    */
-  constructor(visible: VisibleGameState);
+  public constructor(visible: VisibleGameState);
 
   /**
    * Create a normal game state
@@ -138,7 +66,7 @@ export default class GameState {
    * @param blockHold Whether the hold action is disallowed
    * @param combo The number of consecutive line clear
    */
-  constructor(
+  public constructor(
     pieceSeed?: number,
     pieceIndex?: number,
     falling?: Tetromino,
@@ -150,7 +78,7 @@ export default class GameState {
     isDead?: boolean
   );
 
-  constructor(
+  public constructor(
     pieceSeedOrState: VisibleGameState | number | undefined = undefined,
     pieceIndex = 0,
     falling: Tetromino | null = null,
@@ -165,7 +93,12 @@ export default class GameState {
       const state = pieceSeedOrState;
       this.Grid = state.Grid;
       this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
-      if (state.Grid) state.Grid.forEach((arr, i) => arr.forEach((p, j) => (this.Grid[i][j] = p)));
+      if (state.Grid)
+        state.Grid.forEach((arr, i) =>
+          arr.forEach((p, j) => {
+            this.Grid[i][j] = p;
+          })
+        );
       this.Falling = state.Falling;
       this.Hold = state.Hold;
       this.BlockHold = state.BlockHold;
@@ -195,7 +128,7 @@ export default class GameState {
    * Get an object containing only information that is currently visible to the player
    * @returns An object representing game states that are currently visible to the player
    */
-  GetVisibleState(): VisibleGameState {
+  public GetVisibleState(): VisibleGameState {
     return new VisibleGameState(
       this.PieceQueue,
       this.PieceIndex,
@@ -213,35 +146,35 @@ export default class GameState {
     );
   }
 
-  get Achievement(): TypedEvent<GameAchievement> {
+  public get Achievement(): TypedEvent<GameAchievement> {
     return this.#achievement;
   }
 
-  get Dead(): TypedEvent<void> {
+  public get Dead(): TypedEvent<void> {
     return this.#dead;
   }
 
-  get GridWidth(): number {
+  public get GridWidth(): number {
     return GRID_WIDTH;
   }
 
-  get GridHeight(): number {
+  public get GridHeight(): number {
     return GRID_HEIGHT;
   }
 
-  get PlayfieldHeight(): number {
+  public get PlayfieldHeight(): number {
     return PLAYFIELD_HEIGHT;
   }
 
-  get PieceQueue(): TetrominoType[] {
+  public get PieceQueue(): TetrominoType[] {
     return this.#pieces.GetRange(this.PieceIndex, QUEUE_LENGTH);
   }
 
-  Get(x: number, y: number): TetrominoType | null;
+  public Get(x: number, y: number): TetrominoType | null;
 
-  Get(p: Vector): TetrominoType | null;
+  public Get(p: Vector): TetrominoType | null;
 
-  Get(xOrP: number | Vector, y: number | undefined = undefined): TetrominoType | null {
+  public Get(xOrP: number | Vector, y: number | undefined = undefined): TetrominoType | null {
     let px: number;
     let py: number;
     if (xOrP instanceof Vector) {
@@ -263,13 +196,13 @@ export default class GameState {
    * @param falling Optionally specify a falling piece to be tested
    * @returns Whether the falling piece is not out of bounds and is not overlapping with locked pieces
    */
-  IsPieceValid(falling: Tetromino | undefined = undefined): boolean {
+  public IsPieceValid(falling: Tetromino | undefined = undefined): boolean {
     if (falling) return !falling.Points.some(p => (this.Get(p) ?? TetrominoType.I) !== TetrominoType.None);
     if (this.Falling) return !this.Falling.Points.some(p => (this.Get(p) ?? TetrominoType.I) !== TetrominoType.None);
     return true;
   }
 
-  HasHold(holdInfo: HoldInfo | null | undefined = undefined): boolean {
+  public HasHold(holdInfo: HoldInfo | null | undefined = undefined): boolean {
     if (holdInfo === undefined) return this.Hold !== null && this.Hold.Type !== TetrominoType.None;
     return holdInfo !== null && holdInfo.Type !== TetrominoType.None;
   }
@@ -278,7 +211,7 @@ export default class GameState {
    * Attempt to dequeue a piece from the queue and start dropping it
    * @returns Whether the dequeue is successful
    */
-  DequeuePiece(): boolean {
+  public DequeuePiece(): boolean {
     if (this.Falling !== null) return false;
     this.Falling = Tetromino.Spawn(this.#pieces.Get(this.PieceIndex), this.TicksElapsed, this.PieceIndex);
     this.PieceIndex++;
@@ -295,7 +228,7 @@ export default class GameState {
    * Attempt to hold the current piece
    * @returns Whether the hold was successful
    */
-  HoldPiece(): boolean {
+  public HoldPiece(): boolean {
     if (this.Falling === null) return false;
     if (this.BlockHold) return false;
     let hold = this.Hold;
@@ -314,7 +247,7 @@ export default class GameState {
    * Clear lines that are full and emit events
    * @param lastPiece The most recently locked piece
    */
-  ClearLines(lastPiece: Tetromino | undefined = undefined): void {
+  public ClearLines(lastPiece: Tetromino | undefined = undefined): void {
     const linesCleared: number[] = [];
     let type: AchievementType | null = null;
     if (lastPiece?.Type === TetrominoType.T && IsRotation(lastPiece.LastAction)) {
@@ -359,17 +292,21 @@ export default class GameState {
     } else if (linesCleared.length > 1 && type === AchievementType.TSpinMini) {
       type = AchievementType.TSpin;
     }
-    const achievement = new GameAchievement(
+    let achievement = new GameAchievement(
       linesCleared,
       type ?? AchievementType.LineClear,
       this.Combo,
       this.LastAchievement ? BackToBackEligible(this.LastAchievement) : false
     );
-    if (linesCleared.length > 0) this.Combo++;
     if (!this.Grid.some(row => row.some(c => c !== TetrominoType.None))) {
-      achievement.Type = AchievementType.PerfectClear;
+      achievement = new GameAchievement(
+        achievement.LinesCleared,
+        AchievementType.PerfectClear,
+        achievement.Combo,
+        false
+      );
     }
-    achievement.BackToBack = BackToBackEligible(achievement) && achievement.BackToBack;
+    if (linesCleared.length > 0) this.Combo++;
     const last = achievement.Clone();
     this.#achievement.Emit(achievement);
     this.LastAchievement = last;
@@ -379,12 +316,14 @@ export default class GameState {
    * Attempt to lock the currently falling piece.
    * @returns Whether the lock was successful
    */
-  LockPiece(): boolean {
+  public LockPiece(): boolean {
     if (this.Falling === null) return false;
     while (!this.IsPieceValid()) {
       this.Falling.Position.Y++;
     }
-    this.Falling.Points.forEach(p => (this.Grid[p.Y][p.X] = this.Falling?.Type ?? TetrominoType.None));
+    this.Falling.Points.forEach(p => {
+      this.Grid[p.Y][p.X] = this.Falling?.Type ?? TetrominoType.None;
+    });
     this.ClearLines(this.Falling);
     if (this.Falling.Points.map(p => p.Y).min() >= this.PlayfieldHeight) {
       this.IsDead = true;
@@ -400,7 +339,7 @@ export default class GameState {
    * @param direction Direction of rotation, clockwise or counter-clockwise
    * @returns Whether the rotation was successful
    */
-  RotatePiece(direction: RotationDirection = RotationDirection.CW): boolean {
+  public RotatePiece(direction: RotationDirection = RotationDirection.CW): boolean {
     if (this.Falling === null) return false;
     const kick = Tetrominos[this.Falling.Type].wallKick[this.Falling.Rotation][direction].find(p => {
       const falling = this.Falling?.Clone();
@@ -418,7 +357,7 @@ export default class GameState {
     return true;
   }
 
-  ShiftPiece(offset: number): boolean {
+  public ShiftPiece(offset: number): boolean {
     if (this.Falling === null) return false;
     const falling = this.Falling.Clone();
     falling.Position.X += offset;
@@ -430,7 +369,7 @@ export default class GameState {
     return true;
   }
 
-  CanPieceDrop(falling: Tetromino | undefined = undefined): boolean {
+  public CanPieceDrop(falling: Tetromino | undefined = undefined): boolean {
     let f: Tetromino;
     if (falling) {
       f = falling.Clone();
@@ -441,7 +380,7 @@ export default class GameState {
     return this.IsPieceValid(f);
   }
 
-  SoftDropPiece(isAuto = false): boolean {
+  public SoftDropPiece(isAuto = false): boolean {
     if (this.Falling === null) return false;
     if (!this.CanPieceDrop()) return false;
     this.Falling.Position.Y--;
@@ -452,7 +391,7 @@ export default class GameState {
     return true;
   }
 
-  HardDropPiece(falling: Tetromino | undefined = undefined): boolean {
+  public HardDropPiece(falling: Tetromino | undefined = undefined): boolean {
     let f: Tetromino;
     if (falling) {
       f = falling;
@@ -473,7 +412,7 @@ export default class GameState {
     return true;
   }
 
-  Tick(): void {
+  public Tick(): void {
     if (this.IsDead) return;
     if (this.Falling === null) {
       this.DequeuePiece();

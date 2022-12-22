@@ -1,5 +1,5 @@
 import GameInput from '../../GameInput';
-import { VisibleGameState } from '../../GameState';
+import VisibleGameState from '../../gameState/VisibleGameState';
 
 export interface InputControl {
   AddInput(input: GameInput): void;

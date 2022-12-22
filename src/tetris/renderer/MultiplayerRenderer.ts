@@ -2,7 +2,7 @@ import MultiplayerGame, { Participant } from '../game/MultiplayerGame';
 import DependencyContainer from './dependencyInjection/DependencyContainer';
 import InputHandler from './components/inputHandler/InputHandler';
 import Renderer from './Renderer';
-import MultiGameState from '../MultiGameState';
+import MultiGameState from '../gameState/MultiGameState';
 
 export default class MultiplayerRenderer extends Renderer {
   public declare readonly Game: MultiplayerGame;

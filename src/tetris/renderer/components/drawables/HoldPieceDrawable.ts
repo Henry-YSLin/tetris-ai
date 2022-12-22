@@ -1,4 +1,4 @@
-import GameState from '../../../GameState';
+import GameState from '../../../gameState/GameState';
 import Tetrominos from '../../../Tetrominos';
 import Vector from '../../../utils/Vector';
 import Inject from '../../dependencyInjection/InjectDecorator';

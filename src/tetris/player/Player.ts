@@ -1,5 +1,5 @@
 import GameInput from '../GameInput';
-import { VisibleGameState } from '../GameState';
+import VisibleGameState from '../gameState/VisibleGameState';
 import InputManager, { InputControl } from './input/InputManager';
 
 export default abstract class Player {

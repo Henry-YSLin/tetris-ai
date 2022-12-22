@@ -5,13 +5,13 @@ export default class GarbageGenerator {
 
   #seed: number;
 
-  constructor(seed?: number) {
+  public constructor(seed?: number) {
     if (seed === undefined) this.#seed = Math.floor(Math.random() * 2 ** 32);
     else this.#seed = seed;
     this.#RNG = SeededRNG(this.#seed);
   }
 
-  get Seed(): number {
+  public get Seed(): number {
     return this.#seed;
   }
 
@@ -20,7 +20,7 @@ export default class GarbageGenerator {
    * @param width Width of the playfield/grid
    * @returns The index at which the hole of the garbage line should be
    */
-  Get(width: number): number {
+  public Get(width: number): number {
     return Math.floor(this.#RNG() * width);
   }
 }

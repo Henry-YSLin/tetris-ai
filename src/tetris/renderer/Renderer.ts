@@ -1,5 +1,5 @@
 import Game from '../game/Game';
-import GameState from '../GameState';
+import GameState from '../gameState/GameState';
 import Player from '../player/Player';
 import Container from './components/drawables/Container';
 import DependencyContainer from './dependencyInjection/DependencyContainer';

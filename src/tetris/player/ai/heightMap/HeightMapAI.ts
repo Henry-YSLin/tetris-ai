@@ -1,11 +1,12 @@
 import GameInput from '../../../GameInput';
-import GameState, { VisibleGameState } from '../../../GameState';
+import GameState from '../../../gameState/GameState';
 import AIPlayer from '../AIPlayer';
 import Tetromino from '../../../Tetromino';
 import Tetrominos from '../../../Tetrominos';
 import Vector from '../../../utils/Vector';
 import { DelayedInputControl } from '../../input/DelayedInputManager';
 import HeightMap from './HeightMap';
+import VisibleGameState from '../../../gameState/VisibleGameState';
 
 export default class HeightMapAI extends AIPlayer {
   #lastPiece: Tetromino | null;

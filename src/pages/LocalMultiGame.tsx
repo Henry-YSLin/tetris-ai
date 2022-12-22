@@ -68,6 +68,8 @@ export default function LocalMultiGame() {
       <p className="absolute top-0 left-0 z-10">Round {data.rounds}</p>
       <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center flex-wrap">
         {renderers?.map((r, idx) => (
+          // todo: use a better key
+          // eslint-disable-next-line react/no-array-index-key
           <div key={`${data.rounds}-${idx}`}>
             <Sketch
               setup={r.SetupHandler}

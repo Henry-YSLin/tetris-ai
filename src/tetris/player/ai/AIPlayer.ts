@@ -1,7 +1,7 @@
 import Player from '../Player';
 import { AI_ACTION_DELAY } from '../../Consts';
 import DelayedInputManager, { DelayedInputControl } from '../input/DelayedInputManager';
-import { VisibleGameState } from '../../GameState';
+import VisibleGameState from '../../gameState/VisibleGameState';
 
 /**
  * An AI with a custom input manager which constraints its APM.

@@ -1,11 +1,12 @@
 import GameInput from '../../../GameInput';
-import GameState, { VisibleGameState } from '../../../GameState';
+import GameState from '../../../gameState/GameState';
 import AIPlayer from '../AIPlayer';
 import Tetromino from '../../../Tetromino';
 import Tetrominos, { TetrominoType } from '../../../Tetrominos';
 import '../../../utils/Array';
 import RatedPlacement from './RatedPlacement';
 import { DelayedInputControl } from '../../input/DelayedInputManager';
+import VisibleGameState from '../../../gameState/VisibleGameState';
 
 function Floodfill(x: number, y: number, grid: TetrominoType[][], map: boolean[][]) {
   if (grid[y][x] === TetrominoType.None && !map[y][x]) {

@@ -1,7 +1,7 @@
 import { ANIMATION_DURATION } from '../../Consts';
 import Game from '../../game/Game';
 import GameInput from '../../GameInput';
-import GameState from '../../GameState';
+import GameState from '../../gameState/GameState';
 import Player from '../../player/Player';
 import { TetrominoType } from '../../Tetrominos';
 import Animation from '../../utils/Animation';

@@ -1,7 +1,7 @@
 import { TICK_RATE } from '../Consts';
 import GameInput from '../GameInput';
 import GameInputResult from '../GameInputResult';
-import GameState from '../GameState';
+import GameState from '../gameState/GameState';
 import Game from './Game';
 import Player from '../player/Player';
 import { RotationDirection } from '../Tetrominos';
