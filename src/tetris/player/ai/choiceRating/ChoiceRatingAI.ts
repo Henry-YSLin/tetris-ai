@@ -25,7 +25,6 @@ export default abstract class ChoiceRatingAI extends AIPlayer {
 
   private getChoice(gameState: VisibleGameState, falling: Tetromino): RatedPlacement {
     const choices: RatedPlacement[] = [];
-    // todo: i j k l ....
     for (let i = 0; i < Tetrominos[falling.Type].rotations.length; i++) {
       const minX = Tetrominos[falling.Type].rotations[i].map(p => p.X).min();
       const maxX = Tetrominos[falling.Type].rotations[i].map(p => p.X).max();
@@ -45,47 +44,48 @@ export default abstract class ChoiceRatingAI extends AIPlayer {
 
         choice.HighestRow = f.Top;
 
-        const holes: [number, number][] = [];
-
-        const map: boolean[][] = new Array(simulation.GridHeight)
+        const openSpaceMap: boolean[][] = new Array(simulation.GridHeight)
           .fill(null)
           .map(_ => new Array(simulation.GridWidth).fill(false));
         for (let k = 0; k < simulation.GridWidth; k++) {
-          Floodfill(k, simulation.GridHeight - 1, simulation.Grid, map);
+          Floodfill(k, simulation.GridHeight - 1, simulation.Grid, openSpaceMap);
         }
-        choice.EnclosedHoles = simulation.Grid.reduce(
-          (prev, curr, y) =>
-            prev +
-            curr.reduce((p, c, x) => p + (c === TetrominoType.None && !map[y][x] ? (holes.push([x, y]), 1) : 0), 0),
-          0
-        );
+
+        choice.EnclosedHoles = 0;
+        simulation.Grid.forEach((row, y) => {
+          row.forEach((cell, x) => {
+            if (cell === TetrominoType.None && !openSpaceMap[y][x]) {
+              choice.EnclosedHoles++;
+            }
+          });
+        });
 
         const heightMap: number[] = [];
         for (let k = 0; k < simulation.GridWidth; k++) {
-          const col = simulation.Grid.map(r => r[k]);
-          col[-1] = TetrominoType.I;
-          let l = col.length - 1;
-          while (col[l] === TetrominoType.None) l--;
+          let l = simulation.GridHeight - 1;
+          while (l >= 0 && simulation.Grid[l][k] === TetrominoType.None) l--;
           heightMap.push(l + 1);
         }
         choice.HeightMap = heightMap;
-        choice.OpenHoles = simulation.Grid.reduce(
-          (prev, curr, y) =>
-            prev +
-            curr.reduce(
-              (p, c, x) =>
-                p + (c === TetrominoType.None && map[y][x] && y < heightMap[x] ? (holes.push([x, y]), 1) : 0),
-              0
-            ),
-          0
-        );
+        choice.OpenHoles = 0;
+        simulation.Grid.forEach((row, y) => {
+          row.forEach((cell, x) => {
+            if (cell === TetrominoType.None && openSpaceMap[y][x] && y < heightMap[x]) {
+              choice.OpenHoles++;
+            }
+          });
+        });
 
-        choice.BlocksAboveHoles = holes.reduce((prev, [x, y]) => {
-          for (let k = y; k < heightMap[x]; k++) {
-            if (simulation.Grid[x][k] !== TetrominoType.None) prev++;
+        choice.BlocksAboveHoles = 0;
+        for (let k = 0; k < simulation.GridWidth; k++) {
+          let l = 0;
+          let isAboveHole = false;
+          while (l < simulation.GridHeight) {
+            if (simulation.Grid[l][k] === TetrominoType.None) isAboveHole = true;
+            else if (isAboveHole) choice.BlocksAboveHoles++;
+            l++;
           }
-          return prev;
-        }, 0);
+        }
 
         choice.IWells = [];
         for (let k = 0; k < simulation.GridWidth; k++) {
