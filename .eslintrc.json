@@ -11,7 +11,7 @@
     "ecmaFeatures": {
       "jsx": true // Allows for the parsing of JSX
     },
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.node.json"
   },
   "settings": {
     "react": {
@@ -23,12 +23,23 @@
     "import/resolver": {
       "typescript": {
         "alwaysTryTypes": true,
-        "project": "./tsconfig.json"
+        "project": "./tsconfig.node.json"
       }
     }
   },
   "plugins": ["@typescript-eslint", "import", "prettier"],
   "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "airbnb", "airbnb-typescript", "prettier"],
+
+  "overrides": [
+    {
+      "files": ["*.*"],
+      "excludedFiles": "src/**/*.*",
+      "rules": {
+        "import/no-extraneous-dependencies": "off",
+        "global-require": "off"
+      }
+    }
+  ],
 
   "rules": {
     // "indent": "off",

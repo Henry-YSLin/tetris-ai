@@ -1,17 +1,14 @@
 module.exports = {
-  purge: {
-    enabled: true, // turn it to false in developement to have all tailwind classes
-    content: [
-      './src/*.js',
-      './src/*.jsx',
-      './src/**/*.jsx',
-      './src/**/*.js',
-      './src/*.ts',
-      './src/*.tsx',
-      './src/**/*.tsx',
-      './src/**/*.ts',
-    ],
-  },
+  content: [
+    './src/*.js',
+    './src/*.jsx',
+    './src/**/*.jsx',
+    './src/**/*.js',
+    './src/*.ts',
+    './src/*.tsx',
+    './src/**/*.tsx',
+    './src/**/*.ts',
+  ],
   theme: {
     extend: {},
   },
