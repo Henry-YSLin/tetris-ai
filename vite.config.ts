@@ -10,5 +10,6 @@ export default defineConfig({
   build: {
     // Specify the dist folder
     outDir: '../dist',
+    emptyOutDir: true,
   },
 });

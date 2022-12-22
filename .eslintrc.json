@@ -11,7 +11,7 @@
     "ecmaFeatures": {
       "jsx": true // Allows for the parsing of JSX
     },
-    "project": "./tsconfig.node.json"
+    "project": "./tsconfig.eslint.json"
   },
   "settings": {
     "react": {
@@ -23,7 +23,7 @@
     "import/resolver": {
       "typescript": {
         "alwaysTryTypes": true,
-        "project": "./tsconfig.node.json"
+        "project": "./tsconfig.eslint.json"
       }
     }
   },
