@@ -8,16 +8,27 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: bahmutov/npm-install@v1
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
 
-      - run: yarn run build
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - run: pnpm build
 
       - name: deploy
         uses: peaceiris/actions-github-pages@v3.1.12
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./prod
+          publish_dir: ./dist
