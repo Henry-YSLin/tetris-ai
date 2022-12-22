@@ -8,7 +8,7 @@ import { GetSFX, InputSFX } from '../../Helper';
 import RenderConfiguration from '../../RenderConfiguration';
 import Component from '../Component';
 
-export default class PlayerSfxPlayer extends Component {
+export default class InputSfxPlayer extends Component {
   protected game: Game = null!;
 
   protected player: Player = null!;

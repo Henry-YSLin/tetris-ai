@@ -10,7 +10,7 @@ import PlayfieldDrawable from './components/drawables/PlayfieldDrawable';
 import DisableInputHandler from './components/inputHandler/DisableInputHandler';
 import GameEventSfxPlayer from './components/sounds/GameEventSfxPlayer';
 import GameEventVoicePlayer from './components/sounds/GameEventVoicePlayer';
-import PlayerSfxPlayer from './components/sounds/PlayerSfxPlayer';
+import InputSfxPlayer from './components/sounds/InputSfxPlayer';
 import Inject from './dependencyInjection/InjectDecorator';
 import MultiplayerRenderer from './MultiplayerRenderer';
 
@@ -24,7 +24,6 @@ export default class MultiplayerSpectatingRenderer extends MultiplayerRenderer {
     const blockSize = this.renderConfig.BlockSize;
 
     this.Add(
-      new PlayerSfxPlayer(),
       new GameEventVoicePlayer(),
       new GameEventSfxPlayer(),
       new GameEventTextDrawable().With(c => {
