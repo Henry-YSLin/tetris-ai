@@ -22,6 +22,7 @@ export default function LocalMultiGame() {
   });
   useEffect(() => {
     data.rounds++;
+    const seed = Math.floor(Math.random() * 2 ** 32);
     const player1: Player = new HumanPlayer();
     const aiPlayers: Player[] = [];
     aiPlayers.push(new MediumRenAI());
@@ -29,8 +30,8 @@ export default function LocalMultiGame() {
     aiPlayers.push(new BasicChoiceRatingAI());
     aiPlayers.push(new HeightMapAI());
     const game: LocalMutiplayerGame = new LocalMutiplayerGame([
-      { player: player1 },
-      ...aiPlayers.map(p => ({ player: p })),
+      { player: player1, seed },
+      ...aiPlayers.map(p => ({ player: p, seed })),
     ]);
     const renderer1: RenderHost = new RenderHost(
       new MultiplayerMainRenderer(game, game.Participants[0]),
