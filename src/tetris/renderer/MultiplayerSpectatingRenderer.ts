@@ -10,7 +10,6 @@ import PlayfieldDrawable from './components/drawables/PlayfieldDrawable';
 import DisableInputHandler from './components/inputHandler/DisableInputHandler';
 import GameEventSfxPlayer from './components/sounds/GameEventSfxPlayer';
 import GameEventVoicePlayer from './components/sounds/GameEventVoicePlayer';
-import InputSfxPlayer from './components/sounds/InputSfxPlayer';
 import Inject from './dependencyInjection/InjectDecorator';
 import MultiplayerRenderer from './MultiplayerRenderer';
 
