@@ -1,11 +1,11 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Error404 from './pages/Error404';
 import Home from './pages/Home';
 import LocalMultiGame from './pages/LocalMultiGame';
 import SoloGame from './pages/SoloGame';
 
-const ROUTER = createBrowserRouter([
+const ROUTER = createHashRouter([
   {
     path: '/',
     element: <Home />,
