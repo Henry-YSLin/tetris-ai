@@ -18,6 +18,8 @@ export default class PlayfieldDrawable extends Drawable {
 
   #playfieldGraphics: p5Types.Graphics | null = null;
 
+  #freezeGraphics = false;
+
   @Inject(GameState, RenderConfiguration, AnimationManager)
   private loadPlayfieldDrawable(
     gameState: GameState,
@@ -46,82 +48,78 @@ export default class PlayfieldDrawable extends Drawable {
 
     if (!this.#playfieldGraphics) return;
     const pg = this.#playfieldGraphics;
+    if (!this.#freezeGraphics) {
+      pg.background(50);
+      pg.stroke(0, 0, 0, 100);
+      for (let i = 0; i <= state.GridHeight; i++) {
+        pg.line(0, i * blockSize, state.GridWidth * blockSize, i * blockSize);
+      }
+      for (let i = 0; i <= state.GridWidth; i++) {
+        pg.line(i * blockSize, 0, i * blockSize, state.GridHeight * blockSize);
+      }
 
-    pg.background(50);
-    pg.stroke(0, 0, 0, 100);
-    for (let i = 0; i <= state.GridHeight; i++) {
-      pg.line(0, i * blockSize, state.GridWidth * blockSize, i * blockSize);
-    }
-    for (let i = 0; i <= state.GridWidth; i++) {
-      pg.line(i * blockSize, 0, i * blockSize, state.GridHeight * blockSize);
-    }
+      pg.noStroke();
+      this.animationManager.HardDropAnimations.forEach(animation => {
+        pg.fill(WithAlpha(TetrominoColor(pg, animation.Data.type), 20));
+        pg.rect(
+          animation.Data.left * blockSize,
+          animation.Data.end * blockSize,
+          (animation.Data.right - animation.Data.left + 1) * blockSize,
+          (state.PlayfieldHeight - animation.Data.end) * animation.CurrentValue * blockSize
+        );
+      });
 
-    pg.noStroke();
-    this.animationManager.HardDropAnimations.forEach(animation => {
-      pg.fill(WithAlpha(TetrominoColor(pg, animation.Data.type), 20));
-      pg.rect(
-        animation.Data.left * blockSize,
-        animation.Data.end * blockSize,
-        (animation.Data.right - animation.Data.left + 1) * blockSize,
-        (state.PlayfieldHeight - animation.Data.end) * animation.CurrentValue * blockSize
-      );
-    });
+      pg.stroke(0, 0, 0, 150);
+      const animatedHeight: number[] = [];
+      for (let i = 0; i < state.GridHeight; i++) {
+        animatedHeight.push(
+          i +
+            this.animationManager.LineClearAnimations.filter(x => x.Data.y <= i).reduce(
+              (prev, curr) => prev + curr.CurrentValue,
+              0
+            )
+        );
+      }
 
-    pg.stroke(0, 0, 0, 150);
-    let heightMap: number[] | null = null;
-    heightMap = [];
-    for (let i = 0; i < state.GridHeight; i++) {
-      heightMap.push(
-        i +
-          this.animationManager.LineClearAnimations.filter(x => x.Data.y <= i).reduce(
-            (prev, curr) => prev + curr.CurrentValue,
-            0
-          )
-      );
-    }
-
-    function getAnimatedHeight(i: number) {
-      if (heightMap === null) return i;
-      return heightMap[i];
-    }
-
-    for (let i = 0; i < state.GridHeight; i++) {
-      for (let j = 0; j < state.GridWidth; j++) {
-        const type = state.Get(j, i) ?? TetrominoType.None;
-        if (type !== TetrominoType.None) {
-          pg.fill(TetrominoColor(pg, type));
-          pg.rect(j * blockSize, getAnimatedHeight(i) * blockSize, blockSize, blockSize);
+      for (let i = 0; i < state.GridHeight; i++) {
+        for (let j = 0; j < state.GridWidth; j++) {
+          const type = state.Get(j, i) ?? TetrominoType.None;
+          if (type !== TetrominoType.None) {
+            pg.fill(TetrominoColor(pg, type));
+            pg.rect(j * blockSize, animatedHeight[i] * blockSize, blockSize, blockSize);
+          }
         }
       }
-    }
-    if (state.Falling) {
-      const falling = state.Falling.Points.map(p => new Vector(p.X, getAnimatedHeight(p.Y)));
-      DrawTetromino(pg, state.Falling?.Type, new Vector(0, 0), falling, blockSize, 255);
-      const ghost = state.Falling.Clone();
-      state.HardDropPiece(ghost);
-      const ghostPoints = ghost.Points.map(p => new Vector(p.X, getAnimatedHeight(p.Y)));
-      DrawTetromino(pg, state.Falling?.Type, new Vector(0, 0), ghostPoints, blockSize, 50);
-    }
-    pg.noStroke();
-    pg.fill(255, 255, 255, 100);
-    this.animationManager.LineClearAnimations.forEach(animation => {
-      pg.rect(
-        0,
-        animation.Data.origY * blockSize,
-        ((state.GridWidth * blockSize) / 2) * animation.CurrentValue,
-        blockSize
-      );
-      pg.rect(
-        state.GridWidth * blockSize,
-        animation.Data.origY * blockSize,
-        ((-state.GridWidth * blockSize) / 2) * animation.CurrentValue,
-        blockSize
-      );
-    });
+      if (state.Falling) {
+        const falling = state.Falling.Points.map(p => new Vector(p.X, animatedHeight[p.Y]));
+        DrawTetromino(pg, state.Falling?.Type, new Vector(0, 0), falling, blockSize, 255);
+        const ghost = state.Falling.Clone();
+        state.HardDropPiece(ghost);
+        const ghostPoints = ghost.Points.map(p => new Vector(p.X, animatedHeight[p.Y]));
+        DrawTetromino(pg, state.Falling?.Type, new Vector(0, 0), ghostPoints, blockSize, 50);
+      }
+      pg.noStroke();
+      pg.fill(255, 255, 255, 100);
+      this.animationManager.LineClearAnimations.forEach(animation => {
+        pg.rect(
+          0,
+          animation.Data.origY * blockSize,
+          ((state.GridWidth * blockSize) / 2) * animation.CurrentValue,
+          blockSize
+        );
+        pg.rect(
+          state.GridWidth * blockSize,
+          animation.Data.origY * blockSize,
+          ((-state.GridWidth * blockSize) / 2) * animation.CurrentValue,
+          blockSize
+        );
+      });
 
-    // TODO: investigate performance issues
-    // if (state.IsDead)
-    //   pg.filter(pg.GRAY);
+      if (state.IsDead) {
+        pg.filter(pg.GRAY);
+        this.#freezeGraphics = true;
+      }
+    }
 
     p5.image(pg, 0, 0);
   }
