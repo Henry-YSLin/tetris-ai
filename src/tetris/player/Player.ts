@@ -9,7 +9,7 @@ export default abstract class Player {
     return this.#inputManager;
   }
 
-  protected constructor(inputManager: InputManager) {
+  public constructor(inputManager: InputManager) {
     this.#inputManager = inputManager;
   }
 

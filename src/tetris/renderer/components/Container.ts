@@ -1,5 +1,5 @@
 import type Component from './Component';
-import DependencyContainer from './dependencyInjection/DependencyContainer';
+import DependencyContainer from '../dependencyInjection/DependencyContainer';
 import Drawable from './Drawable';
 
 export default class Container extends Drawable {

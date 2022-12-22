@@ -1,4 +1,4 @@
-import { Constructor } from './TypeUtils';
+import { Constructor, ConcreteConstructor } from './TypeUtils';
 
 export default class DependencyContainer {
   public readonly Parent: DependencyContainer | null;
@@ -10,14 +10,29 @@ export default class DependencyContainer {
     this.#dependencyMap = new Map();
   }
 
-  public Register(instance: any): void {
-    this.#dependencyMap.set(instance.constructor, instance);
+  /**
+   * Registers a dependency to be injected.
+   * @param instance An instance of the dependency to be injected.
+   * @param classType The class type of the dependency to identify this class. Can be a parent class of the instance. If not provided, the type of the instance will be used.
+   */
+  public Register<T, U>(instance: T, classType?: U & (ConcreteConstructor<T> extends U ? U : never)): void {
+    this.#dependencyMap.set(classType ?? (instance as any).constructor, instance);
   }
 
+  /**
+   * Remove a dependency from the container.
+   * @param classType The class type of the dependency to be unregistered.
+   */
   public Unregister(classType: Constructor): void {
     this.#dependencyMap.delete(classType);
   }
 
+  /**
+   * Resolve a dependency from the container.
+   * @param classType The class type of the dependency to be resolved.
+   * @returns The resolved dependency.
+   * @throws Error if the dependency cannot be resolved.
+   */
   public Resolve<T>(classType: Constructor<T>): T {
     const instance = this.#dependencyMap.get(classType);
     if (instance) {

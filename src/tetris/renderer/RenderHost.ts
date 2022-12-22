@@ -1,6 +1,7 @@
 import p5Types from 'p5';
 import DependencyContainer from './dependencyInjection/DependencyContainer';
 import Graphics from './Graphics';
+import InputHandler from './components/inputHandler/InputHandler';
 import Renderer from './Renderer';
 
 export default class RenderHost {
@@ -32,11 +33,19 @@ export default class RenderHost {
     this.renderer.DrawSubTree();
   }
 
-  public get SetupHandler(): (p5: p5Types, canvasParentRef: Element) => void {
+  public get SetupHandler(): RenderHost['p5Setup'] {
     return this.p5Setup.bind(this);
   }
 
-  public get DrawHandler(): (p5: p5Types) => void {
+  public get DrawHandler(): RenderHost['p5Draw'] {
     return this.p5Draw.bind(this);
+  }
+
+  public get KeyPressedHandler(): InputHandler['p5KeyPressed'] {
+    return this.renderer.InputHandler.KeyPressedHandler;
+  }
+
+  public get KeyReleasedHandler(): InputHandler['p5KeyReleased'] {
+    return this.renderer.InputHandler.KeyReleasedHandler;
   }
 }

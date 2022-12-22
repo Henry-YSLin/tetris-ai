@@ -4,7 +4,7 @@ import Sketch from 'react-p5';
 import Player from '../tetris/player/Player';
 import HumanPlayer from '../tetris/player/HumanPlayer';
 import LocalMutiplayerGame from '../tetris/game/LocalMultiplayerGame';
-import MultiplayerMainRenderer from '../tetris/renderer/MultiplayerMainRenderer';
+import MultiplayerMainRenderer from '../tetris/renderer/MultiplayerRenderer';
 import MultiplayerSpectatingRenderer from '../tetris/renderer/MultiplayerSpectatingRenderer';
 import Renderer from '../tetris/renderer/Renderer';
 import HeightMapAI from '../tetris/player/ai/heightMap/HeightMapAI';

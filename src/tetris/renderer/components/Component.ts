@@ -1,6 +1,6 @@
 import type Container from './Container';
-import DependencyContainer from './dependencyInjection/DependencyContainer';
-import DependencyStore from './dependencyInjection/DependencyStore';
+import DependencyContainer from '../dependencyInjection/DependencyContainer';
+import DependencyStore from '../dependencyInjection/DependencyStore';
 import LoadState from './LoadState';
 
 export default class Component {

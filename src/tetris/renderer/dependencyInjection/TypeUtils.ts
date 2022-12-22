@@ -1,5 +1,16 @@
-export type Constructor<T = any> = new (...args: any[]) => T;
+/**
+ * Get the constructor type of an abstract/concrete class type.
+ */
+export type Constructor<T = any> = abstract new (...args: any[]) => T;
 
+/**
+ * Get the instance type of an concrete class type.
+ */
+export type ConcreteConstructor<T = any> = new (...args: any[]) => T;
+
+/**
+ * Maps a tuple of constructor types to a tuple of instance types.
+ */
 export type MapToInstance<
   ConstructorTuple extends Constructor[],
   Result extends any[] = []

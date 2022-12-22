@@ -1,7 +1,7 @@
-import Vector from '../utils/Vector';
+import Vector from '../../utils/Vector';
 import Component from './Component';
-import Inject from './dependencyInjection/InjectDecorator';
-import Graphics from './Graphics';
+import Inject from '../dependencyInjection/InjectDecorator';
+import Graphics from '../Graphics';
 
 export default class Drawable extends Component {
   protected graphics: Graphics = null!;
