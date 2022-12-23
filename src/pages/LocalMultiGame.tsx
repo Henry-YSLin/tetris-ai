@@ -76,7 +76,7 @@ export default function LocalMultiGame() {
       className="min-h-screen w-screen relative"
       style={{ backgroundColor: renderers?.[0].RenderConfig.BackgroundColor }}
     >
-      <p className="absolute top-0 left-0 z-10">Round {data.rounds}</p>
+      <p className="absolute top-4 left-4 z-10 text-6xl text-green-500">Round {data.rounds}</p>
 
       <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
         {mainRenderer ? (
@@ -101,7 +101,7 @@ export default function LocalMultiGame() {
                 keyPressed={r.KeyPressedHandler}
                 keyReleased={r.KeyReleasedHandler}
               />
-              <p>{data.wins ? `${data.wins[idx + 1]} wins` : null}</p>
+              <p className="mb-0 text-2xl text-white">{data.wins ? `${data.wins[idx + 1]} wins` : null}</p>
             </div>
           ))}
         </div>
