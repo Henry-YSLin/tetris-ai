@@ -25,7 +25,10 @@ export default function SoloGame() {
   }, []);
   if (renderer)
     return (
-      <div className="min-h-screen w-screen flex justify-center items-center">
+      <div
+        className="min-h-screen w-screen flex justify-center items-center"
+        style={{ backgroundColor: renderer.RenderConfig.BackgroundColor }}
+      >
         <Sketch
           setup={renderer.SetupHandler}
           draw={renderer.DrawHandler}

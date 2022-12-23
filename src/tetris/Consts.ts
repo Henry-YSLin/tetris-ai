@@ -19,6 +19,11 @@ export const PLAYFIELD_HEIGHT = 20;
 export const TICK_RATE = 60;
 
 /**
+ * Framerate of the renderer, independent from gameplay tick rate.
+ */
+export const FRAMERATE = 60;
+
+/**
  * Number of ticks from contact to locking the piece
  */
 export const LOCK_DELAY = 60;
@@ -36,22 +41,22 @@ export const QUEUE_LENGTH = 6;
 /**
  * The least number of ticks to wait between AI actions
  */
-export const AI_ACTION_DELAY = 10;
+export const AI_ACTION_DELAY = 15;
 
 /**
  * Size of a block in pixels
  */
-export const BLOCK_SIZE = 20;
+export const BLOCK_SIZE = 30;
 
 /**
  * Number of frames to wait before repeating input
  */
-export const DAS_DELAY = 10;
+export const DAS_DELAY = 20;
 
 /**
  * Number of frames to wait between repeated inputs
  */
-export const DAS_INTERVAL = 3;
+export const DAS_INTERVAL = 5;
 
 /**
  * Number of frames a normal animation lasts for
@@ -68,3 +73,8 @@ export const SOUND_VOLUME = 0.5;
  * actually created
  */
 export const GARBAGE_DELAY = 4 * 60;
+
+/**
+ * Background color of the whole page.
+ */
+export const BACKGROUND_COLOR = '#34515e';

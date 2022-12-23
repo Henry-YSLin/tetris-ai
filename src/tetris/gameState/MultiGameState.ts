@@ -23,6 +23,9 @@ export default class MultiGameState extends GameState {
   /**
    * Create a normal game state
    * @param pieceSeed The seed for the internal PieceGenerator
+   * @param gridWidth The width of the grid
+   * @param gridHeight The height of the grid
+   * @param playfieldHeight The portion of the grid that is visible to the player
    * @param pieceIndex The starting index of the piece queue
    * @param falling The currently falling tetromino
    * @param hold The tetromino type of the held piece
@@ -32,6 +35,9 @@ export default class MultiGameState extends GameState {
    */
   public constructor(
     pieceSeed?: number,
+    gridWidth?: number,
+    gridHeight?: number,
+    playfieldHeight?: number,
     pieceIndex?: number,
     falling?: Tetromino,
     hold?: HoldInfo | null,
@@ -46,6 +52,9 @@ export default class MultiGameState extends GameState {
 
   public constructor(
     pieceSeedOrState: VisibleMultiGameState | number | undefined = undefined,
+    gridWidth: number | undefined = undefined,
+    gridHeight: number | undefined = undefined,
+    playfieldHeight: number | undefined = undefined,
     pieceIndex = 0,
     falling: Tetromino | null = null,
     hold: HoldInfo | null = null,
@@ -58,7 +67,10 @@ export default class MultiGameState extends GameState {
     garbageSeed: number | undefined = undefined
   ) {
     super(
-      pieceSeedOrState as any /* eslint-disable-line @typescript-eslint/no-explicit-any */,
+      pieceSeedOrState as number,
+      gridWidth,
+      gridHeight,
+      playfieldHeight,
       pieceIndex,
       falling ?? undefined,
       hold,

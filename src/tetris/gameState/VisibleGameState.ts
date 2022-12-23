@@ -46,7 +46,7 @@ export default class VisibleGameState {
     lastAchievement: GameAchievement | null = null,
     isDead = false
   ) {
-    this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
+    this.Grid = new Array(gridHeight).fill(null).map(() => new Array(gridWidth).fill(TetrominoType.None));
     if (grid)
       grid.forEach((arr, i) =>
         arr.forEach((p, j) => {

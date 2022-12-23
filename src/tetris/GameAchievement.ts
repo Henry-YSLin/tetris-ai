@@ -7,10 +7,10 @@ export enum AchievementType {
 
 export default class GameAchievement {
   public constructor(
-    public readonly LinesCleared: number[],
-    public readonly Type: AchievementType,
-    public readonly Combo: number,
-    public readonly BackToBack: boolean
+    public LinesCleared: number[],
+    public Type: AchievementType,
+    public Combo: number,
+    public BackToBack: boolean
   ) {}
 
   public Clone(): GameAchievement {

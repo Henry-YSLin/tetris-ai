@@ -13,6 +13,12 @@ import VisibleGameState from './VisibleGameState';
 export default class GameState {
   public Grid: TetrominoType[][];
 
+  public readonly GridWidth: number;
+
+  public readonly GridHeight: number;
+
+  public readonly PlayfieldHeight: number;
+
   public Falling: Tetromino | null;
 
   public Hold: HoldInfo | null;
@@ -59,6 +65,9 @@ export default class GameState {
   /**
    * Create a normal game state
    * @param pieceSeed The seed for the internal PieceGenerator
+   * @param gridWidth The width of the grid
+   * @param gridHeight The height of the grid
+   * @param playfieldHeight The portion of the grid that is visible to the player
    * @param pieceIndex The starting index of the piece queue
    * @param falling The currently falling tetromino
    * @param hold The tetromino type of the held piece
@@ -68,6 +77,9 @@ export default class GameState {
    */
   public constructor(
     pieceSeed?: number,
+    gridWidth?: number,
+    gridHeight?: number,
+    playfieldHeight?: number,
     pieceIndex?: number,
     falling?: Tetromino,
     hold?: HoldInfo | null,
@@ -80,6 +92,9 @@ export default class GameState {
 
   public constructor(
     pieceSeedOrState: VisibleGameState | number | undefined = undefined,
+    gridWidth: number = GRID_WIDTH,
+    gridHeight: number = GRID_HEIGHT,
+    playfieldHeight: number = PLAYFIELD_HEIGHT,
     pieceIndex = 0,
     falling: Tetromino | null = null,
     hold: HoldInfo | null = null,
@@ -91,8 +106,10 @@ export default class GameState {
   ) {
     if (pieceSeedOrState instanceof VisibleGameState) {
       const state = pieceSeedOrState;
-      this.Grid = state.Grid;
-      this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
+      this.GridWidth = state.GridWidth;
+      this.GridHeight = state.GridHeight;
+      this.PlayfieldHeight = state.PlayfieldHeight;
+      this.Grid = new Array(state.GridHeight).fill(null).map(() => new Array(state.GridWidth).fill(TetrominoType.None));
       if (state.Grid)
         state.Grid.forEach((arr, i) =>
           arr.forEach((p, j) => {
@@ -109,7 +126,10 @@ export default class GameState {
       this.LastAchievement = state.LastAchievement;
       this.IsDead = state.IsDead;
     } else {
-      this.Grid = new Array(40).fill(null).map(() => new Array(10).fill(TetrominoType.None));
+      this.GridWidth = gridWidth;
+      this.GridHeight = gridHeight;
+      this.PlayfieldHeight = playfieldHeight;
+      this.Grid = new Array(this.GridHeight).fill(null).map(() => new Array(this.GridWidth).fill(TetrominoType.None));
       this.Falling = falling;
       this.Hold = hold ?? null;
       this.BlockHold = blockHold;
@@ -152,18 +172,6 @@ export default class GameState {
 
   public get Dead(): TypedEvent<void> {
     return this.#dead;
-  }
-
-  public get GridWidth(): number {
-    return GRID_WIDTH;
-  }
-
-  public get GridHeight(): number {
-    return GRID_HEIGHT;
-  }
-
-  public get PlayfieldHeight(): number {
-    return PLAYFIELD_HEIGHT;
   }
 
   public get PieceQueue(): TetrominoType[] {
@@ -292,21 +300,17 @@ export default class GameState {
     } else if (linesCleared.length > 1 && type === AchievementType.TSpinMini) {
       type = AchievementType.TSpin;
     }
-    let achievement = new GameAchievement(
+    const achievement = new GameAchievement(
       linesCleared,
       type ?? AchievementType.LineClear,
       this.Combo,
       this.LastAchievement ? BackToBackEligible(this.LastAchievement) : false
     );
-    if (!this.Grid.some(row => row.some(c => c !== TetrominoType.None))) {
-      achievement = new GameAchievement(
-        achievement.LinesCleared,
-        AchievementType.PerfectClear,
-        achievement.Combo,
-        false
-      );
-    }
     if (linesCleared.length > 0) this.Combo++;
+    if (!this.Grid.some(row => row.some(c => c !== TetrominoType.None))) {
+      achievement.Type = AchievementType.PerfectClear;
+    }
+    achievement.BackToBack = BackToBackEligible(achievement) && achievement.BackToBack;
     const last = achievement.Clone();
     this.#achievement.Emit(achievement);
     this.LastAchievement = last;

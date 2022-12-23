@@ -6,36 +6,34 @@ import Renderer from './Renderer';
 import RenderConfiguration from './RenderConfiguration';
 
 export default class RenderHost {
-  private renderer: Renderer;
+  public readonly Renderer: Renderer;
+
+  public readonly RenderConfig: RenderConfiguration;
 
   private dependencies: DependencyContainer = new DependencyContainer();
 
   private graphics: Graphics | null = null;
 
-  private renderConfig: RenderConfiguration;
-
   public constructor(renderer: Renderer, renderConfig: RenderConfiguration) {
-    this.renderer = renderer;
-    this.renderConfig = renderConfig;
+    this.Renderer = renderer;
+    this.RenderConfig = renderConfig;
   }
 
   private p5Setup(p5: p5Types, canvasParentRef: Element): void {
-    p5.createCanvas(this.renderConfig.Width, this.renderConfig.Height).parent(canvasParentRef);
-    p5.frameRate(this.renderConfig.Framerate);
-    p5.background(100);
+    p5.createCanvas(this.RenderConfig.Width, this.RenderConfig.Height).parent(canvasParentRef);
+    p5.frameRate(this.RenderConfig.Framerate);
     this.graphics = new Graphics(p5);
     this.dependencies.Register(this.graphics);
-    this.dependencies.Register(this.renderConfig);
-    this.renderer.Load(null, this.dependencies);
-    this.renderer.SetupSubTree();
+    this.dependencies.Register(this.RenderConfig);
+    this.Renderer.Load(null, this.dependencies);
+    this.Renderer.SetupSubTree();
   }
 
   private p5Draw(p5: p5Types): void {
     if (this.graphics === null) throw new Error('Render Host graphics is null. Pleasee run setup before draw.');
     this.graphics.p5 = p5;
-    p5.background(100);
-    this.renderer.UpdateSubTree();
-    this.renderer.DrawSubTree();
+    this.Renderer.UpdateSubTree();
+    this.Renderer.DrawSubTree();
   }
 
   public get SetupHandler(): RenderHost['p5Setup'] {
@@ -47,10 +45,10 @@ export default class RenderHost {
   }
 
   public get KeyPressedHandler(): InputHandler['p5KeyPressed'] {
-    return this.renderer.InputHandler.KeyPressedHandler;
+    return this.Renderer.InputHandler.KeyPressedHandler;
   }
 
   public get KeyReleasedHandler(): InputHandler['p5KeyReleased'] {
-    return this.renderer.InputHandler.KeyReleasedHandler;
+    return this.Renderer.InputHandler.KeyReleasedHandler;
   }
 }

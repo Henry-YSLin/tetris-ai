@@ -54,4 +54,21 @@ export default class Renderer extends Container {
 
     super.applyTransform(graphics);
   }
+
+  protected override setup(graphics: Graphics): void {
+    const { p5 } = graphics;
+    p5.noStroke();
+    p5.textAlign(p5.CENTER, p5.CENTER);
+    p5.textSize(16);
+    p5.background(this.renderConfig.BackgroundColor);
+    p5.textFont('Noto Sans Mono');
+    super.setup(graphics);
+  }
+
+  protected override draw(graphics: Graphics): void {
+    const { p5 } = graphics;
+    p5.background(this.renderConfig.BackgroundColor);
+    p5.textFont('Noto Sans Mono');
+    super.draw(graphics);
+  }
 }

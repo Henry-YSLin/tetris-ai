@@ -15,6 +15,7 @@ import RenderConfiguration from '../tetris/renderer/RenderConfiguration';
 import Vector from '../tetris/utils/Vector';
 
 export default function LocalMultiGame() {
+  const [mainRenderer, setMainRenderer] = useState<RenderHost>();
   const [renderers, setRenderers] = useState<RenderHost[]>();
   const data = useStates({
     rounds: 0,
@@ -44,11 +45,16 @@ export default function LocalMultiGame() {
           new MultiplayerSpectatingRenderer(game, p).With(c => {
             c.Scale = new Vector(0.5, 0.5);
           }),
-          new RenderConfiguration({ soundVolume: 0.1, width: 220, height: 251 })
+          new RenderConfiguration({
+            soundVolume: 0.1,
+            width: renderer1.RenderConfig.Width / 2,
+            height: renderer1.RenderConfig.Height / 2,
+          })
         )
       )
     );
-    setRenderers([renderer1, ...aiRenderers]);
+    setMainRenderer(renderer1);
+    setRenderers(aiRenderers);
     setTimeout(() => game.StartClock(), 1000);
     game.GameEnded.Once(() => {
       game.StopClock();
@@ -61,27 +67,44 @@ export default function LocalMultiGame() {
     });
     return () => {
       game.StopClock();
+      setMainRenderer(undefined);
       setRenderers(undefined);
     };
   }, [data.wins]);
   return (
-    <div className="min-h-screen w-screen relative">
+    <div
+      className="min-h-screen w-screen relative"
+      style={{ backgroundColor: renderers?.[0].RenderConfig.BackgroundColor }}
+    >
       <p className="absolute top-0 left-0 z-10">Round {data.rounds}</p>
-      <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center flex-wrap">
-        {renderers?.map((r, idx) => (
-          // todo: use a better key
-          // eslint-disable-next-line react/no-array-index-key
-          <div key={`${data.rounds}-${idx}`}>
+      {mainRenderer ? (
+        <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
+          <div>
             <Sketch
-              setup={r.SetupHandler}
-              draw={r.DrawHandler}
-              keyPressed={r.KeyPressedHandler}
-              keyReleased={r.KeyReleasedHandler}
+              setup={mainRenderer.SetupHandler}
+              draw={mainRenderer.DrawHandler}
+              keyPressed={mainRenderer.KeyPressedHandler}
+              keyReleased={mainRenderer.KeyReleasedHandler}
             />
-            <p>{data.wins ? `${data.wins[idx]} wins` : null}</p>
+            <p>{data.wins ? `${data.wins[0]} wins` : null}</p>
           </div>
-        ))}
-      </div>
+          <div className="flex justify-center items-center flex-wrap flex-shrink">
+            {renderers?.map((r, idx) => (
+              // todo: use a better key
+              // eslint-disable-next-line react/no-array-index-key
+              <div key={`${data.rounds}-${idx}`}>
+                <Sketch
+                  setup={r.SetupHandler}
+                  draw={r.DrawHandler}
+                  keyPressed={r.KeyPressedHandler}
+                  keyReleased={r.KeyReleasedHandler}
+                />
+                <p>{data.wins ? `${data.wins[idx]} wins` : null}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
