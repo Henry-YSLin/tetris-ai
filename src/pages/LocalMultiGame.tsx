@@ -77,9 +77,10 @@ export default function LocalMultiGame() {
       style={{ backgroundColor: renderers?.[0].RenderConfig.BackgroundColor }}
     >
       <p className="absolute top-0 left-0 z-10">Round {data.rounds}</p>
-      {mainRenderer ? (
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
-          <div>
+
+      <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
+        {mainRenderer ? (
+          <div key={`${data.rounds}-${0}`}>
             <Sketch
               setup={mainRenderer.SetupHandler}
               draw={mainRenderer.DrawHandler}
@@ -88,23 +89,23 @@ export default function LocalMultiGame() {
             />
             <p>{data.wins ? `${data.wins[0]} wins` : null}</p>
           </div>
-          <div className="flex justify-center items-center flex-wrap flex-shrink">
-            {renderers?.map((r, idx) => (
-              // todo: use a better key
-              // eslint-disable-next-line react/no-array-index-key
-              <div key={`${data.rounds}-${idx}`}>
-                <Sketch
-                  setup={r.SetupHandler}
-                  draw={r.DrawHandler}
-                  keyPressed={r.KeyPressedHandler}
-                  keyReleased={r.KeyReleasedHandler}
-                />
-                <p>{data.wins ? `${data.wins[idx]} wins` : null}</p>
-              </div>
-            ))}
-          </div>
+        ) : null}
+        <div className="flex justify-center items-center flex-wrap flex-shrink">
+          {renderers?.map((r, idx) => (
+            // todo: use a better key
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={`${data.rounds}-${idx + 1}`}>
+              <Sketch
+                setup={r.SetupHandler}
+                draw={r.DrawHandler}
+                keyPressed={r.KeyPressedHandler}
+                keyReleased={r.KeyReleasedHandler}
+              />
+              <p>{data.wins ? `${data.wins[idx + 1]} wins` : null}</p>
+            </div>
+          ))}
         </div>
-      ) : null}
+      </div>
     </div>
   );
 }
