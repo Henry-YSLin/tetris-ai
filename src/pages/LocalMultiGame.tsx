@@ -80,28 +80,28 @@ export default function LocalMultiGame() {
 
       <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
         {mainRenderer ? (
-          <div key={`${data.rounds}-${0}`}>
+          <div key={`${data.rounds}-${0}`} className="text-center">
             <Sketch
               setup={mainRenderer.SetupHandler}
               draw={mainRenderer.DrawHandler}
               keyPressed={mainRenderer.KeyPressedHandler}
               keyReleased={mainRenderer.KeyReleasedHandler}
             />
-            <p>{data.wins ? `${data.wins[0]} wins` : null}</p>
+            <p className="mb-0 text-lg text-white">{data.wins ? `${data.wins[0]} wins` : null}</p>
           </div>
         ) : null}
         <div className="flex justify-center items-center flex-wrap flex-shrink">
           {renderers?.map((r, idx) => (
             // todo: use a better key
             // eslint-disable-next-line react/no-array-index-key
-            <div key={`${data.rounds}-${idx + 1}`}>
+            <div key={`${data.rounds}-${idx + 1}`} className="text-center">
               <Sketch
                 setup={r.SetupHandler}
                 draw={r.DrawHandler}
                 keyPressed={r.KeyPressedHandler}
                 keyReleased={r.KeyReleasedHandler}
               />
-              <p className="mb-0 text-2xl text-white">{data.wins ? `${data.wins[idx + 1]} wins` : null}</p>
+              <p className="mb-0 text-lg text-white">{data.wins ? `${data.wins[idx + 1]} wins` : null}</p>
             </div>
           ))}
         </div>
