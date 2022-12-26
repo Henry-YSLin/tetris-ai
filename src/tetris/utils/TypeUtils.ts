@@ -19,10 +19,12 @@ export type MapToInstance<
   : Result;
 
 /**
- * Create an object type with all properties of T set to optional.
+ * Create an object type with all non-method properties of T.
  */
-export type OptionalFieldsOf<T> = {
-  [Key in keyof T as Key extends string ? Uncapitalize<Key> : Key]?: T[Key] extends (...args: any) => any
-    ? never
-    : T[Key];
+export type FieldsOf<T> = {
+  [Key in keyof T as Key extends string
+    ? T[Key] extends (...args: any) => any
+      ? never
+      : Uncapitalize<Key>
+    : Key]: T[Key];
 };

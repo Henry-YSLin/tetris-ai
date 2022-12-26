@@ -1,4 +1,3 @@
-import { TICK_RATE } from '../Consts';
 import GameInput from '../GameInput';
 import GameInputResult from '../GameInputResult';
 import GameState from '../gameState/GameState';
@@ -6,6 +5,7 @@ import Game from './Game';
 import Player from '../player/Player';
 import { RotationDirection } from '../Tetrominos';
 import TypedEvent from '../utils/TypedEvent';
+import GlobalConfiguration from '../GlobalConfiguration';
 
 export default class SingleplayerGame extends Game {
   public State: GameState;
@@ -16,14 +16,18 @@ export default class SingleplayerGame extends Game {
 
   #input: TypedEvent<GameInputResult>;
 
-  public constructor(player: Player, seed: number | GameState | undefined = undefined) {
-    super();
+  public constructor(
+    configuration: GlobalConfiguration,
+    player: Player,
+    seedOrState: number | GameState | undefined = undefined
+  ) {
+    super(configuration);
     this.#handle = null;
     this.Player = player;
-    if (seed instanceof GameState) {
-      this.State = seed;
+    if (seedOrState instanceof GameState) {
+      this.State = seedOrState;
     } else {
-      this.State = new GameState(seed);
+      this.State = new GameState(this.Configuration, seedOrState);
     }
     this.#input = new TypedEvent();
   }
@@ -32,19 +36,8 @@ export default class SingleplayerGame extends Game {
     return this.#input;
   }
 
-  public get ClockRunning(): boolean {
-    return this.#handle !== null;
-  }
-
-  public StartClock(): void {
-    this.#handle = window.setInterval(this.Tick.bind(this), 1000 / TICK_RATE);
-  }
-
-  public StopClock(): void {
-    if (this.#handle !== null) window.clearInterval(this.#handle);
-  }
-
-  public Tick(): void {
+  public override Tick(): void {
+    if (!this.GameRunning) return;
     if (this.State.IsDead) return;
     this.State.Tick();
     const input = this.Player.Tick(this.State.GetVisibleState());

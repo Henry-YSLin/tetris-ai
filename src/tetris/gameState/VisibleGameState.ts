@@ -1,17 +1,13 @@
-import { GRID_WIDTH, GRID_HEIGHT, PLAYFIELD_HEIGHT } from '../Consts';
 import GameAchievement from '../GameAchievement';
+import GlobalConfiguration from '../GlobalConfiguration';
 import Tetromino from '../Tetromino';
 import { TetrominoType } from '../Tetrominos';
 import HoldInfo from './HoldInfo';
 
 export default class VisibleGameState {
+  public readonly Configuration: GlobalConfiguration;
+
   public readonly Grid: TetrominoType[][];
-
-  public readonly GridWidth: number;
-
-  public readonly GridHeight: number;
-
-  public readonly PlayfieldHeight: number;
 
   public readonly Falling: Tetromino | null;
 
@@ -31,13 +27,23 @@ export default class VisibleGameState {
 
   public readonly IsDead: boolean;
 
+  public get GridWidth(): number {
+    return this.Configuration.GridWidth;
+  }
+
+  public get GridHeight(): number {
+    return this.Configuration.GridHeight;
+  }
+
+  public get PlayfieldHeight(): number {
+    return this.Configuration.PlayfieldHeight;
+  }
+
   public constructor(
+    configuration: GlobalConfiguration,
     pieceQueue: TetrominoType[] = [],
     pieceIndex = 0,
     grid: TetrominoType[][] | undefined = undefined,
-    gridWidth: number = GRID_WIDTH,
-    gridHeight: number = GRID_HEIGHT,
-    playfieldHeight: number = PLAYFIELD_HEIGHT,
     falling: Tetromino | null = null,
     hold: HoldInfo | null = null,
     elapsed = 0,
@@ -46,16 +52,14 @@ export default class VisibleGameState {
     lastAchievement: GameAchievement | null = null,
     isDead = false
   ) {
-    this.Grid = new Array(gridHeight).fill(null).map(() => new Array(gridWidth).fill(TetrominoType.None));
+    this.Configuration = configuration;
+    this.Grid = new Array(this.GridHeight).fill(null).map(() => new Array(this.GridWidth).fill(TetrominoType.None));
     if (grid)
       grid.forEach((arr, i) =>
         arr.forEach((p, j) => {
           this.Grid[i][j] = p;
         })
       );
-    this.GridWidth = gridWidth;
-    this.GridHeight = gridHeight;
-    this.PlayfieldHeight = playfieldHeight;
     this.Falling = falling ? falling.Clone() : null;
     this.Hold = hold ? hold.Clone() : null;
     this.BlockHold = blockHold;

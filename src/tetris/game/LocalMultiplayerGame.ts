@@ -1,4 +1,3 @@
-import { TICK_RATE } from '../Consts';
 import GameInput from '../GameInput';
 import GameInputResult from '../GameInputResult';
 import Player from '../player/Player';
@@ -7,6 +6,7 @@ import TypedEvent from '../utils/TypedEvent';
 import MultiGameState from '../gameState/MultiGameState';
 import MultiplayerGame, { Participant } from './MultiplayerGame';
 import GarbageEntry from '../gameState/GarbageEntry';
+import GlobalConfiguration from '../GlobalConfiguration';
 
 export default class LocalMutiplayerGame extends MultiplayerGame {
   public Participants: Participant[];
@@ -19,12 +19,15 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
 
   #gameEnded: TypedEvent<void>;
 
-  public constructor(players: { player: Player; seed?: number | MultiGameState }[]) {
-    super();
+  public constructor(
+    configuration: GlobalConfiguration,
+    players: { player: Player; seed?: number | MultiGameState }[]
+  ) {
+    super(configuration);
     this.#handle = null;
     this.Participants = players.map(p => ({
       player: p.player,
-      state: p.seed instanceof MultiGameState ? p.seed : new MultiGameState(p.seed),
+      state: p.seed instanceof MultiGameState ? p.seed : new MultiGameState(this.Configuration, p.seed),
     }));
     this.Participants.map(p => p.state).forEach(state =>
       state.Achievement.On(achievement => {
@@ -60,19 +63,8 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
     return this.#gameEnded;
   }
 
-  public get ClockRunning(): boolean {
-    return this.#handle !== null;
-  }
-
-  public StartClock(): void {
-    this.#handle = window.setInterval(this.Tick.bind(this), 1000 / TICK_RATE);
-  }
-
-  public StopClock(): void {
-    if (this.#handle !== null) window.clearInterval(this.#handle);
-  }
-
-  public Tick(): void {
+  public override Tick(): void {
+    if (!this.GameRunning) return;
     this.Participants.forEach(p => {
       if (p.state.IsDead) return;
       p.state.Tick();

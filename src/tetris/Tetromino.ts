@@ -1,8 +1,8 @@
 import Tetrominos, { TetrominoType, Rotation, RotationDirection } from './Tetrominos';
 import Vector from './utils/Vector';
 import './utils/Array';
-import { GRID_WIDTH } from './Consts';
 import GameInput from './GameInput';
+import GlobalConfiguration from './GlobalConfiguration';
 
 export default class Tetromino {
   public Type: TetrominoType;
@@ -38,8 +38,8 @@ export default class Tetromino {
 
   public constructor(
     type: TetrominoType,
+    position: Vector,
     rotation: Rotation = Rotation.R0,
-    position: Vector | undefined = undefined,
     lastActionTick = NaN,
     actionCount = 0,
     dropTick = NaN,
@@ -47,13 +47,8 @@ export default class Tetromino {
     pieceIndex = 0
   ) {
     this.Type = type;
+    this.Position = position;
     this.Rotation = rotation;
-    if (position) this.Position = position;
-    else {
-      this.Position = new Vector(4, 21);
-      this.Bottom = 21; // spawns just above playfield
-      this.Left = Math.floor(GRID_WIDTH / 2 - this.Width / 2); // spawns centered, rounds to the left
-    }
     this.LastActionTick = lastActionTick;
     this.ActionCount = actionCount;
     this.DropTick = dropTick;
@@ -64,8 +59,8 @@ export default class Tetromino {
   public Clone(): Tetromino {
     return new Tetromino(
       this.Type,
-      this.Rotation,
       this.Position.Clone(),
+      this.Rotation,
       this.LastActionTick,
       this.ActionCount,
       this.DropTick,
@@ -74,8 +69,25 @@ export default class Tetromino {
     );
   }
 
-  public static Spawn(type: TetrominoType, ticksElapsed: number, pieceIndex: number): Tetromino {
-    return new Tetromino(type, undefined, undefined, ticksElapsed, 0, ticksElapsed, undefined, pieceIndex);
+  public static Spawn(
+    type: TetrominoType,
+    config: GlobalConfiguration,
+    ticksElapsed: number,
+    pieceIndex: number
+  ): Tetromino {
+    const tetromino = new Tetromino(
+      type,
+      new Vector(4, 21),
+      undefined,
+      ticksElapsed,
+      0,
+      ticksElapsed,
+      undefined,
+      pieceIndex
+    );
+    tetromino.Bottom = 21; // spawns just above playfield
+    tetromino.Left = Math.floor(config.GridWidth / 2 - tetromino.Width / 2); // spawns centered, rounds to the left
+    return tetromino;
   }
 
   public Rotate(direction: RotationDirection = RotationDirection.CW): void {

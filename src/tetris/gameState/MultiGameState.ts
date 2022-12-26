@@ -1,6 +1,5 @@
 import { TetrominoType } from '../Tetrominos';
 import '../utils/Array';
-import { GARBAGE_DELAY } from '../Consts';
 import Tetromino from '../Tetromino';
 import GameAchievement from '../GameAchievement';
 import GameState from './GameState';
@@ -8,6 +7,7 @@ import GarbageGenerator from '../GarbageGenerator';
 import VisibleMultiGameState from './VisibleMultiGameState';
 import GarbageEntry from './GarbageEntry';
 import HoldInfo from './HoldInfo';
+import GlobalConfiguration from '../GlobalConfiguration';
 
 export default class MultiGameState extends GameState {
   public GarbageMeter: GarbageEntry[];
@@ -22,10 +22,8 @@ export default class MultiGameState extends GameState {
 
   /**
    * Create a normal game state
+   * @param configuration The global configuration
    * @param pieceSeed The seed for the internal PieceGenerator
-   * @param gridWidth The width of the grid
-   * @param gridHeight The height of the grid
-   * @param playfieldHeight The portion of the grid that is visible to the player
    * @param pieceIndex The starting index of the piece queue
    * @param falling The currently falling tetromino
    * @param hold The tetromino type of the held piece
@@ -34,10 +32,8 @@ export default class MultiGameState extends GameState {
    * @param combo The number of consecutive line clear
    */
   public constructor(
+    configuration: GlobalConfiguration,
     pieceSeed?: number,
-    gridWidth?: number,
-    gridHeight?: number,
-    playfieldHeight?: number,
     pieceIndex?: number,
     falling?: Tetromino,
     hold?: HoldInfo | null,
@@ -51,10 +47,8 @@ export default class MultiGameState extends GameState {
   );
 
   public constructor(
-    pieceSeedOrState: VisibleMultiGameState | number | undefined = undefined,
-    gridWidth: number | undefined = undefined,
-    gridHeight: number | undefined = undefined,
-    playfieldHeight: number | undefined = undefined,
+    configurationOrState: GlobalConfiguration | VisibleMultiGameState,
+    pieceSeed: number | undefined = undefined,
     pieceIndex = 0,
     falling: Tetromino | null = null,
     hold: HoldInfo | null = null,
@@ -67,10 +61,8 @@ export default class MultiGameState extends GameState {
     garbageSeed: number | undefined = undefined
   ) {
     super(
-      pieceSeedOrState as number,
-      gridWidth,
-      gridHeight,
-      playfieldHeight,
+      configurationOrState as GlobalConfiguration,
+      pieceSeed,
       pieceIndex,
       falling ?? undefined,
       hold,
@@ -80,8 +72,8 @@ export default class MultiGameState extends GameState {
       lastAchievement,
       isDead
     );
-    if (pieceSeedOrState instanceof VisibleMultiGameState) {
-      const state = pieceSeedOrState;
+    if (configurationOrState instanceof VisibleMultiGameState) {
+      const state = configurationOrState;
       this.GarbageMeter = state.GarbageMeter;
       this.#garbageGenerator = null;
     } else {
@@ -96,12 +88,10 @@ export default class MultiGameState extends GameState {
    */
   public GetVisibleState(): VisibleMultiGameState {
     return new VisibleMultiGameState(
+      this.Configuration,
       this.PieceQueue,
       this.PieceIndex,
       this.Grid,
-      this.GridWidth,
-      this.GridHeight,
-      this.PlayfieldHeight,
       this.Falling,
       this.Hold,
       this.TicksElapsed,
@@ -148,12 +138,12 @@ export default class MultiGameState extends GameState {
     if (this.IsDead) return;
     this.GarbageMeter.forEach(entry => {
       if (entry.Lines <= 0) return;
-      if (this.TicksElapsed - entry.TickEnqueued >= GARBAGE_DELAY) {
+      if (this.TicksElapsed - entry.TickEnqueued >= this.Configuration.GarbageDelay) {
         this.SpawnGarbageLines(entry.Lines);
       }
     });
     this.GarbageMeter = this.GarbageMeter.filter(
-      x => this.TicksElapsed - x.TickEnqueued < GARBAGE_DELAY && x.Lines > 0
+      x => this.TicksElapsed - x.TickEnqueued < this.Configuration.GarbageDelay && x.Lines > 0
     );
     super.Tick();
   }

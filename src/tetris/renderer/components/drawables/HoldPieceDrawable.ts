@@ -4,25 +4,25 @@ import Vector from '../../../utils/Vector';
 import Inject from '../../dependencyInjection/InjectDecorator';
 import Graphics from '../../Graphics';
 import { DrawTetromino, p5Text } from '../../Helper';
-import RenderConfiguration from '../../RenderConfiguration';
+import LocalConfiguration from '../../LocalConfiguration';
 import Drawable from './Drawable';
 
 export default class HoldPieceDrawable extends Drawable {
   protected gameState: GameState = null!;
 
-  protected renderConfig: RenderConfiguration = null!;
+  protected localConfig: LocalConfiguration = null!;
 
-  @Inject(GameState, RenderConfiguration)
-  private loadHoldPieceDrawable(gameState: GameState, renderConfig: RenderConfiguration): void {
+  @Inject(GameState, LocalConfiguration)
+  private loadHoldPieceDrawable(gameState: GameState, localConfig: LocalConfiguration): void {
     this.gameState = gameState;
-    this.renderConfig = renderConfig;
+    this.localConfig = localConfig;
   }
 
   protected override draw(graphics: Graphics): void {
     const { p5 } = graphics;
 
     const state = this.gameState;
-    const blockSize = this.renderConfig.BlockSize;
+    const blockSize = this.localConfig.BlockSize;
 
     p5.fill(50);
     p5.rect(0, 0, blockSize * 5, blockSize * 6);

@@ -1,11 +1,10 @@
 import { Howl } from 'howler';
-import { DAS_INTERVAL } from '../../../Consts';
 import Game from '../../../game/Game';
 import GameInputResult from '../../../GameInputResult';
 import Player from '../../../player/Player';
 import Inject from '../../dependencyInjection/InjectDecorator';
 import { GetSFX, InputSFX } from '../../Helper';
-import RenderConfiguration from '../../RenderConfiguration';
+import LocalConfiguration from '../../LocalConfiguration';
 import Component from '../Component';
 
 export default class InputSfxPlayer extends Component {
@@ -13,17 +12,17 @@ export default class InputSfxPlayer extends Component {
 
   protected player: Player = null!;
 
-  protected renderConfig: RenderConfiguration = null!;
+  protected localConfig: LocalConfiguration = null!;
 
   #sounds: Map<InputSFX, Howl> = new Map();
 
   #lastInput: GameInputResult | null = null;
 
-  @Inject(Game, Player, RenderConfiguration)
-  private loadPlayerSfxPlayer(game: Game, player: Player, renderConfig: RenderConfiguration): void {
+  @Inject(Game, Player, LocalConfiguration)
+  private loadPlayerSfxPlayer(game: Game, player: Player, localConfig: LocalConfiguration): void {
     this.game = game;
     this.player = player;
-    this.renderConfig = renderConfig;
+    this.localConfig = localConfig;
   }
 
   protected override preSetup(): void {
@@ -32,7 +31,7 @@ export default class InputSfxPlayer extends Component {
         value,
         new Howl({
           src: [value],
-          volume: this.renderConfig.SoundVolume,
+          volume: this.localConfig.SoundVolume,
         })
       )
     );
@@ -42,11 +41,7 @@ export default class InputSfxPlayer extends Component {
       const last = this.#lastInput;
       this.#lastInput = result ?? null;
       if (last) {
-        if (
-          result.Tick - last.Tick <= DAS_INTERVAL + 1 &&
-          result.Success === last.Success &&
-          result.Input === last.Input
-        ) {
+        if (result.Success === last.Success && result.Input === last.Input) {
           return;
         }
       }

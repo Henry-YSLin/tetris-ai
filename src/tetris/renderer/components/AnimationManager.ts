@@ -1,4 +1,3 @@
-import { ANIMATION_DURATION } from '../../Consts';
 import Game from '../../game/Game';
 import GameInput from '../../GameInput';
 import GameState from '../../gameState/GameState';
@@ -6,6 +5,7 @@ import Player from '../../player/Player';
 import { TetrominoType } from '../../Tetrominos';
 import Animation from '../../utils/Animation';
 import Inject from '../dependencyInjection/InjectDecorator';
+import LocalConfiguration from '../LocalConfiguration';
 import Component from './Component';
 
 type HardDropAnimationData = {
@@ -51,11 +51,19 @@ export default class AnimationManager extends Component {
 
   protected gameState: GameState = null!;
 
-  @Inject(Game, Player, GameState)
-  private loadAnimationManager(game: Game, player: Player, gameState: GameState): void {
+  protected localConfig: LocalConfiguration = null!;
+
+  @Inject(Game, Player, GameState, LocalConfiguration)
+  private loadAnimationManager(
+    game: Game,
+    player: Player,
+    gameState: GameState,
+    localConfig: LocalConfiguration
+  ): void {
     this.game = game;
     this.player = player;
     this.gameState = gameState;
+    this.localConfig = localConfig;
   }
 
   protected override preSetup(): void {
@@ -67,7 +75,7 @@ export default class AnimationManager extends Component {
         new Animation(
           1,
           0,
-          ANIMATION_DURATION,
+          this.localConfig.AnimationDuration,
           {
             left: result.Falling.Left,
             right: result.Falling.Right,
@@ -85,9 +93,16 @@ export default class AnimationManager extends Component {
       achievement.LinesCleared.forEach(line => {
         this.lineClearAnimations.filter(x => x.Data.y > line).forEach(x => x.Data.y--);
         this.lineClearAnimations.push(
-          new Animation(1, 0, ANIMATION_DURATION + offset, { y: line, origY: line }, 0, Animation.EaseOutQuint)
+          new Animation(
+            1,
+            0,
+            this.localConfig.AnimationDuration + offset,
+            { y: line, origY: line },
+            0,
+            Animation.EaseOutQuint
+          )
         );
-        offset += ANIMATION_DURATION / 5;
+        offset += this.localConfig.AnimationDuration / 5;
       });
     });
 
@@ -96,7 +111,7 @@ export default class AnimationManager extends Component {
       this.gameEventAnimation = new Animation(
         0,
         1,
-        ANIMATION_DURATION * 5 * achievement.Rating,
+        this.localConfig.AnimationDuration * 5 * achievement.Rating,
         { subtitle, title, rating: achievement.Rating },
         0,
         Animation.RevertingFunction()

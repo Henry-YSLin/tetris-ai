@@ -3,25 +3,25 @@ import { TetrominoType } from '../../../Tetrominos';
 import Inject from '../../dependencyInjection/InjectDecorator';
 import Graphics from '../../Graphics';
 import { TetrominoColor } from '../../Helper';
-import RenderConfiguration from '../../RenderConfiguration';
+import LocalConfiguration from '../../LocalConfiguration';
 import Drawable from './Drawable';
 
 export default class GarbageMeterDrawable extends Drawable {
   protected gameState: MultiGameState = null!;
 
-  protected renderConfig: RenderConfiguration = null!;
+  protected localConfig: LocalConfiguration = null!;
 
-  @Inject(MultiGameState, RenderConfiguration)
-  private loadGarbageMeterDrawable(gameState: MultiGameState, renderConfig: RenderConfiguration): void {
+  @Inject(MultiGameState, LocalConfiguration)
+  private loadGarbageMeterDrawable(gameState: MultiGameState, localConfig: LocalConfiguration): void {
     this.gameState = gameState;
-    this.renderConfig = renderConfig;
+    this.localConfig = localConfig;
   }
 
   protected override draw(graphics: Graphics): void {
     const { p5 } = graphics;
 
     const state = this.gameState;
-    const blockSize = this.renderConfig.BlockSize;
+    const blockSize = this.localConfig.BlockSize;
 
     p5.fill(50);
     p5.rect(0, 0, blockSize, blockSize * state.PlayfieldHeight);

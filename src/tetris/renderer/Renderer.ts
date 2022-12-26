@@ -6,7 +6,7 @@ import DependencyContainer from './dependencyInjection/DependencyContainer';
 import Graphics from './Graphics';
 import InputHandler from './components/inputHandler/InputHandler';
 import AnimationManager from './components/AnimationManager';
-import RenderConfiguration from './RenderConfiguration';
+import LocalConfiguration from './LocalConfiguration';
 import Inject from './dependencyInjection/InjectDecorator';
 
 export default class Renderer extends Container {
@@ -20,7 +20,7 @@ export default class Renderer extends Container {
 
   public readonly AnimationManager: AnimationManager;
 
-  protected renderConfig: RenderConfiguration = null!;
+  protected localConfig: LocalConfiguration = null!;
 
   public constructor(game: Game, player: Player, gameState: GameState, inputHandler: InputHandler) {
     super();
@@ -30,11 +30,11 @@ export default class Renderer extends Container {
     this.Add((this.InputHandler = inputHandler), (this.AnimationManager = new AnimationManager()));
   }
 
-  @Inject(RenderConfiguration)
-  private loadRenderer(renderConfig: RenderConfiguration): void {
-    this.renderConfig = renderConfig;
-    this.Width = renderConfig.Width;
-    this.Height = renderConfig.Height;
+  @Inject(LocalConfiguration)
+  private loadRenderer(localConfig: LocalConfiguration): void {
+    this.localConfig = localConfig;
+    this.Width = localConfig.Width;
+    this.Height = localConfig.Height;
   }
 
   protected override registerDependencies(dependencyContainer: DependencyContainer): void {
@@ -60,14 +60,25 @@ export default class Renderer extends Container {
     p5.noStroke();
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(16);
-    p5.background(this.renderConfig.BackgroundColor);
+    p5.background(this.localConfig.BackgroundColor);
     p5.textFont('Noto Sans Mono');
     super.setup(graphics);
   }
 
+  #lastTick = 0;
+
+  protected override update(): void {
+    const timestamp = performance.now();
+    if (timestamp - this.#lastTick < 1000 / this.Game.Configuration.TickRate) {
+      return;
+    }
+    this.#lastTick = timestamp;
+    this.Game.Tick();
+  }
+
   protected override draw(graphics: Graphics): void {
     const { p5 } = graphics;
-    p5.background(this.renderConfig.BackgroundColor);
+    p5.background(this.localConfig.BackgroundColor);
     p5.textFont('Noto Sans Mono');
     super.draw(graphics);
   }

@@ -5,7 +5,8 @@ import HumanPlayer from '../tetris/player/HumanPlayer';
 import SingleplayerGame from '../tetris/game/SingleplayerGame';
 import SingleplayerRenderer from '../tetris/renderer/SingleplayerRenderer';
 import RenderHost from '../tetris/renderer/RenderHost';
-import RenderConfiguration from '../tetris/renderer/RenderConfiguration';
+import LocalConfiguration from '../tetris/renderer/LocalConfiguration';
+import GlobalConfiguration from '../tetris/GlobalConfiguration';
 
 export default function SoloGame() {
   const [, setPlayer] = useState<Player>();
@@ -13,21 +14,18 @@ export default function SoloGame() {
   const [renderer, setRenderer] = useState<RenderHost>();
   useEffect(() => {
     const player: Player = new HumanPlayer();
-    const game: SingleplayerGame = new SingleplayerGame(player);
-    const renderHost: RenderHost = new RenderHost(new SingleplayerRenderer(game), new RenderConfiguration());
+    const game: SingleplayerGame = new SingleplayerGame(new GlobalConfiguration(), player);
+    const renderHost: RenderHost = new RenderHost(new SingleplayerRenderer(game), new LocalConfiguration());
     setPlayer(player);
     setGame(game);
     setRenderer(renderHost);
-    setTimeout(() => game.StartClock(), 1000);
-    return () => {
-      game.StopClock();
-    };
+    game.StartGame();
   }, []);
   if (renderer)
     return (
       <div
         className="min-h-screen w-screen flex justify-center items-center"
-        style={{ backgroundColor: renderer.RenderConfig.BackgroundColor }}
+        style={{ backgroundColor: renderer.LocalConfig.BackgroundColor }}
       >
         <Sketch
           setup={renderer.SetupHandler}

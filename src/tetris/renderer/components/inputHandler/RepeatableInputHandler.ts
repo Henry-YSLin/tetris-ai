@@ -1,8 +1,8 @@
 import p5Types from 'p5';
-import { DAS_DELAY, DAS_INTERVAL } from '../../../Consts';
 import GameInput from '../../../GameInput';
 import Player from '../../../player/Player';
 import Inject from '../../dependencyInjection/InjectDecorator';
+import LocalConfiguration from '../../LocalConfiguration';
 import InputHandler from './InputHandler';
 
 export default class RepeatableInputHandler extends InputHandler {
@@ -12,16 +12,19 @@ export default class RepeatableInputHandler extends InputHandler {
 
   protected player: Player = null!;
 
-  @Inject(Player)
-  private loadRepeatableInputHandler(player: Player): void {
+  protected localConfig: LocalConfiguration = null!;
+
+  @Inject(Player, LocalConfiguration)
+  private loadRepeatableInputHandler(player: Player, localConfig: LocalConfiguration): void {
     this.player = player;
+    this.localConfig = localConfig;
   }
 
   protected override update(): void {
     if (this.#keyHeld !== GameInput.None) {
       if (this.#keyDelay <= 0) {
         this.player.InputControl.AddInput(this.#keyHeld);
-        this.#keyDelay = DAS_INTERVAL; // todo: retrieve const value via DI
+        this.#keyDelay = this.localConfig.AutoRepeatInterval;
       }
       this.#keyDelay--;
     }
@@ -30,7 +33,7 @@ export default class RepeatableInputHandler extends InputHandler {
   protected p5KeyPressed(p5: p5Types): void {
     this.#keyHeld = this.getInput(p5);
     this.player.InputControl.AddInput(this.#keyHeld);
-    this.#keyDelay = DAS_DELAY; // todo: retrieve const value via DI
+    this.#keyDelay = this.localConfig.AutoRepeatDelay;
   }
 
   protected p5KeyReleased(p5: p5Types): void {

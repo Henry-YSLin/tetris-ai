@@ -1,5 +1,5 @@
-import { GRID_WIDTH, GRID_HEIGHT, PLAYFIELD_HEIGHT } from '../Consts';
 import GameAchievement from '../GameAchievement';
+import GlobalConfiguration from '../GlobalConfiguration';
 import Tetromino from '../Tetromino';
 import { TetrominoType } from '../Tetrominos';
 import GarbageEntry from './GarbageEntry';
@@ -10,12 +10,10 @@ export default class VisibleMultiGameState extends VisibleGameState {
   public readonly GarbageMeter: GarbageEntry[];
 
   public constructor(
+    configuration: GlobalConfiguration,
     pieceQueue: TetrominoType[] = [],
     pieceIndex = 0,
     grid: TetrominoType[][] | undefined = undefined,
-    gridWidth: number = GRID_WIDTH,
-    gridHeight: number = GRID_HEIGHT,
-    playfieldHeight: number = PLAYFIELD_HEIGHT,
     falling: Tetromino | null = null,
     hold: HoldInfo | null = null,
     elapsed = 0,
@@ -26,12 +24,10 @@ export default class VisibleMultiGameState extends VisibleGameState {
     garbageMeter: GarbageEntry[] = []
   ) {
     super(
+      configuration,
       pieceQueue,
       pieceIndex,
       grid,
-      gridWidth,
-      gridHeight,
-      playfieldHeight,
       falling,
       hold,
       elapsed,

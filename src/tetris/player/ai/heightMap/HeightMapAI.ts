@@ -9,12 +9,7 @@ import HeightMap from './HeightMap';
 import VisibleGameState from '../../../gameState/VisibleGameState';
 
 export default class HeightMapAI extends AIPlayer {
-  #lastPiece: Tetromino | null;
-
-  public constructor() {
-    super();
-    this.#lastPiece = null;
-  }
+  #lastPiece: Tetromino | null = null;
 
   protected override processTick(gameState: VisibleGameState, inputControl: DelayedInputControl): void {
     const falling = gameState.Falling;

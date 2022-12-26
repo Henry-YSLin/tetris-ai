@@ -1,7 +1,7 @@
 import p5Types from 'p5';
 import GameState from '../../../gameState/GameState';
 import Inject from '../../dependencyInjection/InjectDecorator';
-import RenderConfiguration from '../../RenderConfiguration';
+import LocalConfiguration from '../../LocalConfiguration';
 import Drawable from './Drawable';
 import Graphics from '../../Graphics';
 import AnimationManager from '../AnimationManager';
@@ -12,7 +12,7 @@ import Vector from '../../../utils/Vector';
 export default class PlayfieldDrawable extends Drawable {
   protected gameState: GameState = null!;
 
-  protected renderConfig: RenderConfiguration = null!;
+  protected localConfig: LocalConfiguration = null!;
 
   protected animationManager: AnimationManager = null!;
 
@@ -20,14 +20,14 @@ export default class PlayfieldDrawable extends Drawable {
 
   #freezeGraphics = false;
 
-  @Inject(GameState, RenderConfiguration, AnimationManager)
+  @Inject(GameState, LocalConfiguration, AnimationManager)
   private loadPlayfieldDrawable(
     gameState: GameState,
-    renderConfig: RenderConfiguration,
+    localConfig: LocalConfiguration,
     animationManager: AnimationManager
   ): void {
     this.gameState = gameState;
-    this.renderConfig = renderConfig;
+    this.localConfig = localConfig;
     this.animationManager = animationManager;
   }
 
@@ -35,8 +35,8 @@ export default class PlayfieldDrawable extends Drawable {
     const { p5 } = this.graphics;
 
     this.#playfieldGraphics = p5.createGraphics(
-      this.gameState.GridWidth * this.renderConfig.BlockSize,
-      (this.gameState.PlayfieldHeight + 0.1) * this.renderConfig.BlockSize
+      this.gameState.GridWidth * this.localConfig.BlockSize,
+      (this.gameState.PlayfieldHeight + 0.1) * this.localConfig.BlockSize
     );
   }
 
@@ -44,7 +44,7 @@ export default class PlayfieldDrawable extends Drawable {
     const { p5 } = this.graphics;
 
     const state = this.gameState;
-    const blockSize = this.renderConfig.BlockSize;
+    const blockSize = this.localConfig.BlockSize;
 
     if (!this.#playfieldGraphics) return;
     const pg = this.#playfieldGraphics;

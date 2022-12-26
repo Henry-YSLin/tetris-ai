@@ -2,20 +2,20 @@ import { Howl } from 'howler';
 import GameState from '../../../gameState/GameState';
 import Inject from '../../dependencyInjection/InjectDecorator';
 import { GameEventVoice, GetVoice } from '../../Helper';
-import RenderConfiguration from '../../RenderConfiguration';
+import LocalConfiguration from '../../LocalConfiguration';
 import Component from '../Component';
 
 export default class GameEventVoicePlayer extends Component {
   protected gameState: GameState = null!;
 
-  protected renderConfig: RenderConfiguration = null!;
+  protected localConfig: LocalConfiguration = null!;
 
   #sounds: Map<GameEventVoice, Howl> = new Map();
 
-  @Inject(GameState, RenderConfiguration)
-  private loadGameEventSfxPlayer(gameState: GameState, renderConfig: RenderConfiguration): void {
+  @Inject(GameState, LocalConfiguration)
+  private loadGameEventSfxPlayer(gameState: GameState, localConfig: LocalConfiguration): void {
     this.gameState = gameState;
-    this.renderConfig = renderConfig;
+    this.localConfig = localConfig;
   }
 
   protected override preSetup(): void {
@@ -24,7 +24,7 @@ export default class GameEventVoicePlayer extends Component {
         value,
         new Howl({
           src: [value],
-          volume: this.renderConfig.SoundVolume,
+          volume: this.localConfig.SoundVolume,
         })
       )
     );

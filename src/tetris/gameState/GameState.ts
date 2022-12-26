@@ -1,7 +1,6 @@
 import Tetrominos, { TetrominoType, RotationDirection } from '../Tetrominos';
 import Vector from '../utils/Vector';
 import '../utils/Array';
-import { DROP_INTERVAL, GRID_HEIGHT, GRID_WIDTH, LOCK_DELAY, PLAYFIELD_HEIGHT, QUEUE_LENGTH } from '../Consts';
 import PieceGenerator from '../PieceGenerator';
 import Tetromino from '../Tetromino';
 import GameInput, { IsRotation } from '../GameInput';
@@ -9,15 +8,12 @@ import TypedEvent from '../utils/TypedEvent';
 import GameAchievement, { AchievementType, BackToBackEligible } from '../GameAchievement';
 import HoldInfo from './HoldInfo';
 import VisibleGameState from './VisibleGameState';
+import GlobalConfiguration from '../GlobalConfiguration';
 
 export default class GameState {
   public Grid: TetrominoType[][];
 
-  public readonly GridWidth: number;
-
-  public readonly GridHeight: number;
-
-  public readonly PlayfieldHeight: number;
+  public readonly Configuration: GlobalConfiguration;
 
   public Falling: Tetromino | null;
 
@@ -64,10 +60,8 @@ export default class GameState {
 
   /**
    * Create a normal game state
+   * @param configuration The global configuration
    * @param pieceSeed The seed for the internal PieceGenerator
-   * @param gridWidth The width of the grid
-   * @param gridHeight The height of the grid
-   * @param playfieldHeight The portion of the grid that is visible to the player
    * @param pieceIndex The starting index of the piece queue
    * @param falling The currently falling tetromino
    * @param hold The tetromino type of the held piece
@@ -76,10 +70,8 @@ export default class GameState {
    * @param combo The number of consecutive line clear
    */
   public constructor(
+    configuration: GlobalConfiguration,
     pieceSeed?: number,
-    gridWidth?: number,
-    gridHeight?: number,
-    playfieldHeight?: number,
     pieceIndex?: number,
     falling?: Tetromino,
     hold?: HoldInfo | null,
@@ -91,10 +83,8 @@ export default class GameState {
   );
 
   public constructor(
-    pieceSeedOrState: VisibleGameState | number | undefined = undefined,
-    gridWidth: number = GRID_WIDTH,
-    gridHeight: number = GRID_HEIGHT,
-    playfieldHeight: number = PLAYFIELD_HEIGHT,
+    configurationOrState: GlobalConfiguration | VisibleGameState,
+    pieceSeed: number | undefined = undefined,
     pieceIndex = 0,
     falling: Tetromino | null = null,
     hold: HoldInfo | null = null,
@@ -104,11 +94,9 @@ export default class GameState {
     lastAchievement: GameAchievement | null = null,
     isDead = false
   ) {
-    if (pieceSeedOrState instanceof VisibleGameState) {
-      const state = pieceSeedOrState;
-      this.GridWidth = state.GridWidth;
-      this.GridHeight = state.GridHeight;
-      this.PlayfieldHeight = state.PlayfieldHeight;
+    if (configurationOrState instanceof VisibleGameState) {
+      const state = configurationOrState;
+      this.Configuration = state.Configuration;
       this.Grid = new Array(state.GridHeight).fill(null).map(() => new Array(state.GridWidth).fill(TetrominoType.None));
       if (state.Grid)
         state.Grid.forEach((arr, i) =>
@@ -126,15 +114,13 @@ export default class GameState {
       this.LastAchievement = state.LastAchievement;
       this.IsDead = state.IsDead;
     } else {
-      this.GridWidth = gridWidth;
-      this.GridHeight = gridHeight;
-      this.PlayfieldHeight = playfieldHeight;
+      this.Configuration = configurationOrState;
       this.Grid = new Array(this.GridHeight).fill(null).map(() => new Array(this.GridWidth).fill(TetrominoType.None));
       this.Falling = falling;
       this.Hold = hold ?? null;
       this.BlockHold = blockHold;
       this.TicksElapsed = elapsed;
-      this.#pieces = new PieceGenerator(pieceSeedOrState);
+      this.#pieces = new PieceGenerator(pieceSeed);
       this.PieceIndex = pieceIndex;
       this.Combo = combo;
       this.LastAchievement = lastAchievement;
@@ -150,12 +136,10 @@ export default class GameState {
    */
   public GetVisibleState(): VisibleGameState {
     return new VisibleGameState(
+      this.Configuration,
       this.PieceQueue,
       this.PieceIndex,
       this.Grid,
-      this.GridWidth,
-      this.GridHeight,
-      this.PlayfieldHeight,
       this.Falling,
       this.Hold,
       this.TicksElapsed,
@@ -164,6 +148,18 @@ export default class GameState {
       this.LastAchievement?.Clone(),
       this.IsDead
     );
+  }
+
+  public get GridWidth(): number {
+    return this.Configuration.GridWidth;
+  }
+
+  public get GridHeight(): number {
+    return this.Configuration.GridHeight;
+  }
+
+  public get PlayfieldHeight(): number {
+    return this.Configuration.PlayfieldHeight;
   }
 
   public get Achievement(): TypedEvent<GameAchievement> {
@@ -175,7 +171,7 @@ export default class GameState {
   }
 
   public get PieceQueue(): TetrominoType[] {
-    return this.#pieces.GetRange(this.PieceIndex, QUEUE_LENGTH);
+    return this.#pieces.GetRange(this.PieceIndex, this.Configuration.QueueLength);
   }
 
   public Get(x: number, y: number): TetrominoType | null;
@@ -194,7 +190,7 @@ export default class GameState {
     } else {
       return null;
     }
-    if (px < 0 || py < 0 || px >= GRID_WIDTH || py >= GRID_HEIGHT) return null;
+    if (px < 0 || py < 0 || px >= this.GridWidth || py >= this.GridHeight) return null;
     return this.Grid[py][px];
   }
 
@@ -221,7 +217,12 @@ export default class GameState {
    */
   public DequeuePiece(): boolean {
     if (this.Falling !== null) return false;
-    this.Falling = Tetromino.Spawn(this.#pieces.Get(this.PieceIndex), this.TicksElapsed, this.PieceIndex);
+    this.Falling = Tetromino.Spawn(
+      this.#pieces.Get(this.PieceIndex),
+      this.Configuration,
+      this.TicksElapsed,
+      this.PieceIndex
+    );
     this.PieceIndex++;
     this.BlockHold = false;
     if (!this.IsPieceValid()) {
@@ -242,10 +243,16 @@ export default class GameState {
     let hold = this.Hold;
     this.Hold = new HoldInfo(this.Falling.Type, this.PieceIndex - 1);
     if (!this.HasHold(hold)) {
-      hold = new HoldInfo(this.#pieces.Get(this.PieceIndex), this.PieceIndex);
+      const newPiece = this.#pieces.Get(this.PieceIndex);
+      if (newPiece === TetrominoType.None) {
+        // no more pieces in queue, possible when this game state is a simulation
+        this.Hold = hold;
+        return false;
+      }
+      hold = new HoldInfo(newPiece, this.PieceIndex);
       this.PieceIndex++;
     }
-    if (hold) this.Falling = Tetromino.Spawn(hold.Type, this.TicksElapsed, hold.PieceIndex);
+    if (hold) this.Falling = Tetromino.Spawn(hold.Type, this.Configuration, this.TicksElapsed, hold.PieceIndex);
     this.BlockHold = true;
     this.Falling.LastAction = GameInput.Hold;
     return true;
@@ -421,8 +428,9 @@ export default class GameState {
     if (this.Falling === null) {
       this.DequeuePiece();
     } else {
-      if (this.TicksElapsed - this.Falling.DropTick >= DROP_INTERVAL) this.SoftDropPiece(true);
-      if (this.TicksElapsed - this.Falling.LastActionTick >= LOCK_DELAY && !this.CanPieceDrop()) this.LockPiece();
+      if (this.TicksElapsed - this.Falling.DropTick >= this.Configuration.DropInterval) this.SoftDropPiece(true);
+      if (this.TicksElapsed - this.Falling.LastActionTick >= this.Configuration.LockDelay && !this.CanPieceDrop())
+        this.LockPiece();
     }
 
     this.TicksElapsed++;

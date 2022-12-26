@@ -1,4 +1,3 @@
-import { PLAYFIELD_HEIGHT } from '../Consts';
 import MultiplayerGame, { Participant } from '../game/MultiplayerGame';
 import Vector from '../utils/Vector';
 import FramerateDrawable from './components/drawables/FramerateDrawable';
@@ -21,14 +20,14 @@ export default class MultiplayerMainRenderer extends MultiplayerRenderer {
 
   @Inject()
   private loadMultiplayerMainRenderer(): void {
-    const blockSize = this.renderConfig.BlockSize;
+    const blockSize = this.localConfig.BlockSize;
 
     this.Add(
       new InputSfxPlayer(),
       new GameEventVoicePlayer(),
       new GameEventSfxPlayer(),
       new GameEventTextDrawable().With(c => {
-        c.Offset = new Vector(blockSize * 11, blockSize * ((this.GameState?.PlayfieldHeight ?? PLAYFIELD_HEIGHT) + 1));
+        c.Offset = new Vector(blockSize * 11, blockSize * (this.GameState.PlayfieldHeight + 1));
         c.Scale = new Vector(1, 1);
       }),
       new PlayfieldDrawable().With(c => {

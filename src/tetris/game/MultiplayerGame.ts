@@ -1,6 +1,7 @@
 import Game from './Game';
 import Player from '../player/Player';
 import MultiGameState from '../gameState/MultiGameState';
+import GlobalConfiguration from '../GlobalConfiguration';
 
 export interface Participant {
   player: Player;
@@ -10,8 +11,8 @@ export interface Participant {
 export default abstract class MultiplayerGame extends Game {
   public Participants: Participant[];
 
-  public constructor() {
-    super();
+  public constructor(configuration: GlobalConfiguration) {
+    super(configuration);
     this.Participants = [];
   }
 }

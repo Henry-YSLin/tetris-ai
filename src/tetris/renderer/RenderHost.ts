@@ -3,28 +3,28 @@ import DependencyContainer from './dependencyInjection/DependencyContainer';
 import Graphics from './Graphics';
 import InputHandler from './components/inputHandler/InputHandler';
 import Renderer from './Renderer';
-import RenderConfiguration from './RenderConfiguration';
+import LocalConfiguration from './LocalConfiguration';
 
 export default class RenderHost {
   public readonly Renderer: Renderer;
 
-  public readonly RenderConfig: RenderConfiguration;
+  public readonly LocalConfig: LocalConfiguration;
 
   private dependencies: DependencyContainer = new DependencyContainer();
 
   private graphics: Graphics | null = null;
 
-  public constructor(renderer: Renderer, renderConfig: RenderConfiguration) {
+  public constructor(renderer: Renderer, localConfig: LocalConfiguration) {
     this.Renderer = renderer;
-    this.RenderConfig = renderConfig;
+    this.LocalConfig = localConfig;
   }
 
   private p5Setup(p5: p5Types, canvasParentRef: Element): void {
-    p5.createCanvas(this.RenderConfig.Width, this.RenderConfig.Height).parent(canvasParentRef);
-    p5.frameRate(this.RenderConfig.Framerate);
+    p5.createCanvas(this.LocalConfig.Width, this.LocalConfig.Height).parent(canvasParentRef);
+    if (this.LocalConfig.Framerate) p5.frameRate(this.LocalConfig.Framerate);
     this.graphics = new Graphics(p5);
     this.dependencies.Register(this.graphics);
-    this.dependencies.Register(this.RenderConfig);
+    this.dependencies.Register(this.LocalConfig);
     this.Renderer.Load(null, this.dependencies);
     this.Renderer.SetupSubTree();
   }
