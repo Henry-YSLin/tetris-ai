@@ -25,10 +25,10 @@ export default class GameAchievement {
     let ret = 1.1 ** this.LinesCleared.length;
     switch (this.Type) {
       case AchievementType.PerfectClear:
-        ret *= 1.9;
+        ret *= 1.5;
         break;
       case AchievementType.TSpin:
-        ret *= 1.5;
+        ret *= 1.3;
         break;
       case AchievementType.TSpinMini:
         ret *= 1.1;

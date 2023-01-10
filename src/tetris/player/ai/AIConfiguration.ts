@@ -4,7 +4,7 @@ export default class AIConfiguration {
   /**
    * The least number of ticks to wait between AI actions
    */
-  public ActionDelay = 15;
+  public ActionDelay = 60;
 
   public UpdateConfig(options: Partial<FieldsOf<AIConfiguration>>): void {
     this.ActionDelay = options.actionDelay ?? this.ActionDelay;

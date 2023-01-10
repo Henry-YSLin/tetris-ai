@@ -4,7 +4,7 @@ export default class GlobalConfiguration {
   /**
    * The width of the grid in blocks.
    */
-  public GridWidth = 10;
+  public GridWidth = 4;
 
   /**
    * The height of the grid in blocks.
