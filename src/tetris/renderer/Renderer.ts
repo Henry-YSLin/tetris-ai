@@ -55,6 +55,8 @@ export default class Renderer extends Container {
     super.applyTransform(graphics);
   }
 
+  #lastTick = 0;
+
   protected override setup(graphics: Graphics): void {
     const { p5 } = graphics;
     p5.noStroke();
@@ -63,17 +65,14 @@ export default class Renderer extends Container {
     p5.background(this.localConfig.BackgroundColor);
     p5.textFont('Noto Sans Mono');
     super.setup(graphics);
+    this.#lastTick = performance.now();
   }
-
-  #lastTick = 0;
 
   protected override update(): void {
     const timestamp = performance.now();
-    if (timestamp - this.#lastTick < 1000 / this.Game.Configuration.TickRate) {
-      return;
-    }
+    console.log('render update');
+    this.Game.Tick(timestamp - this.#lastTick);
     this.#lastTick = timestamp;
-    this.Game.Tick();
   }
 
   protected override draw(graphics: Graphics): void {

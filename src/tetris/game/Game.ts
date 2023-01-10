@@ -18,7 +18,7 @@ export default abstract class Game {
     this.#gameRunning = false;
   }
 
-  public abstract Tick(): void;
+  public abstract Tick(delta: number): void;
 
   public constructor(
     /**

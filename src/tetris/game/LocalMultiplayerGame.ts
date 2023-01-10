@@ -63,13 +63,22 @@ export default class LocalMutiplayerGame extends MultiplayerGame {
     return this.#gameEnded;
   }
 
-  public override Tick(): void {
+  #cumulativeDelta = 0;
+
+  public override Tick(delta: number): void {
+    this.#cumulativeDelta += delta;
+    if (this.#cumulativeDelta < 1000 / this.Configuration.TickRate) {
+      return;
+    }
+    this.#cumulativeDelta %= 1000 / this.Configuration.TickRate;
     if (!this.GameRunning) return;
+    console.log('game ticked');
     this.Participants.forEach(p => {
       if (p.state.IsDead) return;
       p.state.Tick();
       if (p.state.IsDead) return;
       const input = p.player.Tick(p.state.GetVisibleState());
+      console.log('player input ticked');
       const falling = p.state.Falling;
       let success = false;
       switch (input) {

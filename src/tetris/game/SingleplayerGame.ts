@@ -36,7 +36,14 @@ export default class SingleplayerGame extends Game {
     return this.#input;
   }
 
-  public override Tick(): void {
+  #cumulativeDelta = 0;
+
+  public override Tick(delta: number): void {
+    this.#cumulativeDelta += delta;
+    if (this.#cumulativeDelta < 1000 / this.Configuration.TickRate) {
+      return;
+    }
+    this.#cumulativeDelta %= 1000 / this.Configuration.TickRate;
     if (!this.GameRunning) return;
     if (this.State.IsDead) return;
     this.State.Tick();
