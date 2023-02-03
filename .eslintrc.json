@@ -102,7 +102,7 @@
         "modifiers": ["public"]
       },
       {
-        "format": ["PascalCase", "camelCase"], // workaround for https://github.com/typescript-eslint/typescript-eslint/issues/6258
+        "format": ["PascalCase"],
         "selector": ["classProperty"],
         "modifiers": ["public"]
       },
